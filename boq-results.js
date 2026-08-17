@@ -1,16 +1,18 @@
 // ========================================
+// VERIBUILD - BOQ RESULTS
+// Bulawayo, Zimbabwe
+// ========================================
+
+console.log('📊 VeriBuild BOQ Results loaded!');
+
+// ========================================
 // SUPABASE CONFIGURATION
 // ========================================
 const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);// ========================================
-// VERIBUILD - BOQ RESULTS
-// Bulawayo, Zimbabwe
-// ========================================
-
-console.log('📊 VeriBuild BOQ Results loaded!');
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Sample BOQ Data (will be replaced with real data from Supabase) ---
 const boqData = {
@@ -34,21 +36,8 @@ const boqData = {
         rebar: { qty: 144, unit: 'kg' },
         lintels: { qty: 18, unit: 'meters' }
     },
-    // Hardware prices (from registered shops)
-    hardwarePrices: {
-        bricks: { price: 0.08, supplier: 'City Hardware', phone: '0772 123 456' },
-        cementMortar: { price: 9.50, supplier: 'Ncube Hardware', phone: '0773 789 012' },
-        pitSand: { price: 75, supplier: 'Build-it', phone: '0712 345 678' },
-        riverSand: { price: 70, supplier: 'Build-it', phone: '0712 345 678' },
-        plasterCement: { price: 9.50, supplier: 'Ncube Hardware', phone: '0773 789 012' },
-        roofSheets: { price: 15, supplier: 'Delta Supplies', phone: '0789 012 345' },
-        screedCement: { price: 9.50, supplier: 'Ncube Hardware', phone: '0773 789 012' },
-        screedSand: { price: 70, supplier: 'Build-it', phone: '0712 345 678' },
-        internalPaint: { price: 8, supplier: 'Paints & More', phone: '0774 567 890' },
-        externalPaint: { price: 8, supplier: 'Paints & More', phone: '0774 567 890' },
-        rebar: { price: 1.10, supplier: 'City Hardware', phone: '0772 123 456' },
-        lintels: { price: 25, supplier: 'Ncube Hardware', phone: '0773 789 012' }
-    },
+    // Hardware prices will be fetched from Supabase
+    hardwarePrices: {},
     // Recommended workers
     workers: [
         { name: 'Ncube Mason', trade: 'Bricklayer', suburb: 'Kelvin North', phone: '0772 123 456', rating: 4.8 },
@@ -57,7 +46,6 @@ const boqData = {
         { name: 'Ndlovu Painters', trade: 'Painter', suburb: 'Pumula', phone: '0789 012 345', rating: 4.5 },
         { name: 'Moyo Tiling', trade: 'Tiler', suburb: 'Nkulumane', phone: '0774 567 890', rating: 4.7 }
     ],
-    // Total cost (calculated)
     totalCost: 0
 };
 
@@ -103,19 +91,35 @@ function populateCostBreakdown() {
     const p = boqData.hardwarePrices;
     let total = 0;
     
+    // If no hardware prices fetched, use default fallback
+    const defaultPrices = {
+        bricks: 0.08,
+        cementMortar: 9.50,
+        pitSand: 75,
+        riverSand: 70,
+        plasterCement: 9.50,
+        roofSheets: 15,
+        screedCement: 9.50,
+        screedSand: 70,
+        internalPaint: 8,
+        externalPaint: 8,
+        rebar: 1.10,
+        lintels: 25
+    };
+    
     const items = [
-        { name: 'Bricks (Stock)', qty: q.bricks.qty, unit: q.bricks.unit, price: p.bricks.price, supplier: p.bricks.supplier },
-        { name: 'Cement (Mortar)', qty: q.cementMortar.qty, unit: q.cementMortar.unit, price: p.cementMortar.price, supplier: p.cementMortar.supplier },
-        { name: 'Pit Sand', qty: q.pitSand.qty, unit: q.pitSand.unit, price: p.pitSand.price, supplier: p.pitSand.supplier },
-        { name: 'River Sand', qty: q.riverSand.qty, unit: q.riverSand.unit, price: p.riverSand.price, supplier: p.riverSand.supplier },
-        { name: 'Cement (Plaster)', qty: q.plasterCement.qty, unit: q.plasterCement.unit, price: p.plasterCement.price, supplier: p.plasterCement.supplier },
-        { name: 'Zinc Sheets', qty: q.roofSheets.qty, unit: q.roofSheets.unit, price: p.roofSheets.price, supplier: p.roofSheets.supplier },
-        { name: 'Cement (Screed)', qty: q.screedCement.qty, unit: q.screedCement.unit, price: p.screedCement.price, supplier: p.screedCement.supplier },
-        { name: 'Sand (Screed)', qty: q.screedSand.qty, unit: q.screedSand.unit, price: p.screedSand.price, supplier: p.screedSand.supplier },
-        { name: 'Paint (Internal)', qty: q.internalPaint.qty, unit: q.internalPaint.unit, price: p.internalPaint.price, supplier: p.internalPaint.supplier },
-        { name: 'Paint (External)', qty: q.externalPaint.qty, unit: q.externalPaint.unit, price: p.externalPaint.price, supplier: p.externalPaint.supplier },
-        { name: 'Rebar (10mm)', qty: q.rebar.qty, unit: q.rebar.unit, price: p.rebar.price, supplier: p.rebar.supplier },
-        { name: 'Steel Lintels', qty: q.lintels.qty, unit: q.lintels.unit, price: p.lintels.price, supplier: p.lintels.supplier }
+        { name: 'Bricks (Stock)', qty: q.bricks.qty, unit: q.bricks.unit, price: p.bricks?.price || defaultPrices.bricks, supplier: p.bricks?.supplier || 'Unknown' },
+        { name: 'Cement (Mortar)', qty: q.cementMortar.qty, unit: q.cementMortar.unit, price: p.cementMortar?.price || defaultPrices.cementMortar, supplier: p.cementMortar?.supplier || 'Unknown' },
+        { name: 'Pit Sand', qty: q.pitSand.qty, unit: q.pitSand.unit, price: p.pitSand?.price || defaultPrices.pitSand, supplier: p.pitSand?.supplier || 'Unknown' },
+        { name: 'River Sand', qty: q.riverSand.qty, unit: q.riverSand.unit, price: p.riverSand?.price || defaultPrices.riverSand, supplier: p.riverSand?.supplier || 'Unknown' },
+        { name: 'Cement (Plaster)', qty: q.plasterCement.qty, unit: q.plasterCement.unit, price: p.plasterCement?.price || defaultPrices.plasterCement, supplier: p.plasterCement?.supplier || 'Unknown' },
+        { name: 'Zinc Sheets', qty: q.roofSheets.qty, unit: q.roofSheets.unit, price: p.roofSheets?.price || defaultPrices.roofSheets, supplier: p.roofSheets?.supplier || 'Unknown' },
+        { name: 'Cement (Screed)', qty: q.screedCement.qty, unit: q.screedCement.unit, price: p.screedCement?.price || defaultPrices.screedCement, supplier: p.screedCement?.supplier || 'Unknown' },
+        { name: 'Sand (Screed)', qty: q.screedSand.qty, unit: q.screedSand.unit, price: p.screedSand?.price || defaultPrices.screedSand, supplier: p.screedSand?.supplier || 'Unknown' },
+        { name: 'Paint (Internal)', qty: q.internalPaint.qty, unit: q.internalPaint.unit, price: p.internalPaint?.price || defaultPrices.internalPaint, supplier: p.internalPaint?.supplier || 'Unknown' },
+        { name: 'Paint (External)', qty: q.externalPaint.qty, unit: q.externalPaint.unit, price: p.externalPaint?.price || defaultPrices.externalPaint, supplier: p.externalPaint?.supplier || 'Unknown' },
+        { name: 'Rebar (10mm)', qty: q.rebar.qty, unit: q.rebar.unit, price: p.rebar?.price || defaultPrices.rebar, supplier: p.rebar?.supplier || 'Unknown' },
+        { name: 'Steel Lintels', qty: q.lintels.qty, unit: q.lintels.unit, price: p.lintels?.price || defaultPrices.lintels, supplier: p.lintels?.supplier || 'Unknown' }
     ];
     
     items.forEach(item => {
@@ -137,37 +141,85 @@ function populateCostBreakdown() {
 }
 
 // ========================================
-// 3. POPULATE HARDWARE LIST
+// 3. POPULATE HARDWARE LIST (From Supabase)
 // ========================================
-function populateHardwareList() {
+async function populateHardwareList() {
     const container = document.getElementById('hardwareList');
-    const p = boqData.hardwarePrices;
+    container.innerHTML = '<p>⏳ Loading hardware shops...</p>';
     
-    // Get unique suppliers
-    const suppliers = {};
-    Object.values(p).forEach(item => {
-        if (!suppliers[item.supplier]) {
-            suppliers[item.supplier] = {
-                name: item.supplier,
-                phone: item.phone,
-                products: []
-            };
+    try {
+        const { data, error } = await supabase
+            .from('hardware_products')
+            .select('product_name, price_usd, hardware_id, users(phone, full_name)')
+            .eq('stock_status', 'in_stock')
+            .order('price_usd', { ascending: true });
+        
+        if (error) {
+            console.error('Supabase error:', error);
+            throw error;
         }
-        // We'll just show the supplier names for now
-    });
-    
-    let html = '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:10px;">';
-    Object.keys(suppliers).forEach(name => {
-        html += `
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; text-align:center;">
-                <strong>${name}</strong>
-                <p style="font-size:14px; color:#6c757d;">📞 ${suppliers[name].phone}</p>
-                <a href="tel:${suppliers[name].phone}" class="btn-outline" style="font-size:12px; padding:4px 12px;">Call Shop</a>
-            </div>
-        `;
-    });
-    html += '</div>';
-    container.innerHTML = html;
+        
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p>🛒 No hardware shops registered yet. Check back soon!</p>';
+            return;
+        }
+        
+        // Group by supplier and find cheapest per product
+        const suppliers = {};
+        data.forEach(item => {
+            const supplierName = item.users?.full_name || 'Unknown';
+            if (!suppliers[supplierName]) {
+                suppliers[supplierName] = {
+                    name: supplierName,
+                    phone: item.users?.phone || 'N/A',
+                    products: []
+                };
+            }
+            suppliers[supplierName].products.push({
+                name: item.product_name,
+                price: item.price_usd
+            });
+        });
+        
+        // Also populate hardwarePrices for cost breakdown
+        const prices = {};
+        data.forEach(item => {
+            const productKey = item.product_name.toLowerCase().replace(/\s/g, '');
+            if (!prices[productKey] || item.price_usd < prices[productKey].price) {
+                prices[productKey] = {
+                    price: item.price_usd,
+                    supplier: item.users?.full_name || 'Unknown'
+                };
+            }
+        });
+        boqData.hardwarePrices = prices;
+        
+        // Build HTML
+        let html = '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:10px;">';
+        Object.keys(suppliers).forEach(name => {
+            const s = suppliers[name];
+            const topProducts = s.products.slice(0, 3).map(p => `${p.name} ($${p.price.toFixed(2)})`).join(', ');
+            html += `
+                <div style="background:#f8f9fa; padding:15px; border-radius:8px; text-align:center; border:1px solid #e9ecef;">
+                    <strong style="font-size:16px;">${name}</strong>
+                    <p style="font-size:12px; color:#6c757d; margin:5px 0;">📞 ${s.phone}</p>
+                    <p style="font-size:12px; color:#495057;">${s.products.length} products listed</p>
+                    <p style="font-size:11px; color:#6c757d; margin-top:5px;">Top: ${topProducts}</p>
+                    <a href="tel:${s.phone}" class="btn-outline" style="font-size:12px; padding:4px 12px; margin-top:5px; display:inline-block;">📞 Call Shop</a>
+                </div>
+            `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+        
+        // Re-populate cost breakdown with fetched prices
+        document.getElementById('costBreakdown').innerHTML = '';
+        populateCostBreakdown();
+        
+    } catch (error) {
+        console.error('Error fetching hardware:', error);
+        container.innerHTML = '<p>⚠️ Error loading hardware shops. Please refresh.</p>';
+    }
 }
 
 // ========================================
@@ -201,10 +253,8 @@ function generateQRCode() {
     const container = document.getElementById('qrCodeContainer');
     const url = window.location.href;
     
-    // Clear container
     container.innerHTML = '';
     
-    // Create QR code
     const qr = new QRCode(container, {
         text: url,
         width: 128,
@@ -214,7 +264,6 @@ function generateQRCode() {
         correctLevel: QRCode.CorrectLevel.H
     });
     
-    // Add label
     const label = document.createElement('p');
     label.textContent = 'Scan to view this BOQ online';
     label.style.fontSize = '12px';
@@ -232,6 +281,22 @@ function generatePDF() {
     const q = boqData.quantities;
     const p = boqData.hardwarePrices;
     let y = 20;
+    
+    // Default fallback prices
+    const defaultPrices = {
+        bricks: 0.08,
+        cementMortar: 9.50,
+        pitSand: 75,
+        riverSand: 70,
+        plasterCement: 9.50,
+        roofSheets: 15,
+        screedCement: 9.50,
+        screedSand: 70,
+        internalPaint: 8,
+        externalPaint: 8,
+        rebar: 1.10,
+        lintels: 25
+    };
     
     // --- Cover Page ---
     doc.setFontSize(24);
@@ -251,7 +316,7 @@ function generatePDF() {
     
     doc.setFontSize(12);
     doc.setTextColor('#333');
-    doc.text(`Prepared for: User`, 20, y);
+    doc.text(`Prepared for: VeriBuild User`, 20, y);
     y += 8;
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, y);
     y += 8;
@@ -325,18 +390,18 @@ function generatePDF() {
     
     let total = 0;
     const costItems = [
-        ['Bricks', q.bricks.qty, p.bricks.price],
-        ['Cement (Mortar)', q.cementMortar.qty, p.cementMortar.price],
-        ['Pit Sand', q.pitSand.qty, p.pitSand.price],
-        ['River Sand', q.riverSand.qty, p.riverSand.price],
-        ['Cement (Plaster)', q.plasterCement.qty, p.plasterCement.price],
-        ['Zinc Sheets', q.roofSheets.qty, p.roofSheets.price],
-        ['Cement (Screed)', q.screedCement.qty, p.screedCement.price],
-        ['Sand (Screed)', q.screedSand.qty, p.screedSand.price],
-        ['Paint (Internal)', q.internalPaint.qty, p.internalPaint.price],
-        ['Paint (External)', q.externalPaint.qty, p.externalPaint.price],
-        ['Rebar', q.rebar.qty, p.rebar.price],
-        ['Lintels', q.lintels.qty, p.lintels.price]
+        ['Bricks', q.bricks.qty, p.bricks?.price || defaultPrices.bricks],
+        ['Cement (Mortar)', q.cementMortar.qty, p.cementMortar?.price || defaultPrices.cementMortar],
+        ['Pit Sand', q.pitSand.qty, p.pitSand?.price || defaultPrices.pitSand],
+        ['River Sand', q.riverSand.qty, p.riverSand?.price || defaultPrices.riverSand],
+        ['Cement (Plaster)', q.plasterCement.qty, p.plasterCement?.price || defaultPrices.plasterCement],
+        ['Zinc Sheets', q.roofSheets.qty, p.roofSheets?.price || defaultPrices.roofSheets],
+        ['Cement (Screed)', q.screedCement.qty, p.screedCement?.price || defaultPrices.screedCement],
+        ['Sand (Screed)', q.screedSand.qty, p.screedSand?.price || defaultPrices.screedSand],
+        ['Paint (Internal)', q.internalPaint.qty, p.internalPaint?.price || defaultPrices.internalPaint],
+        ['Paint (External)', q.externalPaint.qty, p.externalPaint?.price || defaultPrices.externalPaint],
+        ['Rebar', q.rebar.qty, p.rebar?.price || defaultPrices.rebar],
+        ['Lintels', q.lintels.qty, p.lintels?.price || defaultPrices.lintels]
     ];
     
     costItems.forEach(item => {
@@ -366,7 +431,6 @@ function generatePDF() {
     doc.text('Generated by VeriBuild - Verified Building Solutions', 105, 285, { align: 'center' });
     doc.text('Bulawayo, Zimbabwe | www.veribuild.co.zw', 105, 290, { align: 'center' });
     
-    // --- Save PDF ---
     doc.save('veribuild-boq.pdf');
 }
 
@@ -383,7 +447,7 @@ function shareViaWhatsApp() {
 // ========================================
 // 8. INITIALIZE PAGE
 // ========================================
-function init() {
+async function init() {
     // Populate project summary
     document.getElementById('planType').textContent = boqData.planType;
     document.getElementById('floorArea').textContent = `${boqData.floorArea} m²`;
@@ -393,8 +457,7 @@ function init() {
     document.getElementById('roofType').textContent = boqData.roofType;
     
     populateQuantities();
-    populateCostBreakdown();
-    populateHardwareList();
+    await populateHardwareList(); // Fetches from Supabase
     populateWorkerList();
     generateQRCode();
     
@@ -405,7 +468,7 @@ function init() {
         window.location.href = 'index.html';
     });
     
-    console.log('✅ BOQ Results page loaded successfully!');
+    console.log('✅ BOQ Results page loaded successfully with Supabase!');
 }
 
 // Run when page loads

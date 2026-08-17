@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VeriBuild - Sample BOQ</title>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 600px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .logo span {
+            color: #007bff;
+        }
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 40px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #28a745;
+        }
+        .btn-secondary:hover {
+            background-color: #1e7e34;
+        }
+        .features {
+            text-align: left;
+            margin: 20px 0;
+            padding: 0;
+            list-style: none;
+        }
+        .features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+            color: #495057;
+        }
+        .features li:last-child {
+            border-bottom: none;
+        }
+        .note {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Veri<span>Build</span></div>
+        <p class="subtitle">Verified Building Solutions</p>
+        <h2>📄 Sample BOQ</h2>
+        <p style="color: #6c757d;">3-Bedroom House - Pumula, Bulawayo</p>
+        <p style="color: #6c757d; font-size: 14px;">Total Floor Area: 120 m² | 4 Rooms | 6 Doors | 8 Windows</p>
+
+        <ul class="features">
+            <li>✅ Full Bill of Quantities (12 materials)</li>
+            <li>✅ Cost breakdown with hardware prices</li>
+            <li>✅ Hardware sourcing list (cheapest suppliers)</li>
+            <li>✅ Recommended skilled workers</li>
+            <li>✅ Branded PDF with QR code</li>
+        </ul>
+
+        <p style="font-size: 24px; font-weight: 700; color: #007bff;">$12,450.00 USD</p>
+        <p style="color: #6c757d; font-size: 14px;">Total Material Cost</p>
+
+        <button id="downloadSampleBtn" class="btn">📄 Download Sample BOQ PDF</button>
+        <br />
+        <a href="index.html" class="btn btn-secondary" style="display: inline-block; margin-top: 10px;">🏠 Back to Home</a>
+        <p class="note">This is a sample BOQ for demonstration purposes only.</p>
+    </div>
+
+    <script>
+        // ========================================
+        // GENERATE SAMPLE BOQ PDF
+        // ========================================
+        document.getElementById('downloadSampleBtn').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            let y = 20;
+
+            // --- Sample Data ---
+            const floorArea = 120;
+            const numRooms = 4;
+            const brickType = 'Stock Brick';
+            const wallThickness = '230mm';
+            const roofType = 'Zinc';
+
+            const quantities = {
+                bricks: { qty: 7800, unit: 'units' },
+                cementMortar: { qty: 70, unit: 'bags' },
+                pitSand: { qty: 12, unit: 'tonnes' },
+                riverSand: { qty: 6, unit: 'tonnes' },
+                plasterCement: { qty: 36, unit: 'bags' },
+                roofSheets: { qty: 36, unit: 'sheets' },
+                screedCement: { qty: 18, unit: 'bags' },
+                screedSand: { qty: 2.4, unit: 'tonnes' },
+                internalPaint: { qty: 48, unit: 'liters' },
+                externalPaint: { qty: 36, unit: 'liters' },
+                rebar: { qty: 144, unit: 'kg' },
+                lintels: { qty: 18, unit: 'meters' }
+            };
+
+            const prices = {
+                bricks: 0.08,
+                cementMortar: 9.50,
+                pitSand: 75,
+                riverSand: 70,
+                plasterCement: 9.50,
+                roofSheets: 15,
+                screedCement: 9.50,
+                screedSand: 70,
+                internalPaint: 8,
+                externalPaint: 8,
+                rebar: 1.10,
+                lintels: 25
+            };
+
+            const suppliers = {
+                bricks: 'City Hardware',
+                cementMortar: 'Ncube Hardware',
+                pitSand: 'Build-it',
+                riverSand: 'Build-it',
+                plasterCement: 'Ncube Hardware',
+                roofSheets: 'Delta Supplies',
+                screedCement: 'Ncube Hardware',
+                screedSand: 'Build-it',
+                internalPaint: 'Paints & More',
+                externalPaint: 'Paints & More',
+                rebar: 'City Hardware',
+                lintels: 'Ncube Hardware'
+            };
+
+            // --- COVER PAGE ---
+            doc.setFontSize(24);
+            doc.setTextColor('#1a1a2e');
+            doc.text('VeriBuild', 105, y, { align: 'center' });
+            y += 10;
+
+            doc.setFontSize(14);
+            doc.setTextColor('#6c757d');
+            doc.text('Verified Building Solutions', 105, y, { align: 'center' });
+            y += 20;
+
+            doc.setFontSize(18);
+            doc.setTextColor('#007bff');
+            doc.text('BILL OF QUANTITIES', 105, y, { align: 'center' });
+            y += 15;
+
+            doc.setFontSize(12);
+            doc.setTextColor('#333');
+            doc.text('Prepared for: Sample Client', 20, y);
+            y += 8;
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, y);
+            y += 8;
+            doc.text('Plan Type: Residential', 20, y);
+            y += 8;
+            doc.text(`Floor Area: ${floorArea} m²`, 20, y);
+            y += 8;
+            doc.text(`Rooms: ${numRooms}`, 20, y);
+            y += 8;
+            doc.text(`Brick Type: ${brickType}`, 20, y);
+            y += 8;
+            doc.text(`Wall Thickness: ${wallThickness}`, 20, y);
+            y += 8;
+            doc.text(`Roof Type: ${roofType}`, 20, y);
+            y += 20;
+
+            // --- MATERIAL QUANTITIES ---
+            doc.setFontSize(16);
+            doc.setTextColor('#1a1a2e');
+            doc.text('1. MATERIAL QUANTITIES', 20, y);
+            y += 10;
+
+            doc.setFontSize(10);
+            doc.text('Material', 20, y);
+            doc.text('Qty', 140, y);
+            doc.text('Unit', 180, y);
+            y += 6;
+            doc.line(20, y, 190, y);
+            y += 4;
+
+            const materialList = [
+                ['Bricks (Stock)', quantities.bricks.qty, quantities.bricks.unit],
+                ['Cement (Mortar)', quantities.cementMortar.qty, quantities.cementMortar.unit],
+                ['Pit Sand', quantities.pitSand.qty, quantities.pitSand.unit],
+                ['River Sand (Plaster)', quantities.riverSand.qty, quantities.riverSand.unit],
+                ['Cement (Plaster)', quantities.plasterCement.qty, quantities.plasterCement.unit],
+                ['Zinc Sheets', quantities.roofSheets.qty, quantities.roofSheets.unit],
+                ['Cement (Screed)', quantities.screedCement.qty, quantities.screedCement.unit],
+                ['Sand (Screed)', quantities.screedSand.qty, quantities.screedSand.unit],
+                ['Paint (Internal)', quantities.internalPaint.qty, quantities.internalPaint.unit],
+                ['Paint (External)', quantities.externalPaint.qty, quantities.externalPaint.unit],
+                ['Rebar (10mm)', quantities.rebar.qty, quantities.rebar.unit],
+                ['Steel Lintels', quantities.lintels.qty, quantities.lintels.unit]
+            ];
+
+            materialList.forEach(m => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                doc.text(m[0], 20, y);
+                doc.text(String(m[1]), 140, y);
+                doc.text(m[2], 180, y);
+                y += 6;
+            });
+
+            y += 10;
+
+            // --- COST BREAKDOWN ---
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.setFontSize(16);
+            doc.setTextColor('#1a1a2e');
+            doc.text('2. COST BREAKDOWN', 20, y);
+            y += 10;
+
+            doc.setFontSize(10);
+            doc.text('Material', 20, y);
+            doc.text('Qty', 80, y);
+            doc.text('Unit Price', 120, y);
+            doc.text('Total', 160, y);
+            y += 6;
+            doc.line(20, y, 190, y);
+            y += 4;
+
+            let totalCost = 0;
+            const costItems = [
+                ['Bricks', quantities.bricks.qty, prices.bricks],
+                ['Cement (Mortar)', quantities.cementMortar.qty, prices.cementMortar],
+                ['Pit Sand', quantities.pitSand.qty, prices.pitSand],
+                ['River Sand', quantities.riverSand.qty, prices.riverSand],
+                ['Cement (Plaster)', quantities.plasterCement.qty, prices.plasterCement],
+                ['Zinc Sheets', quantities.roofSheets.qty, prices.roofSheets],
+                ['Cement (Screed)', quantities.screedCement.qty, prices.screedCement],
+                ['Sand (Screed)', quantities.screedSand.qty, prices.screedSand],
+                ['Paint (Internal)', quantities.internalPaint.qty, prices.internalPaint],
+                ['Paint (External)', quantities.externalPaint.qty, prices.externalPaint],
+                ['Rebar', quantities.rebar.qty, prices.rebar],
+                ['Lintels', quantities.lintels.qty, prices.lintels]
+            ];
+
+            costItems.forEach(item => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                const lineTotal = item[1] * item[2];
+                totalCost += lineTotal;
+                doc.text(item[0], 20, y);
+                doc.text(String(item[1]), 80, y);
+                doc.text(`$${item[2].toFixed(2)}`, 120, y);
+                doc.text(`$${lineTotal.toFixed(2)}`, 160, y);
+                y += 6;
+            });
+
+            y += 6;
+            doc.line(20, y, 190, y);
+            y += 4;
+            doc.setFontSize(12);
+            doc.setTextColor('#007bff');
+            doc.text(`TOTAL MATERIAL COST: $${totalCost.toFixed(2)}`, 20, y);
+            y += 15;
+
+            // --- HARDWARE SOURCING ---
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.setFontSize(16);
+            doc.setTextColor('#1a1a2e');
+            doc.text('3. HARDWARE SOURCING', 20, y);
+            y += 10;
+
+            doc.setFontSize(10);
+            doc.text('Material', 20, y);
+            doc.text('Supplier', 90, y);
+            doc.text('Price', 170, y);
+            y += 6;
+            doc.line(20, y, 190, y);
+            y += 4;
+
+            const supplierList = [
+                ['Bricks', suppliers.bricks, `$${prices.bricks.toFixed(2)}`],
+                ['Cement', suppliers.cementMortar, `$${prices.cementMortar.toFixed(2)}`],
+                ['Pit Sand', suppliers.pitSand, `$${prices.pitSand.toFixed(2)}`],
+                ['River Sand', suppliers.riverSand, `$${prices.riverSand.toFixed(2)}`],
+                ['Paint', suppliers.internalPaint, `$${prices.internalPaint.toFixed(2)}`],
+                ['Rebar', suppliers.rebar, `$${prices.rebar.toFixed(2)}`],
+                ['Lintels', suppliers.lintels, `$${prices.lintels.toFixed(2)}`]
+            ];
+
+            supplierList.forEach(item => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                doc.text(item[0], 20, y);
+                doc.text(item[1], 90, y);
+                doc.text(item[2], 170, y);
+                y += 6;
+            });
+
+            y += 10;
+
+            // --- RECOMMENDED WORKERS ---
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.setFontSize(16);
+            doc.setTextColor('#1a1a2e');
+            doc.text('4. RECOMMENDED WORKERS', 20, y);
+            y += 10;
+
+            doc.setFontSize(10);
+            doc.text('Name', 20, y);
+            doc.text('Trade', 90, y);
+            doc.text('Suburb', 140, y);
+            y += 6;
+            doc.line(20, y, 190, y);
+            y += 4;
+
+            const workers = [
+                ['Ncube Mason', 'Bricklayer', 'Kelvin North'],
+                ['Dube Plumbing', 'Plumber', 'Hillside'],
+                ['Mpofu Electrical', 'Electrician', 'Suburbs'],
+                ['Ndlovu Painters', 'Painter', 'Pumula'],
+                ['Moyo Tiling', 'Tiler', 'Nkulumane']
+            ];
+
+            workers.forEach(w => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                doc.text(w[0], 20, y);
+                doc.text(w[1], 90, y);
+                doc.text(w[2], 140, y);
+                y += 6;
+            });
+
+            y += 15;
+
+            // --- FOOTER ---
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.setFontSize(10);
+            doc.setTextColor('#6c757d');
+            doc.text('Generated by VeriBuild - Verified Building Solutions', 105, 285, { align: 'center' });
+            doc.text('Bulawayo, Zimbabwe | www.veribuild.co.zw', 105, 290, { align: 'center' });
+
+            // --- SAVE PDF ---
+            doc.save('VeriBuild-Sample-BOQ.pdf');
+        });
+    </script>
+</body>
+  </html>

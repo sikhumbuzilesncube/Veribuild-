@@ -1,0 +1,464 @@
+/* ======================================== */
+/* VERIBUILD - MAIN STYLES */
+/* Bulawayo, Zimbabwe */
+/* ======================================== */
+
+/* --- RESET & BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #1a1a2e;
+    line-height: 1.6;
+}
+
+/* --- HEADER --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo h1 {
+    font-size: 28px;
+    color: #1a1a2e;
+}
+
+.logo .tagline {
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 300;
+}
+
+nav {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+nav a {
+    text-decoration: none;
+    color: #1a1a2e;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #007bff;
+}
+
+.btn-outline {
+    padding: 8px 20px;
+    border: 2px solid #1a1a2e;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+    color: #1a1a2e;
+    display: inline-block;
+}
+
+.btn-outline:hover {
+    background-color: #1a1a2e;
+    color: #ffffff !important;
+}
+
+.btn-primary {
+    padding: 10px 24px;
+    background-color: #007bff;
+    color: #ffffff !important;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    padding: 10px 24px;
+    background-color: #28a745;
+    color: #ffffff !important;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background-color: #1e7e34;
+    transform: translateY(-2px);
+}
+
+/* --- HERO SECTION --- */
+.hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #ffffff;
+    padding: 80px 40px;
+    text-align: center;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.hero .highlight {
+    color: #f0c040;
+}
+
+.hero p {
+    font-size: 20px;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* --- GENERAL SECTIONS --- */
+.section {
+    padding: 60px 40px;
+    text-align: center;
+    background-color: #ffffff;
+}
+
+.section:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.section h2 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: #1a1a2e;
+}
+
+.section p {
+    font-size: 18px;
+    color: #6c757d;
+    margin-bottom: 30px;
+}
+
+/* --- SAMPLE BOQ CARD --- */
+.sample-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 40px;
+    max-width: 600px;
+    margin: 0 auto;
+    transition: transform 0.3s;
+}
+
+.sample-card:hover {
+    transform: translateY(-5px);
+}
+
+.sample-preview .pdf-icon {
+    font-size: 64px;
+    margin-bottom: 10px;
+}
+
+.sample-preview h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.sample-preview p {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+.sample-actions {
+    margin-top: 20px;
+}
+
+/* --- GENERATE BOQ CARD --- */
+.generate-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 40px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.generate-steps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.step-number {
+    background-color: #007bff;
+    color: #ffffff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.step p {
+    margin: 0;
+    font-size: 14px;
+    color: #1a1a2e;
+}
+
+.generate-actions .note {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #dc3545;
+    font-weight: 500;
+}
+
+/* --- UPLOAD METHODS (NEW) --- */
+.upload-methods {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.upload-methods button {
+    font-size: 16px;
+    padding: 12px 28px;
+}
+
+#cameraContainer {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+#video {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    background-color: #000;
+}
+
+#photoPreview {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 15px;
+}
+
+#photoPreview img {
+    border: 2px solid #e9ecef;
+    transition: transform 0.2s;
+}
+
+#photoPreview img:hover {
+    transform: scale(1.05);
+}
+
+#fileDisplay {
+    background-color: #e9f7fe;
+    border: 1px solid #b8d4e3;
+}
+
+/* --- PRICING GRID --- */
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.pricing-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 30px 20px;
+    transition: transform 0.3s;
+    text-align: left;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+}
+
+.pricing-card h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #1a1a2e;
+}
+
+.pricing-card .price {
+    font-size: 32px;
+    font-weight: 700;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.pricing-card .price span {
+    font-size: 16px;
+    font-weight: 400;
+    color: #6c757d;
+}
+
+.pricing-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.pricing-card ul li {
+    padding: 6px 0;
+    color: #495057;
+    font-size: 14px;
+}
+
+/* --- FOOTER --- */
+footer {
+    background-color: #1a1a2e;
+    color: #ffffff;
+    padding: 40px 40px 20px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-logo h2 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.footer-logo p {
+    color: #adb5bd;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-links a {
+    color: #adb5bd;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #ffffff;
+}
+
+.footer-contact p {
+    color: #adb5bd;
+    margin-bottom: 5px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #343a40;
+    margin-top: 30px;
+    color: #adb5bd;
+    font-size: 14px;
+}
+
+/* --- RESPONSIVE (Mobile First) --- */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .generate-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 40px 20px;
+    }
+
+    .pricing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .upload-methods {
+        flex-direction: column;
+        align-items: center;
+    }
+}

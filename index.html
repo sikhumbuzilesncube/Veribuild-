@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>VeriBuild - Verified Building Solutions</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- ======================================== -->
-    <!-- HEADER / NAVIGATION -->
-    <!-- ======================================== -->
+
+    <!-- ================================ -->
+    <!-- HEADER -->
+    <!-- ================================ -->
     <header>
         <div class="logo">
             <h1>VeriBuild</h1>
@@ -17,20 +18,21 @@
         </div>
         <nav>
             <a href="#how-it-works">How It Works</a>
+            <a href="#platform">Platform</a>
             <a href="#pricing">Pricing</a>
-            <a href="#" class="btn-outline">Sign In</a>
-            <a href="#" class="btn-primary">Get Started</a>
+            <a href="#" class="btn-outline" id="signInBtn">Sign In</a>
+            <a href="#generate" class="btn-primary">Get Started</a>
         </nav>
     </header>
 
-    <!-- ======================================== -->
-    <!-- HERO SECTION -->
-    <!-- ======================================== -->
+    <!-- ================================ -->
+    <!-- HERO -->
+    <!-- ================================ -->
     <section class="hero">
         <div class="hero-content">
             <h1>Stop Overpaying for <span class="highlight">Building Estimates</span></h1>
             <p>
-                Upload your building plan. Get a detailed Bill of Quantities (BOQ) 
+                Upload your building plan. Get a detailed Bill of Quantities (BOQ)
                 with material costs from local hardware shops in Bulawayo.
             </p>
             <div class="hero-buttons">
@@ -40,9 +42,95 @@
         </div>
     </section>
 
-    <!-- ======================================== -->
-    <!-- SAMPLE BOQ SECTION -->
-    <!-- ======================================== -->
+    <!-- ================================ -->
+    <!-- HOW IT WORKS -->
+    <!-- ================================ -->
+    <section id="how-it-works" class="section">
+        <h2>How VeriBuild Works</h2>
+        <p>Three simple steps to get your building estimate and connect with local professionals.</p>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-icon">📄</div>
+                <h3>1. Upload Your Plan</h3>
+                <p>Upload your building plan as a PDF or take photos with your phone.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">📊</div>
+                <h3>2. Get Your BOQ</h3>
+                <p>Receive a detailed Bill of Quantities with material quantities and costs.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">🔨</div>
+                <h3>3. Connect & Build</h3>
+                <p>Find local hardware shops, skilled workers, and structural engineers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- PLATFORM OVERVIEW (4 PILLARS) -->
+    <!-- ================================ -->
+    <section id="platform" class="section alt-bg">
+        <h2>Your Complete Building Platform</h2>
+        <p>One platform connecting clients, hardware shops, workers, and engineers.</p>
+        <div class="platform-grid">
+            <div class="platform-card">
+                <div class="platform-icon">🏠</div>
+                <h3>For Clients</h3>
+                <p>Get accurate BOQs, compare hardware prices, and find skilled workers — all in one place.</p>
+                <ul>
+                    <li>✅ Full Bill of Quantities</li>
+                    <li>✅ Hardware price comparison</li>
+                    <li>✅ Recommended workers & engineers</li>
+                    <li>✅ Branded PDF with QR code</li>
+                </ul>
+                <a href="#generate" class="btn-outline">Generate BOQ</a>
+            </div>
+
+            <div class="platform-card">
+                <div class="platform-icon">🛒</div>
+                <h3>For Hardware Shops</h3>
+                <p>List your products and prices. Get discovered by clients building in your area.</p>
+                <ul>
+                    <li>✅ List up to 50 products</li>
+                    <li>✅ Update prices anytime</li>
+                    <li>✅ Appear in BOQ sourcing list</li>
+                    <li>✅ Get customer leads</li>
+                </ul>
+                <a href="#" class="btn-outline">Register Hardware</a>
+            </div>
+
+            <div class="platform-card">
+                <div class="platform-icon">👷</div>
+                <h3>For Skilled Workers</h3>
+                <p>Showcase your portfolio, get emergency job alerts, and build your reputation.</p>
+                <ul>
+                    <li>✅ Upload portfolio photos</li>
+                    <li>✅ Emergency job alerts</li>
+                    <li>✅ Appear in BOQ recommendations</li>
+                    <li>✅ Get client reviews</li>
+                </ul>
+                <a href="#" class="btn-outline">Register Worker</a>
+            </div>
+
+            <div class="platform-card">
+                <div class="platform-icon">📐</div>
+                <h3>For Engineers</h3>
+                <p>Get exclusive structural leads. Clients send plans directly to you.</p>
+                <ul>
+                    <li>✅ Verified engineer badge</li>
+                    <li>✅ Exclusive structural leads</li>
+                    <li>✅ View client plans & BOQs</li>
+                    <li>✅ Build your portfolio</li>
+                </ul>
+                <a href="#" class="btn-outline">Register Engineer</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- SAMPLE BOQ -->
+    <!-- ================================ -->
     <section id="sample" class="section">
         <h2>View a Sample BOQ</h2>
         <p>See exactly what you get before you pay.</p>
@@ -54,44 +142,66 @@
                 <p><strong>Total Material Cost: $12,450.00 USD</strong></p>
             </div>
             <div class="sample-actions">
-                <a href="#" class="btn-secondary" target="_blank">📄 Download Sample PDF</a>
+                <a href="#" class="btn-secondary" id="downloadSampleBtn">📄 Download Sample PDF</a>
             </div>
         </div>
     </section>
 
-    <!-- ======================================== -->
-    <!-- GENERATE BOQ SECTION (UPDATED WITH CAMERA) -->
-    <!-- ======================================== -->
-    <section id="generate" class="section">
+    <!-- ================================ -->
+    <!-- GENERATE BOQ (WITH FULL-SCREEN CAMERA) -->
+    <!-- ================================ -->
+    <section id="generate" class="section alt-bg">
         <h2>Generate Your BOQ</h2>
         <p>Upload your building plan or take a photo with your phone.</p>
-        
+
         <div class="generate-card">
-            <!-- Step 1: Choose upload method -->
+            <!-- Upload Methods -->
             <div class="upload-methods">
                 <button id="uploadPdfBtn" class="btn-outline">📄 Upload PDF</button>
                 <button id="takePhotoBtn" class="btn-primary">📸 Take Photo</button>
             </div>
 
-            <!-- Hidden file input for PDF -->
-            <input type="file" id="pdfFileInput" accept=".pdf" style="display:none;">
+            <!-- Hidden PDF Input -->
+            <input type="file" id="pdfFileInput" accept=".pdf" style="display:none;" />
 
-            <!-- Camera preview area -->
-            <div id="cameraContainer" style="display:none; margin-top:20px;">
-                <video id="video" autoplay playsinline style="width:100%; max-width:400px; border-radius:12px; background:#000;"></video>
-                <div style="margin-top:10px;">
-                    <button id="capturePhotoBtn" class="btn-secondary">📸 Take Photo</button>
-                    <button id="cancelCameraBtn" class="btn-outline">❌ Cancel</button>
+            <!-- FULL-SCREEN CAMERA OVERLAY -->
+            <div id="cameraOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#000; z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
+                <video id="video" autoplay playsinline style="width:100%; height:100%; object-fit:cover; background:#000;"></video>
+                
+                <!-- Camera Controls (Overlay) -->
+                <div style="position:absolute; bottom:40px; left:0; right:0; display:flex; justify-content:center; gap:20px; padding:0 20px; z-index:10;">
+                    <button id="capturePhotoBtn" class="btn-secondary" style="font-size:20px; padding:16px 40px; border-radius:50px; background:#28a745; color:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.5);">
+                        📸 Take Photo
+                    </button>
+                    <button id="cancelCameraBtn" class="btn-outline" style="font-size:16px; padding:16px 30px; border-radius:50px; background:rgba(255,255,255,0.2); color:#fff; border:2px solid #fff;">
+                        ❌ Cancel
+                    </button>
                 </div>
-                <div id="photoPreview" style="display:none; margin-top:20px;">
-                    <p><strong>Photos Taken:</strong> <span id="photoCount">0</span></p>
-                    <button id="generateFromPhotosBtn" class="btn-primary">📄 Generate BOQ from Photos</button>
-                    <button id="clearPhotosBtn" class="btn-outline">🗑️ Clear Photos</button>
+                
+                <!-- Photo Counter Overlay -->
+                <div style="position:absolute; top:40px; right:20px; background:rgba(0,0,0,0.7); color:#fff; padding:8px 16px; border-radius:30px; font-size:16px; z-index:10;">
+                    📸 <span id="photoCountOverlay">0</span>
+                </div>
+                
+                <!-- Close/Exit Hint -->
+                <div style="position:absolute; top:40px; left:20px; background:rgba(0,0,0,0.5); color:#fff; padding:6px 12px; border-radius:8px; font-size:12px; z-index:10;">
+                    Tap Cancel to exit
                 </div>
             </div>
 
-            <!-- Display selected PDF file name -->
-            <div id="fileDisplay" style="display:none; margin-top:15px; padding:15px; background:#f8f9fa; border-radius:8px;">
+            <!-- Photo Preview (After Camera) -->
+            <div id="photoPreview" style="display:none; margin-top:20px; padding:20px; background:#ffffff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                <p><strong>📸 Photos Taken:</strong> <span id="photoCount">0</span></p>
+                <div id="photoThumbnails" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+                <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <button id="generateFromPhotosBtn" class="btn-primary">📄 Generate BOQ from Photos</button>
+                    <button id="clearPhotosBtn" class="btn-outline">🗑️ Clear Photos</button>
+                    <button id="addMorePhotosBtn" class="btn-outline">📸 Add More Photos</button>
+                </div>
+            </div>
+
+            <!-- PDF File Display -->
+            <div id="fileDisplay" style="display:none; margin-top:15px; padding:15px; background:#e9f7fe; border-radius:8px;">
                 <p>📄 Selected: <span id="fileName"></span></p>
                 <button id="generateFromPdfBtn" class="btn-primary">📄 Generate BOQ from PDF</button>
             </div>
@@ -102,11 +212,12 @@
         </div>
     </section>
 
-    <!-- ======================================== -->
-    <!-- PRICING SECTION -->
-    <!-- ======================================== -->
+    <!-- ================================ -->
+    <!-- PRICING -->
+    <!-- ================================ -->
     <section id="pricing" class="section">
         <h2>Simple, Transparent Pricing</h2>
+        <p>Pay only for what you use. No hidden fees.</p>
         <div class="pricing-grid">
             <div class="pricing-card">
                 <h3>Clients</h3>
@@ -148,9 +259,78 @@
         </div>
     </section>
 
-    <!-- ======================================== -->
+    <!-- ================================ -->
+    <!-- FAQ -->
+    <!-- ================================ -->
+    <section id="faq" class="section alt-bg">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h3>What is a BOQ?</h3>
+                <p>A Bill of Quantities (BOQ) is a detailed list of all materials needed for your building project, with quantities and costs.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Do I need to sign up to generate a BOQ?</h3>
+                <p>You can upload your plan without signing up, but you'll need to sign up (free) before we generate your BOQ.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Can I take photos instead of scanning?</h3>
+                <p>Yes! You can take photos of your plan using your phone camera. We'll convert them to a PDF automatically.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How do hardware shops register?</h3>
+                <p>Hardware shops can sign up for free and list 5 products. To list more, they choose a monthly subscription.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How do skilled workers get jobs?</h3>
+                <p>Workers appear in BOQ recommendations and receive emergency job alerts based on their location and trade.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Do you offer commercial BOQs?</h3>
+                <p>Not yet. Commercial BOQs (offices, shops, schools) are coming soon. Register your email to be notified.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- SIGN-UP POPUP -->
+    <!-- ================================ -->
+    <div id="signupPopup" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center;">
+        <div style="background:#ffffff; max-width:400px; width:90%; padding:30px; border-radius:16px; box-shadow:0 8px 30px rgba(0,0,0,0.3);">
+            <h2 style="margin-bottom:10px;">🔐 Sign Up for VeriBuild</h2>
+            <p style="color:#6c757d; margin-bottom:20px;">Free in 30 seconds. No credit card required.</p>
+            
+            <!-- Phone Input -->
+            <label style="display:block; font-weight:600; margin-bottom:5px;">Phone Number</label>
+            <input type="tel" id="signupPhone" placeholder="0772 123 456" 
+                   style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; margin-bottom:15px;">
+            
+            <!-- Send OTP Button -->
+            <button id="sendOtpBtn" class="btn-primary" style="width:100%; margin-bottom:15px;">
+                📲 Send Verification Code via WhatsApp
+            </button>
+            
+            <!-- OTP Input -->
+            <div id="otpSection" style="display:none;">
+                <label style="display:block; font-weight:600; margin-bottom:5px;">Verification Code</label>
+                <input type="text" id="otpInput" placeholder="Enter 6-digit code" maxlength="6"
+                       style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; margin-bottom:10px;">
+                <p id="otpStatus" style="font-size:14px; color:#6c757d; margin-bottom:10px;">⏳ Code expires in 5 minutes</p>
+                <button id="verifyOtpBtn" class="btn-secondary" style="width:100%;">
+                    ✅ Verify Code
+                </button>
+            </div>
+            
+            <!-- Close Button -->
+            <button id="closeSignupBtn" style="margin-top:15px; background:none; border:none; color:#6c757d; cursor:pointer; font-size:14px; width:100%;">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- ================================ -->
     <!-- FOOTER -->
-    <!-- ======================================== -->
+    <!-- ================================ -->
     <footer>
         <div class="footer-content">
             <div class="footer-logo">
@@ -176,4 +356,4 @@
 
     <script src="script.js"></script>
 </body>
-              </html>
+                </html>

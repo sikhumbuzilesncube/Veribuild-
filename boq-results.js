@@ -1,4 +1,11 @@
 // ========================================
+// SUPABASE CONFIGURATION
+// ========================================
+const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
+
+// Initialize Supabase client
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);// ========================================
 // VERIBUILD - BOQ RESULTS
 // Bulawayo, Zimbabwe
 // ========================================

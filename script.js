@@ -1,4 +1,11 @@
 // ========================================
+// SUPABASE CONFIGURATION
+// ========================================
+const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
+
+// Import Supabase (CDN version)
+// Add this script tag to index.html head section// ========================================
 // VERIBUILD - MAIN JAVASCRIPT
 // Bulawayo, Zimbabwe
 // ========================================

@@ -4,119 +4,247 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VeriBuild - Sample BOQ</title>
-    <!-- jsPDF for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
             padding: 20px;
-            text-align: center;
         }
         .container {
             background: #ffffff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            max-width: 600px;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            max-width: 650px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #007bff, #28a745, #f0c040);
         }
         .logo {
-            font-size: 32px;
-            font-weight: 700;
+            font-size: 38px;
+            font-weight: 800;
             color: #1a1a2e;
+            letter-spacing: -1px;
         }
         .logo span {
             color: #007bff;
         }
         .subtitle {
             color: #6c757d;
-            margin-bottom: 20px;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: -4px;
+        }
+        .divider {
+            width: 60px;
+            height: 3px;
+            background: #007bff;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        .sample-badge {
+            display: inline-block;
+            background: #f0c040;
+            color: #1a1a2e;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        .project-title {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-top: 15px;
+        }
+        .project-details {
+            color: #6c757d;
+            font-size: 15px;
+            margin-top: 5px;
+        }
+        .price-big {
+            font-size: 42px;
+            font-weight: 800;
+            color: #007bff;
+            margin-top: 15px;
+        }
+        .price-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            text-align: left;
+            margin: 25px 0;
+            background: #f8f9fa;
+            padding: 20px 25px;
+            border-radius: 12px;
+        }
+        .features-grid li {
+            list-style: none;
+            padding: 6px 0;
+            color: #495057;
+            font-size: 14px;
+        }
+        .features-grid li::before {
+            content: '✅ ';
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
         }
         .btn {
             display: inline-block;
-            padding: 14px 40px;
-            background-color: #007bff;
+            padding: 14px 36px;
+            background: #007bff;
             color: #ffffff;
             border: none;
-            border-radius: 30px;
-            font-size: 18px;
+            border-radius: 50px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
-            margin-top: 20px;
         }
         .btn:hover {
-            background-color: #0056b3;
+            background: #0056b3;
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.3);
         }
-        .btn-secondary {
-            background-color: #28a745;
+        .btn-success {
+            background: #28a745;
         }
-        .btn-secondary:hover {
-            background-color: #1e7e34;
+        .btn-success:hover {
+            background: #1e7e34;
+            box-shadow: 0 8px 25px rgba(40,167,69,0.3);
         }
-        .features {
-            text-align: left;
-            margin: 20px 0;
-            padding: 0;
-            list-style: none;
+        .btn-outline {
+            background: transparent;
+            color: #1a1a2e;
+            border: 2px solid #dee2e6;
         }
-        .features li {
-            padding: 8px 0;
-            border-bottom: 1px solid #e9ecef;
-            color: #495057;
-        }
-        .features li:last-child {
-            border-bottom: none;
+        .btn-outline:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: none;
         }
         .note {
-            font-size: 14px;
-            color: #6c757d;
+            font-size: 13px;
+            color: #adb5bd;
             margin-top: 20px;
+        }
+        .contact-bar {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .contact-bar span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        @media (max-width: 500px) {
+            .container { padding: 30px 20px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .price-big { font-size: 32px; }
+            .btn { padding: 12px 24px; font-size: 14px; width: 100%; }
+            .btn-group { flex-direction: column; }
+            .contact-bar { flex-direction: column; gap: 8px; align-items: center; }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Logo -->
         <div class="logo">Veri<span>Build</span></div>
-        <p class="subtitle">Verified Building Solutions</p>
-        <h2>📄 Sample BOQ</h2>
-        <p style="color: #6c757d;">3-Bedroom House - Pumula, Bulawayo</p>
-        <p style="color: #6c757d; font-size: 14px;">Total Floor Area: 120 m² | 4 Rooms | 6 Doors | 8 Windows</p>
+        <div class="subtitle">Verified Building Solutions</div>
+        <div class="divider"></div>
 
-        <ul class="features">
-            <li>✅ Full Bill of Quantities (12 materials)</li>
-            <li>✅ Cost breakdown with hardware prices</li>
-            <li>✅ Hardware sourcing list (cheapest suppliers)</li>
-            <li>✅ Recommended skilled workers</li>
-            <li>✅ Branded PDF with QR code</li>
+        <!-- Sample Badge -->
+        <div class="sample-badge">📄 Sample BOQ</div>
+
+        <!-- Project Info -->
+        <h2 class="project-title">3-Bedroom House — Pumula, Bulawayo</h2>
+        <p class="project-details">🏠 120 m² · 4 Rooms · 6 Doors · 8 Windows</p>
+        <p class="project-details">🧱 Stock Brick · 🏗️ 230mm Walls · 🏠 Zinc Roof</p>
+
+        <!-- Price -->
+        <div class="price-big">$12,450.00 USD</div>
+        <div class="price-label">Total Estimated Material Cost</div>
+
+        <!-- Features -->
+        <ul class="features-grid">
+            <li>Full Bill of Quantities</li>
+            <li>12 Material Categories</li>
+            <li>Hardware Price Comparison</li>
+            <li>Cheapest Supplier Sourcing</li>
+            <li>5 Skilled Workers Recommended</li>
+            <li>Structural Engineer Contact</li>
+            <li>Branded PDF with QR Code</li>
+            <li>Share via WhatsApp</li>
         </ul>
 
-        <p style="font-size: 24px; font-weight: 700; color: #007bff;">$12,450.00 USD</p>
-        <p style="color: #6c757d; font-size: 14px;">Total Material Cost</p>
+        <!-- Buttons -->
+        <div class="btn-group">
+            <button id="downloadSampleBtn" class="btn">📄 Download Sample PDF</button>
+            <a href="index.html" class="btn btn-outline">🏠 Back to Home</a>
+        </div>
 
-        <button id="downloadSampleBtn" class="btn">📄 Download Sample BOQ PDF</button>
-        <br />
-        <a href="index.html" class="btn btn-secondary" style="display: inline-block; margin-top: 10px;">🏠 Back to Home</a>
-        <p class="note">This is a sample BOQ for demonstration purposes only.</p>
+        <!-- Contact Bar -->
+        <div class="contact-bar">
+            <span>📍 Bulawayo, Zimbabwe</span>
+            <span>📞 +263 77 780 3517</span>
+            <span>✉️ admin@gatekeeperai.co.zw</span>
+            <span>🌐 www.veribuild.co.zw</span>
+        </div>
+
+        <p class="note">This is a sample BOQ for demonstration purposes only. Actual BOQs are generated from your specific plans.</p>
     </div>
 
     <script>
         // ========================================
-        // GENERATE SAMPLE BOQ PDF
+        // GENERATE PROFESSIONAL SAMPLE BOQ PDF
         // ========================================
         document.getElementById('downloadSampleBtn').addEventListener('click', function() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             let y = 20;
 
-            // --- Sample Data ---
+            // --- DATA ---
             const floorArea = 120;
             const numRooms = 4;
             const brickType = 'Stock Brick';
@@ -154,66 +282,118 @@
             };
 
             const suppliers = {
-                bricks: 'City Hardware',
-                cementMortar: 'Ncube Hardware',
-                pitSand: 'Build-it',
-                riverSand: 'Build-it',
-                plasterCement: 'Ncube Hardware',
-                roofSheets: 'Delta Supplies',
-                screedCement: 'Ncube Hardware',
-                screedSand: 'Build-it',
-                internalPaint: 'Paints & More',
-                externalPaint: 'Paints & More',
-                rebar: 'City Hardware',
-                lintels: 'Ncube Hardware'
+                bricks: { name: 'City Hardware', phone: '0772 123 456' },
+                cementMortar: { name: 'Ncube Hardware', phone: '0773 789 012' },
+                pitSand: { name: 'Build-it', phone: '0712 345 678' },
+                riverSand: { name: 'Build-it', phone: '0712 345 678' },
+                plasterCement: { name: 'Ncube Hardware', phone: '0773 789 012' },
+                roofSheets: { name: 'Delta Supplies', phone: '0789 012 345' },
+                screedCement: { name: 'Ncube Hardware', phone: '0773 789 012' },
+                screedSand: { name: 'Build-it', phone: '0712 345 678' },
+                internalPaint: { name: 'Paints & More', phone: '0774 567 890' },
+                externalPaint: { name: 'Paints & More', phone: '0774 567 890' },
+                rebar: { name: 'City Hardware', phone: '0772 123 456' },
+                lintels: { name: 'Ncube Hardware', phone: '0773 789 012' }
             };
 
-            // --- COVER PAGE ---
-            doc.setFontSize(24);
+            const workers = [
+                { name: 'Ncube Mason', trade: 'Bricklayer', suburb: 'Kelvin North', phone: '0772 123 456', rating: '⭐⭐⭐⭐⭐' },
+                { name: 'Dube Plumbing', trade: 'Plumber', suburb: 'Hillside', phone: '0773 789 012', rating: '⭐⭐⭐⭐½' },
+                { name: 'Mpofu Electrical', trade: 'Electrician', suburb: 'Suburbs', phone: '0712 345 678', rating: '⭐⭐⭐⭐⭐' },
+                { name: 'Ndlovu Painters', trade: 'Painter', suburb: 'Pumula', phone: '0789 012 345', rating: '⭐⭐⭐⭐½' },
+                { name: 'Moyo Tiling', trade: 'Tiler', suburb: 'Nkulumane', phone: '0774 567 890', rating: '⭐⭐⭐⭐' }
+            ];
+
+            const engineer = {
+                name: 'Eng. Ncube',
+                company: 'Ncube Engineering',
+                suburb: 'Kelvin North',
+                phone: '0772 123 456',
+                email: 'ncube@eng.co.zw'
+            };
+
+            // ========================================
+            // COVER PAGE
+            // ========================================
+            // Header Line
+            doc.setFillColor('#007bff');
+            doc.rect(0, 0, 210, 8, 'F');
+
+            // Logo
+            doc.setFontSize(28);
             doc.setTextColor('#1a1a2e');
-            doc.text('VeriBuild', 105, y, { align: 'center' });
-            y += 10;
-
-            doc.setFontSize(14);
-            doc.setTextColor('#6c757d');
-            doc.text('Verified Building Solutions', 105, y, { align: 'center' });
-            y += 20;
-
-            doc.setFontSize(18);
-            doc.setTextColor('#007bff');
-            doc.text('BILL OF QUANTITIES', 105, y, { align: 'center' });
-            y += 15;
+            doc.text('VeriBuild', 105, 30, { align: 'center' });
 
             doc.setFontSize(12);
-            doc.setTextColor('#333');
-            doc.text('Prepared for: Sample Client', 20, y);
-            y += 8;
-            doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, y);
-            y += 8;
-            doc.text('Plan Type: Residential', 20, y);
-            y += 8;
-            doc.text(`Floor Area: ${floorArea} m²`, 20, y);
-            y += 8;
-            doc.text(`Rooms: ${numRooms}`, 20, y);
-            y += 8;
-            doc.text(`Brick Type: ${brickType}`, 20, y);
-            y += 8;
-            doc.text(`Wall Thickness: ${wallThickness}`, 20, y);
-            y += 8;
-            doc.text(`Roof Type: ${roofType}`, 20, y);
-            y += 20;
+            doc.setTextColor('#6c757d');
+            doc.text('Verified Building Solutions', 105, 40, { align: 'center' });
 
-            // --- MATERIAL QUANTITIES ---
-            doc.setFontSize(16);
+            doc.setDrawColor('#007bff');
+            doc.setLineWidth(0.5);
+            doc.line(75, 46, 135, 46);
+
+            // Title
+            doc.setFontSize(22);
+            doc.setTextColor('#007bff');
+            doc.text('BILL OF QUANTITIES', 105, 62, { align: 'center' });
+
+            doc.setFontSize(12);
             doc.setTextColor('#1a1a2e');
-            doc.text('1. MATERIAL QUANTITIES', 20, y);
-            y += 10;
+            doc.text('3-Bedroom House — Pumula, Bulawayo', 105, 74, { align: 'center' });
+
+            // Project Details Box
+            doc.setFillColor('#f8f9fa');
+            doc.roundedRect(30, 84, 150, 60, 4, 4, 'F');
+
+            doc.setFontSize(11);
+            doc.setTextColor('#495057');
+            doc.text('📋 PROJECT SUMMARY', 105, 96, { align: 'center' });
 
             doc.setFontSize(10);
-            doc.text('Material', 20, y);
+            doc.setTextColor('#6c757d');
+            doc.text(`Floor Area: ${floorArea} m²  |  Rooms: ${numRooms}`, 105, 108, { align: 'center' });
+            doc.text(`Brick Type: ${brickType}  |  Wall: ${wallThickness}`, 105, 118, { align: 'center' });
+            doc.text(`Roof Type: ${roofType}`, 105, 128, { align: 'center' });
+
+            // Sample Badge
+            doc.setFillColor('#f0c040');
+            doc.roundedRect(75, 152, 60, 10, 12, 12, 'F');
+            doc.setFontSize(9);
+            doc.setTextColor('#1a1a2e');
+            doc.text('SAMPLE BOQ', 105, 159, { align: 'center' });
+
+            y = 175;
+
+            // ========================================
+            // PAGE 2: MATERIAL QUANTITIES
+            // ========================================
+            doc.addPage();
+            y = 20;
+
+            // Header
+            doc.setFillColor('#007bff');
+            doc.rect(0, 0, 210, 6, 'F');
+
+            doc.setFontSize(18);
+            doc.setTextColor('#1a1a2e');
+            doc.text('1. MATERIAL QUANTITIES', 20, 20);
+
+            doc.setFontSize(10);
+            doc.setTextColor('#6c757d');
+            doc.text('A detailed breakdown of all materials required for this project.', 20, 28);
+
+            // Table Header
+            y = 38;
+            doc.setFillColor('#f8f9fa');
+            doc.rect(20, y - 4, 170, 8, 'F');
+            doc.setFontSize(10);
+            doc.setTextColor('#1a1a2e');
+            doc.text('Material', 25, y);
             doc.text('Qty', 140, y);
-            doc.text('Unit', 180, y);
+            doc.text('Unit', 175, y);
+
             y += 6;
+            doc.setDrawColor('#dee2e6');
             doc.line(20, y, 190, y);
             y += 4;
 
@@ -232,28 +412,47 @@
                 ['Steel Lintels', quantities.lintels.qty, quantities.lintels.unit]
             ];
 
-            materialList.forEach(m => {
+            materialList.forEach((m, index) => {
                 if (y > 270) { doc.addPage(); y = 20; }
-                doc.text(m[0], 20, y);
+                doc.setFontSize(10);
+                doc.setTextColor(index % 2 === 0 ? '#1a1a2e' : '#495057');
+                doc.text(m[0], 25, y);
                 doc.text(String(m[1]), 140, y);
-                doc.text(m[2], 180, y);
+                doc.text(m[2], 175, y);
                 y += 6;
             });
 
-            y += 10;
+            y += 6;
+            doc.line(20, y, 190, y);
 
-            // --- COST BREAKDOWN ---
-            if (y > 270) { doc.addPage(); y = 20; }
-            doc.setFontSize(16);
+            // ========================================
+            // PAGE 3: COST BREAKDOWN
+            // ========================================
+            doc.addPage();
+            y = 20;
+
+            doc.setFillColor('#007bff');
+            doc.rect(0, 0, 210, 6, 'F');
+
+            doc.setFontSize(18);
             doc.setTextColor('#1a1a2e');
-            doc.text('2. COST BREAKDOWN', 20, y);
-            y += 10;
+            doc.text('2. COST BREAKDOWN', 20, 20);
 
             doc.setFontSize(10);
-            doc.text('Material', 20, y);
+            doc.setTextColor('#6c757d');
+            doc.text('Material quantities multiplied by the cheapest hardware prices in Bulawayo.', 20, 28);
+
+            // Table Header
+            y = 38;
+            doc.setFillColor('#f8f9fa');
+            doc.rect(20, y - 4, 170, 8, 'F');
+            doc.setFontSize(10);
+            doc.setTextColor('#1a1a2e');
+            doc.text('Material', 22, y);
             doc.text('Qty', 80, y);
-            doc.text('Unit Price', 120, y);
+            doc.text('Unit Price', 118, y);
             doc.text('Total', 160, y);
+
             y += 6;
             doc.line(20, y, 190, y);
             y += 4;
@@ -274,103 +473,199 @@
                 ['Lintels', quantities.lintels.qty, prices.lintels]
             ];
 
-            costItems.forEach(item => {
+            costItems.forEach((item, index) => {
                 if (y > 270) { doc.addPage(); y = 20; }
                 const lineTotal = item[1] * item[2];
                 totalCost += lineTotal;
-                doc.text(item[0], 20, y);
+                doc.setFontSize(10);
+                doc.setTextColor(index % 2 === 0 ? '#1a1a2e' : '#495057');
+                doc.text(item[0], 22, y);
                 doc.text(String(item[1]), 80, y);
-                doc.text(`$${item[2].toFixed(2)}`, 120, y);
+                doc.text(`$${item[2].toFixed(2)}`, 118, y);
                 doc.text(`$${lineTotal.toFixed(2)}`, 160, y);
                 y += 6;
             });
 
-            y += 6;
+            y += 4;
             doc.line(20, y, 190, y);
             y += 4;
             doc.setFontSize(12);
             doc.setTextColor('#007bff');
-            doc.text(`TOTAL MATERIAL COST: $${totalCost.toFixed(2)}`, 20, y);
-            y += 15;
+            doc.text(`TOTAL MATERIAL COST: $${totalCost.toFixed(2)}`, 22, y);
 
-            // --- HARDWARE SOURCING ---
-            if (y > 270) { doc.addPage(); y = 20; }
-            doc.setFontSize(16);
+            // ========================================
+            // PAGE 4: HARDWARE SOURCING
+            // ========================================
+            doc.addPage();
+            y = 20;
+
+            doc.setFillColor('#007bff');
+            doc.rect(0, 0, 210, 6, 'F');
+
+            doc.setFontSize(18);
             doc.setTextColor('#1a1a2e');
-            doc.text('3. HARDWARE SOURCING', 20, y);
-            y += 10;
+            doc.text('3. HARDWARE SOURCING', 20, 20);
 
             doc.setFontSize(10);
-            doc.text('Material', 20, y);
-            doc.text('Supplier', 90, y);
-            doc.text('Price', 170, y);
+            doc.setTextColor('#6c757d');
+            doc.text('Cheapest suppliers for each material. Contact them directly to confirm stock.', 20, 28);
+
+            // Table Header
+            y = 38;
+            doc.setFillColor('#f8f9fa');
+            doc.rect(20, y - 4, 170, 8, 'F');
+            doc.setFontSize(10);
+            doc.setTextColor('#1a1a2e');
+            doc.text('Material', 22, y);
+            doc.text('Supplier', 85, y);
+            doc.text('Phone', 145, y);
+            doc.text('Price', 178, y);
+
             y += 6;
             doc.line(20, y, 190, y);
             y += 4;
 
             const supplierList = [
-                ['Bricks', suppliers.bricks, `$${prices.bricks.toFixed(2)}`],
-                ['Cement', suppliers.cementMortar, `$${prices.cementMortar.toFixed(2)}`],
-                ['Pit Sand', suppliers.pitSand, `$${prices.pitSand.toFixed(2)}`],
-                ['River Sand', suppliers.riverSand, `$${prices.riverSand.toFixed(2)}`],
-                ['Paint', suppliers.internalPaint, `$${prices.internalPaint.toFixed(2)}`],
-                ['Rebar', suppliers.rebar, `$${prices.rebar.toFixed(2)}`],
-                ['Lintels', suppliers.lintels, `$${prices.lintels.toFixed(2)}`]
+                ['Bricks', suppliers.bricks.name, suppliers.bricks.phone, `$${prices.bricks.toFixed(2)}`],
+                ['Cement', suppliers.cementMortar.name, suppliers.cementMortar.phone, `$${prices.cementMortar.toFixed(2)}`],
+                ['Pit Sand', suppliers.pitSand.name, suppliers.pitSand.phone, `$${prices.pitSand.toFixed(2)}`],
+                ['River Sand', suppliers.riverSand.name, suppliers.riverSand.phone, `$${prices.riverSand.toFixed(2)}`],
+                ['Paint', suppliers.internalPaint.name, suppliers.internalPaint.phone, `$${prices.internalPaint.toFixed(2)}`],
+                ['Rebar', suppliers.rebar.name, suppliers.rebar.phone, `$${prices.rebar.toFixed(2)}`],
+                ['Lintels', suppliers.lintels.name, suppliers.lintels.phone, `$${prices.lintels.toFixed(2)}`]
             ];
 
-            supplierList.forEach(item => {
+            supplierList.forEach((item, index) => {
                 if (y > 270) { doc.addPage(); y = 20; }
-                doc.text(item[0], 20, y);
-                doc.text(item[1], 90, y);
-                doc.text(item[2], 170, y);
+                doc.setFontSize(10);
+                doc.setTextColor(index % 2 === 0 ? '#1a1a2e' : '#495057');
+                doc.text(item[0], 22, y);
+                doc.text(item[1], 85, y);
+                doc.text(item[2], 145, y);
+                doc.text(item[3], 178, y);
                 y += 6;
             });
 
-            y += 10;
+            y += 6;
+            doc.line(20, y, 190, y);
 
-            // --- RECOMMENDED WORKERS ---
-            if (y > 270) { doc.addPage(); y = 20; }
-            doc.setFontSize(16);
+            // ========================================
+            // PAGE 5: SKILLED WORKERS
+            // ========================================
+            doc.addPage();
+            y = 20;
+
+            doc.setFillColor('#007bff');
+            doc.rect(0, 0, 210, 6, 'F');
+
+            doc.setFontSize(18);
             doc.setTextColor('#1a1a2e');
-            doc.text('4. RECOMMENDED WORKERS', 20, y);
-            y += 10;
+            doc.text('4. RECOMMENDED SKILLED WORKERS', 20, 20);
 
             doc.setFontSize(10);
-            doc.text('Name', 20, y);
-            doc.text('Trade', 90, y);
-            doc.text('Suburb', 140, y);
+            doc.setTextColor('#6c757d');
+            doc.text('Verified workers available in your area. Contact them directly for quotes.', 20, 28);
+
+            // Table Header
+            y = 38;
+            doc.setFillColor('#f8f9fa');
+            doc.rect(20, y - 4, 170, 8, 'F');
+            doc.setFontSize(10);
+            doc.setTextColor('#1a1a2e');
+            doc.text('Name', 22, y);
+            doc.text('Trade', 75, y);
+            doc.text('Suburb', 115, y);
+            doc.text('Phone', 152, y);
+
             y += 6;
             doc.line(20, y, 190, y);
             y += 4;
 
-            const workers = [
-                ['Ncube Mason', 'Bricklayer', 'Kelvin North'],
-                ['Dube Plumbing', 'Plumber', 'Hillside'],
-                ['Mpofu Electrical', 'Electrician', 'Suburbs'],
-                ['Ndlovu Painters', 'Painter', 'Pumula'],
-                ['Moyo Tiling', 'Tiler', 'Nkulumane']
-            ];
-
-            workers.forEach(w => {
+            workers.forEach((w, index) => {
                 if (y > 270) { doc.addPage(); y = 20; }
-                doc.text(w[0], 20, y);
-                doc.text(w[1], 90, y);
-                doc.text(w[2], 140, y);
+                doc.setFontSize(10);
+                doc.setTextColor(index % 2 === 0 ? '#1a1a2e' : '#495057');
+                doc.text(w.name, 22, y);
+                doc.text(w.trade, 75, y);
+                doc.text(w.suburb, 115, y);
+                doc.text(w.phone, 152, y);
                 y += 6;
             });
 
-            y += 15;
+            y += 6;
+            doc.line(20, y, 190, y);
 
-            // --- FOOTER ---
-            if (y > 270) { doc.addPage(); y = 20; }
+            // ========================================
+            // PAGE 6: STRUCTURAL ENGINEER
+            // ========================================
+            doc.addPage();
+            y = 20;
+
+            doc.setFillColor('#007bff');
+            doc.rect(0, 0, 210, 6, 'F');
+
+            doc.setFontSize(18);
+            doc.setTextColor('#1a1a2e');
+            doc.text('5. STRUCTURAL ENGINEER', 20, 20);
+
             doc.setFontSize(10);
             doc.setTextColor('#6c757d');
-            doc.text('Generated by VeriBuild - Verified Building Solutions', 105, 285, { align: 'center' });
-            doc.text('Bulawayo, Zimbabwe | www.veribuild.co.zw', 105, 290, { align: 'center' });
+            doc.text('For projects requiring structural design and council approval.', 20, 28);
+
+            // Engineer Card
+            y = 44;
+            doc.setFillColor('#f8f9fa');
+            doc.roundedRect(20, y, 170, 50, 4, 4, 'F');
+
+            doc.setFontSize(12);
+            doc.setTextColor('#1a1a2e');
+            doc.text(`👷 ${engineer.name}`, 30, y + 10);
+            doc.setFontSize(10);
+            doc.setTextColor('#495057');
+            doc.text(`Company: ${engineer.company}`, 30, y + 20);
+            doc.text(`📍 ${engineer.suburb}`, 30, y + 28);
+            doc.text(`📞 ${engineer.phone}  |  ✉️ ${engineer.email}`, 30, y + 36);
+
+            // ========================================
+            // FINAL PAGE: FOOTER
+            // ========================================
+            doc.addPage();
+            y = 80;
+
+            doc.setFontSize(24);
+            doc.setTextColor('#1a1a2e');
+            doc.text('VeriBuild', 105, y, { align: 'center' });
+            y += 12;
+
+            doc.setFontSize(12);
+            doc.setTextColor('#6c757d');
+            doc.text('Verified Building Solutions', 105, y, { align: 'center' });
+            y += 20;
+
+            doc.setFontSize(14);
+            doc.setTextColor('#007bff');
+            doc.text('Thank you for choosing VeriBuild', 105, y, { align: 'center' });
+            y += 10;
+
+            doc.setFontSize(10);
+            doc.setTextColor('#6c757d');
+            doc.text('This sample BOQ demonstrates the level of detail and accuracy', 105, y, { align: 'center' });
+            y += 6;
+            doc.text('you can expect from your personalized Bill of Quantities.', 105, y, { align: 'center' });
+            y += 20;
+
+            doc.line(40, y, 170, y);
+            y += 10;
+
+            doc.setFontSize(9);
+            doc.setTextColor('#adb5bd');
+            doc.text('📍 Bulawayo, Zimbabwe  |  📞 +263 77 780 3517', 105, y, { align: 'center' });
+            y += 6;
+            doc.text('✉️ admin@gatekeeperai.co.zw  |  🌐 www.veribuild.co.zw', 105, y, { align: 'center' });
 
             // --- SAVE PDF ---
             doc.save('VeriBuild-Sample-BOQ.pdf');
         });
     </script>
 </body>
-  </html>
+            </html>

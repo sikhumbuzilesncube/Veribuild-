@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>VeriBuild - Your BOQ Results</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- ================================ -->
+    <!-- HEADER -->
+    <!-- ================================ -->
+    <header>
+        <div class="logo">
+            <h1>VeriBuild</h1>
+            <span class="tagline">Verified Building Solutions</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="#" id="logoutBtn" class="btn-outline">Logout</a>
+        </nav>
+    </header>
+
+    <!-- ================================ -->
+    <!-- BOQ RESULTS -->
+    <!-- ================================ -->
+    <section class="section">
+        <h2>📊 Your Bill of Quantities</h2>
+        <p>Here is your detailed material list and cost estimate.</p>
+
+        <div class="boq-container">
+
+            <!-- ==================== -->
+            <!-- PROJECT SUMMARY -->
+            <!-- ==================== -->
+            <div class="boq-card">
+                <h3>📋 Project Summary</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="label">Plan Type</span>
+                        <span class="value" id="planType">Residential</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Floor Area</span>
+                        <span class="value" id="floorArea">120 m²</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Rooms</span>
+                        <span class="value" id="numRooms">4</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Brick Type</span>
+                        <span class="value" id="brickType">Stock Brick</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Wall Thickness</span>
+                        <span class="value" id="wallThickness">230mm</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Roof Type</span>
+                        <span class="value" id="roofType">Zinc</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- MATERIAL QUANTITIES -->
+            <!-- ==================== -->
+            <div class="boq-card">
+                <h3>🧱 Material Quantities</h3>
+                <div class="table-responsive">
+                    <table class="boq-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materialQuantities">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- COST BREAKDOWN -->
+            <!-- ==================== -->
+            <div class="boq-card">
+                <h3>💰 Cost Breakdown</h3>
+                <div class="table-responsive">
+                    <table class="boq-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th>Supplier</th>
+                            </tr>
+                        </thead>
+                        <tbody id="costBreakdown">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="3"><strong>Total Material Cost</strong></td>
+                                <td><strong id="totalCost">$0.00</strong></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- HARDWARE SOURCING -->
+            <!-- ==================== -->
+            <div class="boq-card">
+                <h3>🛒 Hardware Sourcing (Cheapest Prices)</h3>
+                <p>Buy from these local shops to get the best prices.</p>
+                <div id="hardwareList">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- WORKER RECOMMENDATIONS -->
+            <!-- ==================== -->
+            <div class="boq-card">
+                <h3>👷 Recommended Skilled Workers</h3>
+                <p>These workers are available in your area.</p>
+                <div id="workerList">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- QR CODE & ACTIONS -->
+            <!-- ==================== -->
+            <div class="boq-card">
+                <h3>📱 Share or Download</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center;">
+                    <div id="qrCodeContainer" style="background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <!-- QR Code generated here -->
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button id="downloadPdfBtn" class="btn-primary">📄 Download BOQ PDF</button>
+                        <button id="shareBtn" class="btn-secondary">📤 Share via WhatsApp</button>
+                        <button id="newBoqBtn" class="btn-outline">🔄 New BOQ</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- FOOTER -->
+    <!-- ================================ -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>VeriBuild</h2>
+                <p>Verified Building Solutions</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-contact">
+                <p>📍 Bulawayo, Zimbabwe</p>
+                <p>📞 +263 77 780 3517</p>
+                <p>✉️ admin@gatekeeperai.co.zw</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VeriBuild. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="boq-results.js"></script>
+</body>
+  </html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriBuild - Verified Building Solutions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ======================================== -->
+    <!-- HEADER / NAVIGATION -->
+    <!-- ======================================== -->
+    <header>
+        <div class="logo">
+            <h1>VeriBuild</h1>
+            <span class="tagline">Verified Building Solutions</span>
+        </div>
+        <nav>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#" class="btn-outline">Sign In</a>
+            <a href="#" class="btn-primary">Get Started</a>
+        </nav>
+    </header>
+
+    <!-- ======================================== -->
+    <!-- HERO SECTION -->
+    <!-- ======================================== -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Stop Overpaying for <span class="highlight">Building Estimates</span></h1>
+            <p>
+                Upload your building plan. Get a detailed Bill of Quantities (BOQ) 
+                with material costs from local hardware shops in Bulawayo.
+            </p>
+            <div class="hero-buttons">
+                <a href="#sample" class="btn-secondary">📄 View Sample BOQ</a>
+                <a href="#generate" class="btn-primary">🚀 Generate My BOQ</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================== -->
+    <!-- SAMPLE BOQ SECTION -->
+    <!-- ======================================== -->
+    <section id="sample" class="section">
+        <h2>View a Sample BOQ</h2>
+        <p>See exactly what you get before you pay.</p>
+        <div class="sample-card">
+            <div class="sample-preview">
+                <div class="pdf-icon">📄</div>
+                <h3>3-Bedroom House - Pumula</h3>
+                <p>Total Floor Area: 120 m² | 4 Rooms | 6 Doors | 8 Windows</p>
+                <p><strong>Total Material Cost: $12,450.00 USD</strong></p>
+            </div>
+            <div class="sample-actions">
+                <a href="#" class="btn-secondary" target="_blank">📄 Download Sample PDF</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================== -->
+    <!-- GENERATE BOQ SECTION (UPDATED WITH CAMERA) -->
+    <!-- ======================================== -->
+    <section id="generate" class="section">
+        <h2>Generate Your BOQ</h2>
+        <p>Upload your building plan or take a photo with your phone.</p>
+        
+        <div class="generate-card">
+            <!-- Step 1: Choose upload method -->
+            <div class="upload-methods">
+                <button id="uploadPdfBtn" class="btn-outline">📄 Upload PDF</button>
+                <button id="takePhotoBtn" class="btn-primary">📸 Take Photo</button>
+            </div>
+
+            <!-- Hidden file input for PDF -->
+            <input type="file" id="pdfFileInput" accept=".pdf" style="display:none;">
+
+            <!-- Camera preview area -->
+            <div id="cameraContainer" style="display:none; margin-top:20px;">
+                <video id="video" autoplay playsinline style="width:100%; max-width:400px; border-radius:12px; background:#000;"></video>
+                <div style="margin-top:10px;">
+                    <button id="capturePhotoBtn" class="btn-secondary">📸 Take Photo</button>
+                    <button id="cancelCameraBtn" class="btn-outline">❌ Cancel</button>
+                </div>
+                <div id="photoPreview" style="display:none; margin-top:20px;">
+                    <p><strong>Photos Taken:</strong> <span id="photoCount">0</span></p>
+                    <button id="generateFromPhotosBtn" class="btn-primary">📄 Generate BOQ from Photos</button>
+                    <button id="clearPhotosBtn" class="btn-outline">🗑️ Clear Photos</button>
+                </div>
+            </div>
+
+            <!-- Display selected PDF file name -->
+            <div id="fileDisplay" style="display:none; margin-top:15px; padding:15px; background:#f8f9fa; border-radius:8px;">
+                <p>📄 Selected: <span id="fileName"></span></p>
+                <button id="generateFromPdfBtn" class="btn-primary">📄 Generate BOQ from PDF</button>
+            </div>
+
+            <div class="generate-actions">
+                <p class="note">Commercial plans: <strong>Coming Soon</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================== -->
+    <!-- PRICING SECTION -->
+    <!-- ======================================== -->
+    <section id="pricing" class="section">
+        <h2>Simple, Transparent Pricing</h2>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Clients</h3>
+                <p class="price">$10 <span>/ BOQ</span></p>
+                <ul>
+                    <li>✅ Full Bill of Quantities</li>
+                    <li>✅ Hardware price comparison</li>
+                    <li>✅ Recommended skilled workers</li>
+                    <li>✅ Branded PDF with QR code</li>
+                </ul>
+            </div>
+            <div class="pricing-card">
+                <h3>Hardware Shops</h3>
+                <p class="price">$12 <span>/ month</span></p>
+                <ul>
+                    <li>✅ List up to 50 products</li>
+                    <li>✅ Update prices anytime</li>
+                    <li>✅ Appear in BOQ sourcing list</li>
+                </ul>
+            </div>
+            <div class="pricing-card">
+                <h3>Skilled Workers</h3>
+                <p class="price">$8 <span>/ month</span></p>
+                <ul>
+                    <li>✅ Upload portfolio photos</li>
+                    <li>✅ Emergency job alerts</li>
+                    <li>✅ Appear in BOQ recommendations</li>
+                </ul>
+            </div>
+            <div class="pricing-card">
+                <h3>Engineers</h3>
+                <p class="price">$15 <span>/ month + $5/lead</span></p>
+                <ul>
+                    <li>✅ Verified engineer badge</li>
+                    <li>✅ Exclusive structural leads</li>
+                    <li>✅ View client plans & BOQs</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================== -->
+    <!-- FOOTER -->
+    <!-- ======================================== -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>VeriBuild</h2>
+                <p>Verified Building Solutions</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms</a>
+            </div>
+            <div class="footer-contact">
+                <p>📍 Bulawayo, Zimbabwe</p>
+                <p>📞 +263 77 780 3517</p>
+                <p>✉️ admin@gatekeeperai.co.zw</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VeriBuild. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+              </html>

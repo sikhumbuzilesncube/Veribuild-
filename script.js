@@ -298,93 +298,102 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========================================
-    // 13. VERIFY OTP (WITH SUPABASE)
-    // ========================================
-    function verifyOTP(userInput) {
-        if (Date.now() > otpExpiryTime) {
-            alert('❌ Verification code has expired. Please request a new one.');
+// 13. VERIFY OTP (WITH SUPABASE AUTH)
+// ========================================
+function verifyOTP(userInput) {
+    if (Date.now() > otpExpiryTime) {
+        alert('❌ Verification code has expired. Please request a new one.');
+        return false;
+    }
+    
+    if (userInput === generatedOTP) {
+        const phone = document.getElementById('signupPhone').value.trim();
+        const cleanPhone = phone.replace(/\D/g, '');
+        const internationalPhone = `+263${cleanPhone.slice(-9)}`;
+        
+        // Show loading
+        verifyOtpBtn.textContent = '⏳ Creating account...';
+        verifyOtpBtn.disabled = true;
+        
+        // Check if Supabase is ready
+        if (!supabaseClient) {
+            alert('⚠️ System is initializing. Please try again in a moment.');
+            verifyOtpBtn.textContent = '✅ Verify Code';
+            verifyOtpBtn.disabled = false;
             return false;
         }
         
-        if (userInput === generatedOTP) {
-            const phone = document.getElementById('signupPhone').value.trim();
-            const cleanPhone = phone.replace(/\D/g, '');
-            const internationalPhone = `+263${cleanPhone.slice(-9)}`;
+        // Create user via Supabase Auth (with a dummy password)
+        const dummyPassword = generateOTP() + 'VeriBuild!';
+        
+        supabaseClient.auth.signUp({
+            phone: internationalPhone,
+            password: dummyPassword,
+        }).then(({ data, error }) => {
+            verifyOtpBtn.textContent = '✅ Verify Code';
+            verifyOtpBtn.disabled = false;
             
-            // Show loading
-            verifyOtpBtn.textContent = '⏳ Saving...';
-            verifyOtpBtn.disabled = true;
-            
-            // Check if Supabase is ready
-            if (!supabaseClient) {
-                alert('⚠️ System is initializing. Please try again in a moment.');
-                verifyOtpBtn.textContent = '✅ Verify Code';
-                verifyOtpBtn.disabled = false;
-                return false;
+            if (error) {
+                console.error('Auth error:', error);
+                // Check if user already exists
+                if (error.message.includes('already registered')) {
+                    // Try to sign in instead
+                    supabaseClient.auth.signInWithPassword({
+                        phone: internationalPhone,
+                        password: dummyPassword,
+                    }).then(({ data, error }) => {
+                        if (error) {
+                            alert('⚠️ Account exists but we couldn\'t sign you in. Please use the "Forgot Password" option.');
+                        } else {
+                            alert('✅ Welcome back! You are now signed in.');
+                            closeSignupPopup();
+                            if (pendingBOQAction) {
+                                pendingBOQAction();
+                                pendingBOQAction = null;
+                            }
+                        }
+                    });
+                } else {
+                    alert('⚠️ There was an issue creating your account: ' + error.message);
+                }
+                return;
             }
             
-            // Check if user already exists
+            // Success! User created
+            alert('✅ Verification successful! Welcome to VeriBuild.');
+            
+            // Also save to users table for additional data
+            const userData = {
+                id: data.user.id,
+                phone: internationalPhone,
+                full_name: 'VeriBuild User',
+                suburb: 'Bulawayo',
+                role: 'client',
+                is_verified: true
+            };
+            
             supabaseClient
                 .from('users')
-                .select('phone')
-                .eq('phone', internationalPhone)
-                .then(({ data, error }) => {
+                .upsert([userData])
+                .then(({ error }) => {
                     if (error) {
-                        console.error('Error checking user:', error);
-                        alert('⚠️ There was an issue. Please try again.');
-                        verifyOtpBtn.textContent = '✅ Verify Code';
-                        verifyOtpBtn.disabled = false;
-                        return;
-                    }
-                    
-                    if (data && data.length > 0) {
-                        // User exists - log them in
-                        alert('✅ Welcome back! You are now signed in.');
-                        closeSignupPopup();
-                        if (pendingBOQAction) {
-                            pendingBOQAction();
-                            pendingBOQAction = null;
-                        }
-                        verifyOtpBtn.textContent = '✅ Verify Code';
-                        verifyOtpBtn.disabled = false;
-                    } else {
-                        // New user - create account
-                        const userData = {
-                            phone: internationalPhone,
-                            full_name: 'VeriBuild User',
-                            suburb: 'Bulawayo',
-                            role: 'client',
-                            is_verified: true
-                        };
-                        
-                        supabaseClient
-                            .from('users')
-                            .insert([userData])
-                            .then(({ data, error }) => {
-                                verifyOtpBtn.textContent = '✅ Verify Code';
-                                verifyOtpBtn.disabled = false;
-                                
-                                if (error) {
-                                    console.error('Error saving user:', error);
-                                    alert('⚠️ There was an issue creating your account. Please try again.');
-                                } else {
-                                    alert('✅ Verification successful! Welcome to VeriBuild.');
-                                    closeSignupPopup();
-                                    if (pendingBOQAction) {
-                                        pendingBOQAction();
-                                        pendingBOQAction = null;
-                                    }
-                                }
-                            });
+                        console.warn('Could not save user profile:', error);
                     }
                 });
             
-            return true;
-        } else {
-            alert('❌ Invalid verification code. Please try again.');
-            return false;
-        }
+            closeSignupPopup();
+            if (pendingBOQAction) {
+                pendingBOQAction();
+                pendingBOQAction = null;
+            }
+        });
+        
+        return true;
+    } else {
+        alert('❌ Invalid verification code. Please try again.');
+        return false;
     }
+                }
 
     if (sendOtpBtn) {
         sendOtpBtn.addEventListener('click', function() {

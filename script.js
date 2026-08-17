@@ -1,16 +1,30 @@
 // ========================================
-// SUPABASE CONFIGURATION
-// ========================================
-const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
-
-// Import Supabase (CDN version)
-// Add this script tag to index.html head section// ========================================
 // VERIBUILD - MAIN JAVASCRIPT
 // Bulawayo, Zimbabwe
 // ========================================
 
 console.log('🚀 VeriBuild platform loaded successfully!');
+
+// ========================================
+// SUPABASE CONFIGURATION
+// ========================================
+const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
+
+// Initialize Supabase client (will be available globally)
+let supabaseClient;
+
+// Wait for Supabase to load
+function initSupabase() {
+    if (typeof window.supabase !== 'undefined') {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase client initialized!');
+        return true;
+    } else {
+        console.log('⏳ Waiting for Supabase to load...');
+        return false;
+    }
+}
 
 // --- Global Variables ---
 let capturedPhotos = [];
@@ -23,6 +37,19 @@ let pendingBOQAction = null;
 
 // --- Wait for the page to load ---
 document.addEventListener('DOMContentLoaded', function() {
+
+    // Initialize Supabase
+    const maxAttempts = 10;
+    let attempts = 0;
+    const interval = setInterval(() => {
+        attempts++;
+        if (initSupabase()) {
+            clearInterval(interval);
+        } else if (attempts >= maxAttempts) {
+            clearInterval(interval);
+            console.warn('⚠️ Supabase could not be loaded. Please refresh.');
+        }
+    }, 500);
 
     // ========================================
     // 1. DOM REFERENCES
@@ -120,10 +147,8 @@ document.addEventListener('DOMContentLoaded', function() {
             photoCountSpan.textContent = photoCount;
             if (photoCountOverlay) photoCountOverlay.textContent = photoCount;
             
-            // Show preview
             photoPreview.style.display = 'block';
             
-            // Add thumbnail
             const img = new Image();
             img.src = imageData;
             img.style.width = '80px';
@@ -134,7 +159,6 @@ document.addEventListener('DOMContentLoaded', function() {
             img.style.margin = '5px';
             photoThumbnails.appendChild(img);
             
-            // Keep camera open for more photos
             alert('✅ Photo ' + photoCount + ' captured! Tap "Take Photo" again for more, or "Generate BOQ from Photos" when done.');
         });
     }
@@ -181,10 +205,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             checkLoginBeforeGeneration(function() {
-                alert('📄 Generating BOQ from ' + capturedPhotos.length + ' photos...\n\n' +
-                      '✅ Your photos will be converted to a PDF and processed.\n' +
-                      '🔜 BOQ generation is coming soon!');
-                console.log('📸 Captured photos:', capturedPhotos.length);
+                alert('📄 Generating BOQ from ' + capturedPhotos.length + ' photos...');
+                window.location.href = 'boq-results.html';
             });
         });
     }
@@ -200,8 +222,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             checkLoginBeforeGeneration(function() {
-                alert('📄 Processing PDF: ' + fileInput.files[0].name + '\n\n' +
-                      '🔜 BOQ generation is coming soon!');
+                alert('📄 Processing PDF: ' + fileInput.files[0].name);
+                window.location.href = 'boq-results.html';
             });
         });
     }
@@ -275,13 +297,88 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
+    // ========================================
+    // 13. VERIFY OTP (WITH SUPABASE)
+    // ========================================
     function verifyOTP(userInput) {
         if (Date.now() > otpExpiryTime) {
             alert('❌ Verification code has expired. Please request a new one.');
             return false;
         }
+        
         if (userInput === generatedOTP) {
-            alert('✅ Verification successful! Welcome to VeriBuild.');
+            const phone = document.getElementById('signupPhone').value.trim();
+            const cleanPhone = phone.replace(/\D/g, '');
+            const internationalPhone = `+263${cleanPhone.slice(-9)}`;
+            
+            // Show loading
+            verifyOtpBtn.textContent = '⏳ Saving...';
+            verifyOtpBtn.disabled = true;
+            
+            // Check if Supabase is ready
+            if (!supabaseClient) {
+                alert('⚠️ System is initializing. Please try again in a moment.');
+                verifyOtpBtn.textContent = '✅ Verify Code';
+                verifyOtpBtn.disabled = false;
+                return false;
+            }
+            
+            // Check if user already exists
+            supabaseClient
+                .from('users')
+                .select('phone')
+                .eq('phone', internationalPhone)
+                .then(({ data, error }) => {
+                    if (error) {
+                        console.error('Error checking user:', error);
+                        alert('⚠️ There was an issue. Please try again.');
+                        verifyOtpBtn.textContent = '✅ Verify Code';
+                        verifyOtpBtn.disabled = false;
+                        return;
+                    }
+                    
+                    if (data && data.length > 0) {
+                        // User exists - log them in
+                        alert('✅ Welcome back! You are now signed in.');
+                        closeSignupPopup();
+                        if (pendingBOQAction) {
+                            pendingBOQAction();
+                            pendingBOQAction = null;
+                        }
+                        verifyOtpBtn.textContent = '✅ Verify Code';
+                        verifyOtpBtn.disabled = false;
+                    } else {
+                        // New user - create account
+                        const userData = {
+                            phone: internationalPhone,
+                            full_name: 'VeriBuild User',
+                            suburb: 'Bulawayo',
+                            role: 'client',
+                            is_verified: true
+                        };
+                        
+                        supabaseClient
+                            .from('users')
+                            .insert([userData])
+                            .then(({ data, error }) => {
+                                verifyOtpBtn.textContent = '✅ Verify Code';
+                                verifyOtpBtn.disabled = false;
+                                
+                                if (error) {
+                                    console.error('Error saving user:', error);
+                                    alert('⚠️ There was an issue creating your account. Please try again.');
+                                } else {
+                                    alert('✅ Verification successful! Welcome to VeriBuild.');
+                                    closeSignupPopup();
+                                    if (pendingBOQAction) {
+                                        pendingBOQAction();
+                                        pendingBOQAction = null;
+                                    }
+                                }
+                            });
+                    }
+                });
+            
             return true;
         } else {
             alert('❌ Invalid verification code. Please try again.');
@@ -309,13 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('❌ Please enter the 6-digit verification code.');
                 return;
             }
-            if (verifyOTP(userOTP)) {
-                closeSignupPopup();
-                if (pendingBOQAction) {
-                    pendingBOQAction();
-                    pendingBOQAction = null;
-                }
-            }
+            verifyOTP(userOTP);
         });
     }
 
@@ -332,10 +423,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========================================
-    // 13. CHECK LOGIN BEFORE GENERATION
+    // 14. CHECK LOGIN BEFORE GENERATION
     // ========================================
     function checkLoginBeforeGeneration(action) {
-        const isLoggedIn = false; // Phase 2: check Supabase auth
+        // For now, always show sign-up popup (Phase 3: check Supabase session)
+        const isLoggedIn = false;
         if (isLoggedIn) {
             action();
         } else {
@@ -345,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========================================
-    // 14. EXISTING BUTTON HANDLERS
+    // 15. EXISTING BUTTON HANDLERS
     // ========================================
     const signInBtn = document.getElementById('signInBtn');
     if (signInBtn) {

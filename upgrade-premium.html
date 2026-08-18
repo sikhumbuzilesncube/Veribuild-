@@ -413,36 +413,20 @@
         let workerId = null;
 
         // ========================================
-        // DOM ELEMENTS
-        // ========================================
-        const usdBtn = document.getElementById('usdBtn');
-        const zwgBtn = document.getElementById('zwgBtn');
-        const monthlyPlan = document.getElementById('monthlyPlan');
-        const yearlyPlan = document.getElementById('yearlyPlan');
-        const monthlyPrice = document.getElementById('monthlyPrice');
-        const yearlyPrice = document.getElementById('yearlyPrice');
-        const selectedPlanDisplay = document.getElementById('selectedPlanDisplay');
-        const upgradeBtn = document.getElementById('upgradeBtn');
-        const paymentTitle = document.getElementById('paymentTitle');
-        const exchangeRateNote = document.getElementById('exchangeRateNote');
-
-        // ========================================
         // 1. CURRENCY TOGGLE (FIXED)
         // ========================================
-        usdBtn.addEventListener('click', function() {
-            setCurrency('usd');
-        });
-
-        zwgBtn.addEventListener('click', function() {
-            setCurrency('zwg');
-        });
-
         function setCurrency(currency) {
             selectedCurrency = currency;
             
+            // Get elements
+            const usdBtn = document.getElementById('usdBtn');
+            const zwgBtn = document.getElementById('zwgBtn');
+            const exchangeRateNote = document.getElementById('exchangeRateNote');
+            const paymentTitle = document.getElementById('paymentTitle');
+            
             // Update button styles
-            usdBtn.classList.toggle('active', currency === 'usd');
-            zwgBtn.classList.toggle('active', currency === 'zwg');
+            usdBtn.className = currency === 'usd' ? 'active' : '';
+            zwgBtn.className = currency === 'zwg' ? 'active' : '';
             
             // Update exchange rate note
             if (currency === 'usd') {
@@ -471,13 +455,13 @@
             const monthlyUSD = 8;
             const monthlyZWG = Math.round(monthlyUSD * EXCHANGE_RATE);
             const monthlyDisplay = isUSD ? `${symbol}${monthlyUSD}` : `${symbol}${monthlyZWG}`;
-            monthlyPrice.innerHTML = `${monthlyDisplay} <span>/ month</span>`;
+            document.getElementById('monthlyPrice').innerHTML = `${monthlyDisplay} <span>/ month</span>`;
             
             // Yearly
             const yearlyUSD = 70;
             const yearlyZWG = Math.round(yearlyUSD * EXCHANGE_RATE);
             const yearlyDisplay = isUSD ? `${symbol}${yearlyUSD}` : `${symbol}${yearlyZWG}`;
-            yearlyPrice.innerHTML = `${yearlyDisplay} <span>/ year</span>`;
+            document.getElementById('yearlyPrice').innerHTML = `${yearlyDisplay} <span>/ year</span>`;
             
             updateSelectedPlanDisplay();
         }
@@ -485,18 +469,10 @@
         // ========================================
         // 3. SELECT PLAN
         // ========================================
-        monthlyPlan.addEventListener('click', function() {
-            selectPlan('monthly');
-        });
-
-        yearlyPlan.addEventListener('click', function() {
-            selectPlan('yearly');
-        });
-
         function selectPlan(plan) {
             selectedPlan = plan;
-            monthlyPlan.classList.toggle('selected', plan === 'monthly');
-            yearlyPlan.classList.toggle('selected', plan === 'yearly');
+            document.getElementById('monthlyPlan').className = 'pricing-option' + (plan === 'monthly' ? ' selected' : '');
+            document.getElementById('yearlyPlan').className = 'pricing-option' + (plan === 'yearly' ? ' selected' : '');
             updateSelectedPlanDisplay();
         }
 
@@ -514,10 +490,10 @@
             }
             
             const displayText = `${symbol}${price} ${period === 'month' ? 'per month' : 'per year'}`;
-            selectedPlanDisplay.textContent = 
+            document.getElementById('selectedPlanDisplay').textContent = 
                 `${selectedPlan === 'monthly' ? 'Monthly' : 'Yearly'} (${displayText})`;
             
-            upgradeBtn.textContent = 
+            document.getElementById('upgradeBtn').textContent = 
                 `⬆️ Pay ${symbol}${price} ${selectedCurrency.toUpperCase()} via EcoCash`;
         }
 
@@ -560,7 +536,7 @@
         // ========================================
         // 5. UPGRADE HANDLER
         // ========================================
-        upgradeBtn.addEventListener('click', async function() {
+        function handleUpgrade() {
             const phone = document.getElementById('ecocashPhone').value.trim();
             const name = document.getElementById('payerName').value.trim();
             const email = document.getElementById('payerEmail').value.trim();
@@ -582,51 +558,75 @@
             const currency = isUSD ? 'USD' : 'ZWG';
             const period = selectedPlan === 'monthly' ? 'monthly' : 'yearly';
 
-            try {
-                await new Promise(resolve => setTimeout(resolve, 2000));
+            // Simulate payment processing
+            setTimeout(async function() {
+                try {
+                    const { error } = await supabase
+                        .from('worker_profiles')
+                        .update({
+                            is_premium: true,
+                            premium_since: new Date().toISOString(),
+                            premium_plan: period,
+                            premium_currency: currency,
+                            premium_amount: price
+                        })
+                        .eq('id', workerId);
 
-                const { error } = await supabase
-                    .from('worker_profiles')
-                    .update({
-                        is_premium: true,
-                        premium_since: new Date().toISOString(),
-                        premium_plan: period,
-                        premium_currency: currency,
-                        premium_amount: price
-                    })
-                    .eq('id', workerId);
+                    if (error) throw error;
 
-                if (error) throw error;
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    document.getElementById('upgradeForm').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    sessionStorage.setItem('isPremium', 'true');
 
-                document.getElementById('loadingOverlay').style.display = 'none';
-                document.getElementById('upgradeForm').style.display = 'none';
-                document.getElementById('successMessage').style.display = 'block';
-                sessionStorage.setItem('isPremium', 'true');
-
-            } catch (error) {
-                document.getElementById('loadingOverlay').style.display = 'none';
-                alert('❌ Payment processing error: ' + error.message);
-            }
-        });
+                } catch (error) {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    alert('❌ Payment processing error: ' + error.message);
+                }
+            }, 2000);
+        }
 
         // ========================================
         // 6. SIGN OUT
         // ========================================
-        document.getElementById('signOutBtn').addEventListener('click', function(e) {
+        function handleSignOut(e) {
             e.preventDefault();
             sessionStorage.clear();
             alert('Signed out successfully.');
             window.location.href = 'index.html';
-        });
+        }
 
         // ========================================
-        // 7. INIT
+        // 7. INIT - ATTACH ALL EVENT LISTENERS
         // ========================================
         document.addEventListener('DOMContentLoaded', function() {
+            // Currency buttons
+            document.getElementById('usdBtn').addEventListener('click', function() {
+                setCurrency('usd');
+            });
+            document.getElementById('zwgBtn').addEventListener('click', function() {
+                setCurrency('zwg');
+            });
+
+            // Plan selection
+            document.getElementById('monthlyPlan').addEventListener('click', function() {
+                selectPlan('monthly');
+            });
+            document.getElementById('yearlyPlan').addEventListener('click', function() {
+                selectPlan('yearly');
+            });
+
+            // Upgrade button
+            document.getElementById('upgradeBtn').addEventListener('click', handleUpgrade);
+
+            // Sign out
+            document.getElementById('signOutBtn').addEventListener('click', handleSignOut);
+
+            // Initialize
             checkLogin();
             setCurrency('usd');
             selectPlan('monthly');
         });
     </script>
 </body>
-            </html>
+                </html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>VeriBuild - Client Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .dashboard-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .dashboard-header .user-info h2 {
+            margin: 0;
+            color: #1a1a2e;
+        }
+        .dashboard-header .user-info p {
+            margin: 5px 0 0 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #007bff;
+        }
+        .stat-card .label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .boq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .boq-item {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            transition: all 0.3s;
+            border-left: 4px solid #007bff;
+        }
+        .boq-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .boq-item .boq-info {
+            flex: 1;
+        }
+        .boq-item .boq-info h4 {
+            margin: 0;
+            font-size: 16px;
+            color: #1a1a2e;
+        }
+        .boq-item .boq-info p {
+            margin: 4px 0 0 0;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .boq-item .boq-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 30px;
+        }
+        .boq-item .boq-status.paid {
+            background: #d4edda;
+            color: #155724;
+        }
+        .boq-item .boq-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .boq-item .boq-status.cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .boq-item .boq-price {
+            font-weight: 700;
+            color: #007bff;
+            font-size: 16px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        @media (max-width: 600px) {
+            .dashboard-container { padding: 20px; }
+            .boq-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================ -->
+    <!-- HEADER -->
+    <!-- ================================ -->
+    <header>
+        <div class="logo">
+            <h1>VeriBuild</h1>
+            <span class="tagline">Verified Building Solutions</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="workers.html">Find Workers</a>
+            <a href="#" class="btn-outline" id="signOutBtn">Sign Out</a>
+        </nav>
+    </header>
+
+    <!-- ================================ -->
+    <!-- DASHBOARD -->
+    <!-- ================================ -->
+    <section class="section" style="background:#f8f9fa;">
+        <div class="dashboard-container" id="dashboard">
+            
+            <!-- Loading State -->
+            <div id="loadingState" style="text-align:center; padding:40px;">
+                <div style="font-size:48px; animation: spin 1s linear infinite;">⏳</div>
+                <p style="color:#6c757d; margin-top:10px;">Loading your dashboard...</p>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboardContent" style="display:none;">
+
+                <!-- Header -->
+                <div class="dashboard-header">
+                    <div class="user-info">
+                        <h2 id="clientName">Client Name</h2>
+                        <p id="clientSuburb">📍 Suburb</p>
+                    </div>
+                    <div>
+                        <a href="index.html#generate" class="btn-primary" style="font-size:13px; padding:8px 20px;">📄 New BOQ</a>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number" id="statBOQs">0</div>
+                        <div class="label">BOQs Generated</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statWorkers">0</div>
+                        <div class="label">Workers Hired</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statSaved">$0</div>
+                        <div class="label">Estimated Savings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statProjects">0</div>
+                        <div class="label">Active Projects</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-bottom:20px;">
+                    <h4 style="margin:0 0 10px 0; color:#1a1a2e;">⚡ Quick Actions</h4>
+                    <div class="btn-group">
+                        <a href="index.html#generate" class="btn-primary" style="font-size:14px; padding:10px 24px;">📄 Generate BOQ</a>
+                        <a href="workers.html" class="btn-secondary" style="font-size:14px; padding:10px 24px;">🔧 Find a Worker</a>
+                        <a href="sample-boq.html" class="btn-outline" style="font-size:14px; padding:10px 24px;">📄 View Sample BOQ</a>
+                    </div>
+                </div>
+
+                <!-- BOQ History -->
+                <h3 class="section-title">📋 BOQ History</h3>
+                <div id="boqHistory">
+                    <!-- BOQs will be rendered here -->
+                </div>
+
+                <!-- Saved Preferences -->
+                <h3 class="section-title" style="margin-top:30px;">⚙️ Saved Preferences</h3>
+                <div id="savedPreferences" style="background:#f8f9fa; padding:15px; border-radius:12px;">
+                    <!-- Preferences will be rendered here -->
+                </div>
+
+                <!-- Account Settings -->
+                <h3 class="section-title" style="margin-top:30px;">👤 Account Settings</h3>
+                <div style="background:#f8f9fa; padding:15px; border-radius:12px;">
+                    <p style="margin:0 0 5px 0;">
+                        <strong>Phone:</strong> <span id="clientPhone">N/A</span>
+                    </p>
+                    <p style="margin:0 0 5px 0;">
+                        <strong>Email:</strong> <span id="clientEmail">Not set</span>
+                    </p>
+                    <p style="margin:0;">
+                        <strong>Suburb:</strong> <span id="clientSuburbDetail">N/A</span>
+                    </p>
+                </div>
+
+                <!-- Sign Out Button -->
+                <div style="margin-top:25px; text-align:center;">
+                    <button id="signOutBtnBottom" class="btn-outline" style="padding:10px 40px; color:#dc3545; border-color:#dc3545;">🚪 Sign Out</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- FOOTER -->
+    <!-- ================================ -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>VeriBuild</h2>
+                <p>Verified Building Solutions</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="workers.html">Find a Worker</a>
+                <a href="register-worker.html">Register as Worker</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms</a>
+            </div>
+            <div class="footer-contact">
+                <p>📍 Bulawayo, Zimbabwe</p>
+                <p>📞 +263 77 780 3517</p>
+                <p>✉️ admin@gatekeeperai.co.zw</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VeriBuild. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // SUPABASE CONFIGURATION
+        // ========================================
+        const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ========================================
+        // 1. LOAD CLIENT DATA
+        // ========================================
+        async function loadClientData() {
+            const clientPhone = sessionStorage.getItem('clientPhone');
+            if (!clientPhone) {
+                alert('Please sign in to access your dashboard.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                // Fetch client profile
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('phone', clientPhone)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (!data) {
+                    alert('Client profile not found. Please register first.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                renderDashboard(data);
+                showDashboard();
+
+            } catch (error) {
+                console.error('Error loading client:', error);
+                alert('Error loading your profile. Please try again.');
+            }
+        }
+
+        // ========================================
+        // 2. RENDER DASHBOARD
+        // ========================================
+        function renderDashboard(data) {
+            // User Info
+            document.getElementById('clientName').textContent = data.full_name || 'Client';
+            document.getElementById('clientSuburb').textContent = '📍 ' + (data.suburb || 'Bulawayo');
+
+            // Account Settings
+            document.getElementById('clientPhone').textContent = data.phone || 'N/A';
+            document.getElementById('clientEmail').textContent = data.email || 'Not set';
+            document.getElementById('clientSuburbDetail').textContent = data.suburb || 'N/A';
+
+            // Stats (placeholder - will be updated with real data later)
+            document.getElementById('statBOQs').textContent = '0';
+            document.getElementById('statWorkers').textContent = '0';
+            document.getElementById('statSaved').textContent = '$0';
+            document.getElementById('statProjects').textContent = '0';
+
+            // BOQ History
+            renderBOQHistory([]);
+
+            // Saved Preferences
+            renderPreferences(data.preferences || {});
+        }
+
+        // ========================================
+        // 3. RENDER BOQ HISTORY
+        // ========================================
+        function renderBOQHistory(boqs) {
+            const container = document.getElementById('boqHistory');
+
+            if (!boqs || boqs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📄</div>
+                        <h4>No BOQs Yet</h4>
+                        <p>You haven't generated any BOQs. Click "New BOQ" to get started.</p>
+                        <a href="index.html#generate" class="btn-primary" style="display:inline-block; margin-top:10px;">📄 Generate Your First BOQ</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="boq-list">';
+            boqs.forEach(boq => {
+                const statusClass = boq.status === 'paid' ? 'paid' : (boq.status === 'pending' ? 'pending' : 'cancelled');
+                const statusLabel = boq.status.charAt(0).toUpperCase() + boq.status.slice(1);
+                html += `
+                    <div class="boq-item">
+                        <div class="boq-info">
+                            <h4>${boq.project_name || 'Building Project'}</h4>
+                            <p>${new Date(boq.created_at).toLocaleDateString()} · ${boq.plan_type || 'Residential'}</p>
+                        </div>
+                        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                            <span class="boq-status ${statusClass}">${statusLabel}</span>
+                            <span class="boq-price">$${boq.total_cost || '0.00'}</span>
+                            <a href="boq-results.html" class="btn-outline" style="font-size:12px; padding:4px 12px;">View</a>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // ========================================
+        // 4. RENDER PREFERENCES
+        // ========================================
+        function renderPreferences(prefs) {
+            const container = document.getElementById('savedPreferences');
+
+            if (!prefs || Object.keys(prefs).length === 0) {
+                container.innerHTML = `
+                    <p style="color:#6c757d; margin:0;">No saved preferences yet. They will appear here after you generate a BOQ.</p>
+                    <a href="index.html#generate" class="btn-outline" style="display:inline-block; margin-top:10px; font-size:12px; padding:6px 16px;">Generate a BOQ</a>
+                `;
+                return;
+            }
+
+            const displayMap = {
+                brick_type: 'Brick Type',
+                wall_thickness: 'Wall Thickness',
+                plaster: 'Plaster',
+                floor_type: 'Floor Type',
+                floor_thickness: 'Floor Thickness',
+                floor_finish: 'Floor Finish',
+                roof_type: 'Roof Type',
+                roof_pitch: 'Roof Pitch',
+                ceiling: 'Ceiling',
+                insulation: 'Insulation',
+                paint: 'Paint',
+                burglar_bars: 'Burglar Bars',
+                security_gate: 'Security Gate',
+                bathroom_tiles: 'Bathroom Tiles',
+                kitchen_tiles: 'Kitchen Tiles'
+            };
+
+            let html = '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">';
+            Object.keys(prefs).forEach(key => {
+                if (displayMap[key]) {
+                    const value = prefs[key] !== undefined && prefs[key] !== null ? 
+                        (typeof prefs[key] === 'boolean' ? (prefs[key] ? 'Yes' : 'No') : prefs[key]) 
+                        : 'Not set';
+                    html += `
+                        <div style="background:#ffffff; padding:8px 12px; border-radius:8px; border:1px solid #e9ecef;">
+                            <span style="font-size:12px; color:#6c757d;">${displayMap[key]}</span>
+                            <br />
+                            <span style="font-size:14px; font-weight:500; color:#1a1a2e;">${value}</span>
+                        </div>
+                    `;
+                }
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // ========================================
+        // 5. SHOW DASHBOARD
+        // ========================================
+        function showDashboard() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+        }
+
+        // ========================================
+        // 6. SIGN OUT
+        // ========================================
+        function handleSignOut(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to sign out?')) {
+                sessionStorage.clear();
+                alert('Signed out successfully.');
+                window.location.href = 'index.html';
+            }
+        }
+
+        document.getElementById('signOutBtn').addEventListener('click', handleSignOut);
+        document.getElementById('signOutBtnBottom').addEventListener('click', handleSignOut);
+
+        // ========================================
+        // 7. INIT
+        // ========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // For demo purposes, set a client phone if not set
+            if (!sessionStorage.getItem('clientPhone')) {
+                sessionStorage.setItem('clientPhone', '+263771234567');
+            }
+            loadClientData();
+        });
+    </script>
+</body>
+  </html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>VeriBuild - Register as a Skilled Worker</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .register-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+        .register-container h2 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .register-container .subtitle {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .form-group label .required {
+            color: #dc3545;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #ffffff;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group .hint {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .upgrade-banner {
+            background: #f8f9fa;
+            border: 2px dashed #f0c040;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .upgrade-banner .icon {
+            font-size: 32px;
+        }
+        .upgrade-banner h4 {
+            color: #1a1a2e;
+            margin: 8px 0;
+        }
+        .upgrade-banner p {
+            color: #6c757d;
+            font-size: 14px;
+            margin: 0;
+        }
+        .upgrade-banner .price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f0c040;
+        }
+        .disclaimer-text {
+            font-size: 12px;
+            color: #856404;
+            background: #fff3cd;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin-top: 15px;
+        }
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: #d4edda;
+            border-radius: 12px;
+            border-left: 4px solid #28a745;
+        }
+        .success-message .icon {
+            font-size: 64px;
+        }
+        .success-message h3 {
+            color: #155724;
+            margin: 10px 0;
+        }
+        .success-message p {
+            color: #155724;
+        }
+        .premium-features {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        .premium-features li {
+            padding: 4px 0;
+            color: #495057;
+            font-size: 14px;
+        }
+        .premium-features li::before {
+            content: '✅ ';
+            color: #28a745;
+        }
+        @media (max-width: 600px) {
+            .register-container { padding: 20px; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================ -->
+    <!-- HEADER -->
+    <!-- ================================ -->
+    <header>
+        <div class="logo">
+            <h1>VeriBuild</h1>
+            <span class="tagline">Verified Building Solutions</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="workers.html">Find Workers</a>
+            <a href="index.html#pricing">Pricing</a>
+            <a href="#" class="btn-outline" id="signInBtn">Sign In</a>
+        </nav>
+    </header>
+
+    <!-- ================================ -->
+    <!-- REGISTRATION FORM -->
+    <!-- ================================ -->
+    <section class="section" style="background:#f8f9fa;">
+        <div class="register-container" id="registerForm">
+            <h2>🔧 Register as a Skilled Worker</h2>
+            <p class="subtitle">List your services for free. Upgrade to Premium to stand out.</p>
+
+            <!-- Step 1: Phone Verification -->
+            <div id="stepPhone">
+                <div class="form-group">
+                    <label>Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="workerPhone" placeholder="0772 123 456" />
+                    <div class="hint">You'll receive a verification code via WhatsApp.</div>
+                </div>
+                <button id="sendWorkerOtpBtn" class="btn-primary" style="width:100%; padding:14px;">📲 Send Verification Code</button>
+
+                <div id="workerOtpSection" style="display:none; margin-top:15px;">
+                    <div class="form-group">
+                        <label>Verification Code <span class="required">*</span></label>
+                        <input type="text" id="workerOtpInput" placeholder="Enter 6-digit code" maxlength="6" />
+                        <div class="hint" id="workerOtpStatus">⏳ Code expires in 5 minutes</div>
+                    </div>
+                    <button id="verifyWorkerOtpBtn" class="btn-secondary" style="width:100%; padding:14px;">✅ Verify Code</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Profile Details (Hidden until verified) -->
+            <div id="stepProfile" style="display:none; margin-top:20px; border-top:2px solid #e9ecef; padding-top:20px;">
+                <h3 style="text-align:center; margin-bottom:15px;">📋 Your Profile (Free)</h3>
+
+                <div class="form-group">
+                    <label>Full Name <span class="required">*</span></label>
+                    <input type="text" id="workerFullName" placeholder="e.g., John Ncube" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Trade <span class="required">*</span></label>
+                        <select id="workerTrade">
+                            <option value="">Select your trade...</option>
+                            <option value="Bricklayer">🧱 Bricklayer</option>
+                            <option value="Plumber">🔧 Plumber</option>
+                            <option value="Electrician">⚡ Electrician</option>
+                            <option value="Painter">🎨 Painter</option>
+                            <option value="Carpenter">🪚 Carpenter</option>
+                            <option value="Tiler">🪄 Tiler</option>
+                            <option value="Welder">🔥 Welder</option>
+                            <option value="General Builder">🏗️ General Builder</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Years of Experience <span class="required">*</span></label>
+                        <input type="number" id="workerExperience" placeholder="e.g., 5" min="0" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Suburb <span class="required">*</span></label>
+                    <input type="text" id="workerSuburb" placeholder="e.g., Kelvin North, Bulawayo" />
+                </div>
+
+                <div class="form-group">
+                    <label>Hourly Rate (USD) <span style="font-weight:400; color:#6c757d;">(optional)</span></label>
+                    <input type="number" id="workerRate" placeholder="e.g., 15" min="0" step="0.50" />
+                    <div class="hint">Leave blank if you prefer to negotiate per job.</div>
+                </div>
+
+                <!-- Upgrade Banner -->
+                <div class="upgrade-banner">
+                    <div class="icon">⭐</div>
+                    <h4>Go Premium & Stand Out</h4>
+                    <p>Upgrade to <strong>Premium</strong> for just <span class="price">$8/month</span> and unlock:</p>
+                    <ul class="premium-features">
+                        <li>Upload portfolio photos of your work</li>
+                        <li>Priority listing above free workers</li>
+                        <li>Emergency job alerts in your area</li>
+                        <li>Premium badge on your profile</li>
+                        <li>Appear in BOQ recommendations</li>
+                    </ul>
+                    <p style="font-size:13px; color:#6c757d; margin-top:8px;">
+                        You can upgrade anytime after registering.
+                    </p>
+                </div>
+
+                <div class="disclaimer-text">
+                    ⚠️ <strong>Important:</strong> By registering, you agree that VeriBuild is a matching platform only. 
+                    You are an independent professional, not an employee of VeriBuild. All contracts and payments 
+                    are between you and the client.
+                </div>
+
+                <button id="submitWorkerBtn" class="btn-primary btn-submit">🚀 Register for Free</button>
+
+                <div style="text-align:center; margin-top:12px;">
+                    <a href="index.html" style="color:#6c757d; font-size:14px;">← Back to Home</a>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <div class="icon">🎉</div>
+                <h3>Registration Successful!</h3>
+                <p>Your profile has been created. You will now appear in "Find a Worker" search results.</p>
+                <div class="upgrade-banner" style="margin-top:15px; text-align:center;">
+                    <div class="icon">⭐</div>
+                    <h4>Want to stand out?</h4>
+                    <p>Upgrade to <strong>Premium</strong> for <span class="price">$8/month</span> and upload portfolio photos, get emergency alerts, and more!</p>
+                    <a href="#" class="btn-worker" style="display:inline-block; margin-top:10px;">⬆️ Upgrade to Premium</a>
+                </div>
+                <a href="workers.html" class="btn-primary" style="display:inline-block; margin-top:15px;">View Workers</a>
+                <br />
+                <a href="index.html" style="color:#6c757d; font-size:14px; display:inline-block; margin-top:10px;">← Back to Home</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- FOOTER -->
+    <!-- ================================ -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>VeriBuild</h2>
+                <p>Verified Building Solutions</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="workers.html">Find a Worker</a>
+                <a href="register-worker.html">Register as Worker</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms</a>
+            </div>
+            <div class="footer-contact">
+                <p>📍 Bulawayo, Zimbabwe</p>
+                <p>📞 +263 77 780 3517</p>
+                <p>✉️ admin@gatekeeperai.co.zw</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VeriBuild. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // SUPABASE CONFIGURATION
+        // ========================================
+        const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- Global Variables ---
+        let workerOTP = '';
+        let workerOTPTimer = null;
+        let workerOTPExpiry = 0;
+        let verifiedPhone = '';
+
+        // ========================================
+        // 1. SEND OTP
+        // ========================================
+        document.getElementById('sendWorkerOtpBtn').addEventListener('click', function() {
+            const phone = document.getElementById('workerPhone').value.trim();
+            if (!phone || phone.length < 10) {
+                alert('❌ Please enter a valid phone number (e.g., 0772 123 456)');
+                return;
+            }
+
+            const cleanPhone = phone.replace(/\D/g, '');
+            const internationalPhone = `+263${cleanPhone.slice(-9)}`;
+
+            workerOTP = String(Math.floor(100000 + Math.random() * 900000));
+            workerOTPExpiry = Date.now() + 300000;
+
+            console.log(`📱 WhatsApp OTP for ${internationalPhone}: ${workerOTP}`);
+            alert(`📱 WhatsApp message sent to ${internationalPhone}\n\nYour verification code is: ${workerOTP}\n\n(We'll replace this with real WhatsApp API in the next step)`);
+
+            document.getElementById('workerOtpSection').style.display = 'block';
+            this.textContent = '📲 Resend Code';
+
+            if (workerOTPTimer) clearInterval(workerOTPTimer);
+            workerOTPTimer = setInterval(() => {
+                const remaining = Math.floor((workerOTPExpiry - Date.now()) / 1000);
+                const status = document.getElementById('workerOtpStatus');
+                if (remaining > 0) {
+                    status.textContent = `⏳ Code expires in ${remaining} seconds`;
+                } else {
+                    status.textContent = '❌ Code expired. Request a new one.';
+                    clearInterval(workerOTPTimer);
+                }
+            }, 1000);
+        });
+
+        // ========================================
+        // 2. VERIFY OTP
+        // ========================================
+        document.getElementById('verifyWorkerOtpBtn').addEventListener('click', function() {
+            const input = document.getElementById('workerOtpInput').value.trim();
+            if (!input || input.length !== 6) {
+                alert('❌ Please enter the 6-digit verification code.');
+                return;
+            }
+
+            if (Date.now() > workerOTPExpiry) {
+                alert('❌ Code expired. Please request a new one.');
+                return;
+            }
+
+            if (input === workerOTP) {
+                const phone = document.getElementById('workerPhone').value.trim();
+                const cleanPhone = phone.replace(/\D/g, '');
+                verifiedPhone = `+263${cleanPhone.slice(-9)}`;
+
+                alert('✅ Phone verified! Now complete your profile.');
+                document.getElementById('stepPhone').style.display = 'none';
+                document.getElementById('stepProfile').style.display = 'block';
+
+                document.getElementById('workerFullName').focus();
+
+            } else {
+                alert('❌ Invalid code. Please try again.');
+            }
+        });
+
+        // ========================================
+        // 3. SUBMIT REGISTRATION
+        // ========================================
+        document.getElementById('submitWorkerBtn').addEventListener('click', async function() {
+            const fullName = document.getElementById('workerFullName').value.trim();
+            const trade = document.getElementById('workerTrade').value;
+            const experience = parseInt(document.getElementById('workerExperience').value);
+            const suburb = document.getElementById('workerSuburb').value.trim();
+            const rate = parseFloat(document.getElementById('workerRate').value) || null;
+
+            // Validation
+            if (!fullName) { alert('❌ Please enter your full name.'); return; }
+            if (!trade) { alert('❌ Please select your trade.'); return; }
+            if (!experience || experience < 0) { alert('❌ Please enter valid years of experience.'); return; }
+            if (!suburb) { alert('❌ Please enter your suburb.'); return; }
+            if (!verifiedPhone) { alert('❌ Please verify your phone number first.'); return; }
+
+            // Show loading
+            this.textContent = '⏳ Registering...';
+            this.disabled = true;
+
+            try {
+                // Check if user already exists
+                const { data: existingUser, error: userError } = await supabase
+                    .from('users')
+                    .select('id')
+                    .eq('phone', verifiedPhone)
+                    .maybeSingle();
+
+                let userId;
+
+                if (existingUser) {
+                    userId = existingUser.id;
+                } else {
+                    // Create new user
+                    const { data: newUser, error: createError } = await supabase
+                        .from('users')
+                        .insert([{
+                            phone: verifiedPhone,
+                            full_name: fullName,
+                            suburb: suburb,
+                            role: 'worker',
+                            is_verified: true
+                        }])
+                        .select()
+                        .single();
+
+                    if (createError) {
+                        alert('❌ Error creating account: ' + createError.message);
+                        this.textContent = '🚀 Register for Free';
+                        this.disabled = false;
+                        return;
+                    }
+                    userId = newUser.id;
+                }
+
+                // Check if worker profile already exists
+                const { data: existingProfile } = await supabase
+                    .from('worker_profiles')
+                    .select('id')
+                    .eq('worker_id', userId)
+                    .maybeSingle();
+
+                if (existingProfile) {
+                    alert('⚠️ You are already registered as a worker. Please sign in to update your profile.');
+                    this.textContent = '🚀 Register for Free';
+                    this.disabled = false;
+                    return;
+                }
+
+                // Create worker profile (free tier — no photos)
+                const workerData = {
+                    worker_id: userId,
+                    trade: trade,
+                    years_experience: experience,
+                    hourly_rate: rate,
+                    portfolio_photos: [], // Empty array for free tier
+                    is_premium: false,
+                    is_active: true
+                };
+
+                const { data, error } = await supabase
+                    .from('worker_profiles')
+                    .insert([workerData])
+                    .select()
+                    .single();
+
+                if (error) {
+                    alert('❌ Error creating worker profile: ' + error.message);
+                    this.textContent = '🚀 Register for Free';
+                    this.disabled = false;
+                    return;
+                }
+
+                // Success!
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+
+            } catch (error) {
+                alert('❌ An unexpected error occurred: ' + error.message);
+                this.textContent = '🚀 Register for Free';
+                this.disabled = false;
+            }
+        });
+
+        // ========================================
+        // 4. KEYBOARD SHORTCUT (Enter key)
+        // ========================================
+        document.getElementById('workerOtpInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('verifyWorkerOtpBtn').click();
+            }
+        });
+    </script>
+</body>
+                                                                                        </html>

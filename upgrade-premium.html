@@ -271,8 +271,8 @@
 
             <!-- Currency Toggle -->
             <div class="currency-toggle">
-                <button class="active" id="usdBtn" onclick="setCurrency('usd')">💵 USD</button>
-                <button id="zwgBtn" onclick="setCurrency('zwg')">💰 ZWG</button>
+                <button class="active" id="usdBtn">💵 USD</button>
+                <button id="zwgBtn">💰 ZWG</button>
             </div>
 
             <!-- Exchange Rate Note -->
@@ -283,7 +283,7 @@
             <!-- Pricing Options -->
             <div class="pricing-grid">
                 <!-- Monthly Plan -->
-                <div class="pricing-option selected" id="monthlyPlan" onclick="selectPlan('monthly')">
+                <div class="pricing-option selected" id="monthlyPlan">
                     <div class="plan-name">Monthly</div>
                     <div class="plan-price" id="monthlyPrice">$8 <span>/ month</span></div>
                     <ul class="plan-features">
@@ -296,7 +296,7 @@
                 </div>
 
                 <!-- Yearly Plan -->
-                <div class="pricing-option" id="yearlyPlan" onclick="selectPlan('yearly')">
+                <div class="pricing-option" id="yearlyPlan">
                     <div class="plan-name">Yearly <span class="plan-savings">Save 27%</span></div>
                     <div class="plan-price" id="yearlyPrice">$70 <span>/ year</span></div>
                     <ul class="plan-features">
@@ -406,32 +406,53 @@
         // ========================================
         // STATE
         // ========================================
-        const EXCHANGE_RATE = 35; // 1 USD = 35 ZWG
+        const EXCHANGE_RATE = 35;
         let selectedPlan = 'monthly';
         let selectedCurrency = 'usd';
         let currentUser = null;
         let workerId = null;
 
         // ========================================
-        // 1. CURRENCY TOGGLE
+        // DOM ELEMENTS
         // ========================================
+        const usdBtn = document.getElementById('usdBtn');
+        const zwgBtn = document.getElementById('zwgBtn');
+        const monthlyPlan = document.getElementById('monthlyPlan');
+        const yearlyPlan = document.getElementById('yearlyPlan');
+        const monthlyPrice = document.getElementById('monthlyPrice');
+        const yearlyPrice = document.getElementById('yearlyPrice');
+        const selectedPlanDisplay = document.getElementById('selectedPlanDisplay');
+        const upgradeBtn = document.getElementById('upgradeBtn');
+        const paymentTitle = document.getElementById('paymentTitle');
+        const exchangeRateNote = document.getElementById('exchangeRateNote');
+
+        // ========================================
+        // 1. CURRENCY TOGGLE (FIXED)
+        // ========================================
+        usdBtn.addEventListener('click', function() {
+            setCurrency('usd');
+        });
+
+        zwgBtn.addEventListener('click', function() {
+            setCurrency('zwg');
+        });
+
         function setCurrency(currency) {
             selectedCurrency = currency;
             
             // Update button styles
-            document.getElementById('usdBtn').classList.toggle('active', currency === 'usd');
-            document.getElementById('zwgBtn').classList.toggle('active', currency === 'zwg');
+            usdBtn.classList.toggle('active', currency === 'usd');
+            zwgBtn.classList.toggle('active', currency === 'zwg');
             
             // Update exchange rate note
-            const rateNote = document.getElementById('exchangeRateNote');
             if (currency === 'usd') {
-                rateNote.textContent = '💱 Exchange Rate: 1 USD = 35 ZWG';
+                exchangeRateNote.textContent = '💱 Exchange Rate: 1 USD = 35 ZWG';
             } else {
-                rateNote.textContent = '💱 Exchange Rate: 35 ZWG = 1 USD';
+                exchangeRateNote.textContent = '💱 Exchange Rate: 35 ZWG = 1 USD';
             }
             
             // Update payment title
-            document.getElementById('paymentTitle').textContent = currency === 'usd' 
+            paymentTitle.textContent = currency === 'usd' 
                 ? '📱 Pay via EcoCash (USD)' 
                 : '📱 Pay via EcoCash (ZWG)';
             
@@ -450,25 +471,32 @@
             const monthlyUSD = 8;
             const monthlyZWG = Math.round(monthlyUSD * EXCHANGE_RATE);
             const monthlyDisplay = isUSD ? `${symbol}${monthlyUSD}` : `${symbol}${monthlyZWG}`;
-            document.getElementById('monthlyPrice').innerHTML = `${monthlyDisplay} <span>/ month</span>`;
+            monthlyPrice.innerHTML = `${monthlyDisplay} <span>/ month</span>`;
             
             // Yearly
             const yearlyUSD = 70;
             const yearlyZWG = Math.round(yearlyUSD * EXCHANGE_RATE);
             const yearlyDisplay = isUSD ? `${symbol}${yearlyUSD}` : `${symbol}${yearlyZWG}`;
-            document.getElementById('yearlyPrice').innerHTML = `${yearlyDisplay} <span>/ year</span>`;
+            yearlyPrice.innerHTML = `${yearlyDisplay} <span>/ year</span>`;
             
-            // Update selected plan display and button
             updateSelectedPlanDisplay();
         }
 
         // ========================================
         // 3. SELECT PLAN
         // ========================================
+        monthlyPlan.addEventListener('click', function() {
+            selectPlan('monthly');
+        });
+
+        yearlyPlan.addEventListener('click', function() {
+            selectPlan('yearly');
+        });
+
         function selectPlan(plan) {
             selectedPlan = plan;
-            document.getElementById('monthlyPlan').classList.toggle('selected', plan === 'monthly');
-            document.getElementById('yearlyPlan').classList.toggle('selected', plan === 'yearly');
+            monthlyPlan.classList.toggle('selected', plan === 'monthly');
+            yearlyPlan.classList.toggle('selected', plan === 'yearly');
             updateSelectedPlanDisplay();
         }
 
@@ -486,10 +514,10 @@
             }
             
             const displayText = `${symbol}${price} ${period === 'month' ? 'per month' : 'per year'}`;
-            document.getElementById('selectedPlanDisplay').textContent = 
+            selectedPlanDisplay.textContent = 
                 `${selectedPlan === 'monthly' ? 'Monthly' : 'Yearly'} (${displayText})`;
             
-            document.getElementById('upgradeBtn').textContent = 
+            upgradeBtn.textContent = 
                 `⬆️ Pay ${symbol}${price} ${selectedCurrency.toUpperCase()} via EcoCash`;
         }
 
@@ -532,7 +560,7 @@
         // ========================================
         // 5. UPGRADE HANDLER
         // ========================================
-        document.getElementById('upgradeBtn').addEventListener('click', async function() {
+        upgradeBtn.addEventListener('click', async function() {
             const phone = document.getElementById('ecocashPhone').value.trim();
             const name = document.getElementById('payerName').value.trim();
             const email = document.getElementById('payerEmail').value.trim();
@@ -547,7 +575,6 @@
                 return;
             }
 
-            // Show loading
             document.getElementById('loadingOverlay').style.display = 'flex';
 
             const isUSD = selectedCurrency === 'usd';
@@ -556,11 +583,8 @@
             const period = selectedPlan === 'monthly' ? 'monthly' : 'yearly';
 
             try {
-                // In production, integrate Paynow here
-                // For now, simulate payment success
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
-                // Update worker profile to premium
                 const { error } = await supabase
                     .from('worker_profiles')
                     .update({
@@ -574,13 +598,9 @@
 
                 if (error) throw error;
 
-                // Hide loading
                 document.getElementById('loadingOverlay').style.display = 'none';
-
-                // Show success
                 document.getElementById('upgradeForm').style.display = 'none';
                 document.getElementById('successMessage').style.display = 'block';
-
                 sessionStorage.setItem('isPremium', 'true');
 
             } catch (error) {
@@ -609,4 +629,4 @@
         });
     </script>
 </body>
-      </html>
+            </html>

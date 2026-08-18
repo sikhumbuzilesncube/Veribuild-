@@ -6,7 +6,7 @@
     <title>VeriBuild - Verified Building Solutions</title>
     <link rel="stylesheet" href="style.css" />
     <!-- Supabase Client -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -22,13 +22,16 @@
             <a href="#how-it-works">How It Works</a>
             <a href="#platform">Platform</a>
             <a href="#pricing">Pricing</a>
+            <a href="workers.html" class="btn-primary" style="background:#28a745;">🔧 Find a Worker</a>
             <a href="#" class="btn-outline" id="signInBtn">Sign In</a>
             <a href="#generate" class="btn-primary">Get Started</a>
         </nav>
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     </header>
 
     <!-- ================================ -->
-    <!-- HERO -->
+    <!-- HERO SECTION -->
     <!-- ================================ -->
     <section class="hero">
         <div class="hero-content">
@@ -39,7 +42,31 @@
             </p>
             <div class="hero-buttons">
                 <a href="sample-boq.html" class="btn-secondary">📄 View Sample BOQ</a>
-                <a href="boq-results.html" class="btn-primary">🚀 Generate My BOQ</a>
+                <a href="#generate" class="btn-primary">🚀 Generate My BOQ</a>
+                <a href="workers.html" class="btn-worker">🔧 Find a Skilled Worker</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- DUAL OFFER SECTION (BOQ + WORKERS) -->
+    <!-- ================================ -->
+    <section class="section" style="background:#f8f9fa; padding:40px 20px;">
+        <div style="max-width:1000px; margin:0 auto; display:grid; grid-template-columns: 1fr 1fr; gap:30px; text-align:center;">
+            <!-- BOQ Card -->
+            <div style="background:#ffffff; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+                <div style="font-size:48px; margin-bottom:10px;">📊</div>
+                <h3 style="font-size:22px; color:#1a1a2e;">Generate a BOQ</h3>
+                <p style="color:#6c757d; font-size:14px; margin-bottom:15px;">Get accurate material quantities and costs from local hardware shops.</p>
+                <a href="#generate" class="btn-primary" style="font-size:14px; padding:10px 24px;">Get Your BOQ →</a>
+            </div>
+            
+            <!-- Workers Card -->
+            <div style="background:#ffffff; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #28a745;">
+                <div style="font-size:48px; margin-bottom:10px;">🔧</div>
+                <h3 style="font-size:22px; color:#1a1a2e;">Find a Skilled Worker</h3>
+                <p style="color:#6c757d; font-size:14px; margin-bottom:15px;">Browse plumbers, electricians, painters, bricklayers, and more near you.</p>
+                <a href="workers.html" class="btn-worker" style="font-size:14px; padding:10px 24px;">Find a Worker →</a>
             </div>
         </div>
     </section>
@@ -86,7 +113,10 @@
                     <li>✅ Recommended workers & engineers</li>
                     <li>✅ Branded PDF with QR code</li>
                 </ul>
-                <a href="boq-results.html" class="btn-outline">Generate BOQ</a>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                    <a href="#generate" class="btn-outline" style="font-size:12px; padding:6px 16px;">Generate BOQ</a>
+                    <a href="workers.html" class="btn-outline" style="font-size:12px; padding:6px 16px; border-color:#28a745; color:#28a745;">Find Worker</a>
+                </div>
             </div>
 
             <div class="platform-card">
@@ -99,7 +129,7 @@
                     <li>✅ Appear in BOQ sourcing list</li>
                     <li>✅ Get customer leads</li>
                 </ul>
-                <a href="#" class="btn-outline">Register Hardware</a>
+                <a href="#" class="btn-outline" style="font-size:12px; padding:6px 16px;">Register Hardware</a>
             </div>
 
             <div class="platform-card">
@@ -112,7 +142,7 @@
                     <li>✅ Appear in BOQ recommendations</li>
                     <li>✅ Get client reviews</li>
                 </ul>
-                <a href="#" class="btn-outline">Register Worker</a>
+                <a href="#" class="btn-outline" style="font-size:12px; padding:6px 16px;">Register as Worker</a>
             </div>
 
             <div class="platform-card">
@@ -125,7 +155,7 @@
                     <li>✅ View client plans & BOQs</li>
                     <li>✅ Build your portfolio</li>
                 </ul>
-                <a href="#" class="btn-outline">Register Engineer</a>
+                <a href="#" class="btn-outline" style="font-size:12px; padding:6px 16px;">Register Engineer</a>
             </div>
         </div>
     </section>
@@ -144,7 +174,7 @@
                 <p><strong>Total Material Cost: $12,450.00 USD</strong></p>
             </div>
             <div class="sample-actions">
-            <a href="sample-boq.html" class="btn-secondary">📄 Download Sample PDF</a>
+                <a href="sample-boq.html" class="btn-secondary" style="font-size:14px;">📄 Download Sample PDF</a>
             </div>
         </div>
     </section>
@@ -170,7 +200,7 @@
             <div id="cameraOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#000; z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
                 <video id="video" autoplay playsinline style="width:100%; height:100%; object-fit:cover; background:#000;"></video>
                 
-                <!-- Camera Controls (Overlay) -->
+                <!-- Camera Controls -->
                 <div style="position:absolute; bottom:40px; left:0; right:0; display:flex; justify-content:center; gap:20px; padding:0 20px; z-index:10;">
                     <button id="capturePhotoBtn" class="btn-secondary" style="font-size:20px; padding:16px 40px; border-radius:50px; background:#28a745; color:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.5);">
                         📸 Take Photo
@@ -180,18 +210,17 @@
                     </button>
                 </div>
                 
-                <!-- Photo Counter Overlay -->
+                <!-- Photo Counter -->
                 <div style="position:absolute; top:40px; right:20px; background:rgba(0,0,0,0.7); color:#fff; padding:8px 16px; border-radius:30px; font-size:16px; z-index:10;">
                     📸 <span id="photoCountOverlay">0</span>
                 </div>
                 
-                <!-- Close/Exit Hint -->
                 <div style="position:absolute; top:40px; left:20px; background:rgba(0,0,0,0.5); color:#fff; padding:6px 12px; border-radius:8px; font-size:12px; z-index:10;">
                     Tap Cancel to exit
                 </div>
             </div>
 
-            <!-- Photo Preview (After Camera) -->
+            <!-- Photo Preview -->
             <div id="photoPreview" style="display:none; margin-top:20px; padding:20px; background:#ffffff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
                 <p><strong>📸 Photos Taken:</strong> <span id="photoCount">0</span></p>
                 <div id="photoThumbnails" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
@@ -280,8 +309,8 @@
                 <p>Yes! You can take photos of your plan using your phone camera. We'll convert them to a PDF automatically.</p>
             </div>
             <div class="faq-item">
-                <h3>How do hardware shops register?</h3>
-                <p>Hardware shops can sign up for free and list 5 products. To list more, they choose a monthly subscription.</p>
+                <h3>How do I find a skilled worker?</h3>
+                <p>Click the "Find a Worker" button to browse plumbers, electricians, painters, and other tradespeople near you.</p>
             </div>
             <div class="faq-item">
                 <h3>How do skilled workers get jobs?</h3>
@@ -342,6 +371,7 @@
             <div class="footer-links">
                 <a href="#">About</a>
                 <a href="#">Contact</a>
+                <a href="workers.html">Find a Worker</a>
                 <a href="#">Privacy Policy</a>
                 <a href="#">Terms</a>
             </div>
@@ -358,4 +388,4 @@
 
     <script src="script.js"></script>
 </body>
-                                          </html>
+            </html>

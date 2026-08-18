@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>VeriBuild - Worker Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .dashboard-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .dashboard-header .user-info h2 {
+            margin: 0;
+            color: #1a1a2e;
+        }
+        .dashboard-header .user-info p {
+            margin: 5px 0 0 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .premium-badge {
+            display: inline-block;
+            background: #f0c040;
+            color: #1a1a2e;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .premium-badge.free {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #007bff;
+        }
+        .stat-card .label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .profile-form .form-group {
+            margin-bottom: 15px;
+        }
+        .profile-form label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .profile-form input,
+        .profile-form select,
+        .profile-form textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            background: #ffffff;
+        }
+        .profile-form input:focus,
+        .profile-form select:focus,
+        .profile-form textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .profile-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .photo-grid .photo-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+        }
+        .photo-grid .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .photo-grid .photo-item .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(220, 53, 69, 0.9);
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .photo-grid .photo-item .delete-btn:hover {
+            background: #dc3545;
+            transform: scale(1.1);
+        }
+        .photo-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        .photo-upload-area:hover {
+            border-color: #007bff;
+            background: #e9f7fe;
+        }
+        .photo-upload-area .icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .photo-upload-area p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 13px;
+        }
+        .premium-lock {
+            opacity: 0.6;
+            pointer-events: none;
+            filter: grayscale(0.5);
+        }
+        .upgrade-prompt {
+            background: #fff3cd;
+            border: 2px solid #f0c040;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .upgrade-prompt h4 {
+            color: #856404;
+            margin: 0 0 8px 0;
+        }
+        .upgrade-prompt p {
+            color: #856404;
+            font-size: 14px;
+            margin: 0 0 12px 0;
+        }
+        .btn-group-dashboard {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        @media (max-width: 600px) {
+            .dashboard-container { padding: 20px; }
+            .profile-form .form-row { grid-template-columns: 1fr; }
+            .dashboard-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================ -->
+    <!-- HEADER -->
+    <!-- ================================ -->
+    <header>
+        <div class="logo">
+            <h1>VeriBuild</h1>
+            <span class="tagline">Verified Building Solutions</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="workers.html">Find Workers</a>
+            <a href="#" class="btn-outline" id="signOutBtn">Sign Out</a>
+        </nav>
+    </header>
+
+    <!-- ================================ -->
+    <!-- DASHBOARD -->
+    <!-- ================================ -->
+    <section class="section" style="background:#f8f9fa;">
+        <div class="dashboard-container" id="dashboard">
+            
+            <!-- Loading State -->
+            <div id="loadingState" style="text-align:center; padding:40px;">
+                <div style="font-size:48px; animation: spin 1s linear infinite;">⏳</div>
+                <p style="color:#6c757d; margin-top:10px;">Loading your dashboard...</p>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboardContent" style="display:none;">
+
+                <!-- Header -->
+                <div class="dashboard-header">
+                    <div class="user-info">
+                        <h2 id="workerName">Worker Name</h2>
+                        <p id="workerTrade">Trade | 📍 Suburb</p>
+                    </div>
+                    <div>
+                        <span class="premium-badge" id="premiumBadge">Free</span>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number" id="statJobs">0</div>
+                        <div class="label">Jobs Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statRating">0.0</div>
+                        <div class="label">Average Rating</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statResponse">0%</div>
+                        <div class="label">Response Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statPremium">Free</div>
+                        <div class="label">Current Plan</div>
+                    </div>
+                </div>
+
+                <!-- Premium Upgrade Prompt -->
+                <div class="upgrade-prompt" id="upgradePrompt">
+                    <h4>⭐ Upgrade to Premium</h4>
+                    <p>Upload portfolio photos, get emergency alerts, and appear in BOQ recommendations.</p>
+                    <a href="upgrade-premium.html" class="btn-worker" style="display:inline-block; padding:10px 30px;">⬆️ Upgrade Now</a>
+                </div>
+
+                <!-- Profile Settings -->
+                <h3 class="section-title">📋 Profile Settings</h3>
+                <form class="profile-form" id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="editFullName" />
+                        </div>
+                        <div class="form-group">
+                            <label>Trade</label>
+                            <select id="editTrade">
+                                <option value="Bricklayer">🧱 Bricklayer</option>
+                                <option value="Plumber">🔧 Plumber</option>
+                                <option value="Electrician">⚡ Electrician</option>
+                                <option value="Painter">🎨 Painter</option>
+                                <option value="Carpenter">🪚 Carpenter</option>
+                                <option value="Tiler">🪄 Tiler</option>
+                                <option value="Welder">🔥 Welder</option>
+                                <option value="General Builder">🏗️ General Builder</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Years of Experience</label>
+                            <input type="number" id="editExperience" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Suburb</label>
+                            <input type="text" id="editSuburb" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Hourly Rate (USD) <span style="font-weight:400; color:#6c757d;">(optional)</span></label>
+                        <input type="number" id="editRate" min="0" step="0.50" placeholder="e.g., 15" />
+                    </div>
+                    <div class="form-group">
+                        <label>About You <span style="font-weight:400; color:#6c757d;">(optional)</span></label>
+                        <textarea id="editBio" rows="3" placeholder="Briefly describe your skills and experience..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="padding:12px 30px;">💾 Save Changes</button>
+                </form>
+
+                <!-- Portfolio Section -->
+                <h3 class="section-title" style="margin-top:30px;">📸 Portfolio</h3>
+                
+                <div id="portfolioContainer">
+                    <!-- Portfolio photos will be rendered here -->
+                </div>
+
+                <!-- Photo Upload (Premium Only) -->
+                <div id="photoUploadSection">
+                    <div class="photo-upload-area" id="photoUploadArea">
+                        <span class="icon">📸</span>
+                        <p>Tap to upload portfolio photos</p>
+                        <p style="font-size:11px; color:#adb5bd;">JPG, PNG, or WebP (max 2MB each)</p>
+                    </div>
+                    <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" />
+                    <p style="font-size:12px; color:#6c757d; margin-top:8px;" id="photoLimitNote">Maximum 10 photos</p>
+                </div>
+
+                <!-- Subscription Management -->
+                <h3 class="section-title" style="margin-top:30px;">💳 Subscription</h3>
+                <div style="background:#f8f9fa; padding:15px; border-radius:12px;">
+                    <p style="margin:0; font-size:14px;">
+                        <strong>Current Plan:</strong> <span id="subscriptionPlan">Free</span><br />
+                        <span id="subscriptionDetails" style="color:#6c757d;">No active subscription</span>
+                    </p>
+                    <div class="btn-group-dashboard">
+                        <a href="upgrade-premium.html" class="btn-worker" style="display:inline-block; padding:8px 20px; font-size:14px;" id="upgradeSubscriptionBtn">⬆️ Upgrade to Premium</a>
+                        <button class="btn-outline" style="padding:8px 20px; font-size:14px; display:none;" id="cancelSubscriptionBtn">❌ Cancel Subscription</button>
+                    </div>
+                </div>
+
+                <!-- Sign Out Button -->
+                <div style="margin-top:25px; text-align:center;">
+                    <button id="signOutBtnBottom" class="btn-outline" style="padding:10px 40px; color:#dc3545; border-color:#dc3545;">🚪 Sign Out</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- FOOTER -->
+    <!-- ================================ -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>VeriBuild</h2>
+                <p>Verified Building Solutions</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="workers.html">Find a Worker</a>
+                <a href="register-worker.html">Register as Worker</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms</a>
+            </div>
+            <div class="footer-contact">
+                <p>📍 Bulawayo, Zimbabwe</p>
+                <p>📞 +263 77 780 3517</p>
+                <p>✉️ admin@gatekeeperai.co.zw</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VeriBuild. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // SUPABASE CONFIGURATION
+        // ========================================
+        const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ========================================
+        // STATE
+        // ========================================
+        let currentWorker = null;
+        let workerId = null;
+        let workerUserId = null;
+        let isPremium = false;
+        let portfolioPhotos = [];
+
+        // ========================================
+        // 1. LOAD WORKER DATA
+        // ========================================
+        async function loadWorkerData() {
+            const workerPhone = sessionStorage.getItem('workerPhone');
+            if (!workerPhone) {
+                alert('Please sign in to access your dashboard.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                // Fetch worker profile with user data
+                const { data, error } = await supabase
+                    .from('worker_profiles')
+                    .select(`
+                        id,
+                        worker_id,
+                        trade,
+                        years_experience,
+                        hourly_rate,
+                        portfolio_photos,
+                        is_premium,
+                        premium_since,
+                        premium_plan,
+                        is_active,
+                        users:worker_id (
+                            id,
+                            phone,
+                            full_name,
+                            suburb,
+                            email
+                        )
+                    `)
+                    .eq('users.phone', workerPhone)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (!data) {
+                    alert('Worker profile not found. Please register first.');
+                    window.location.href = 'register-worker.html';
+                    return;
+                }
+
+                currentWorker = data;
+                workerId = data.id;
+                workerUserId = data.worker_id;
+                isPremium = data.is_premium || false;
+                portfolioPhotos = data.portfolio_photos || [];
+
+                // Render dashboard
+                renderDashboard(data);
+                showDashboard();
+
+            } catch (error) {
+                console.error('Error loading worker:', error);
+                alert('Error loading your profile. Please try again.');
+            }
+        }
+
+        // ========================================
+        // 2. RENDER DASHBOARD
+        // ========================================
+        function renderDashboard(data) {
+            const user = data.users || {};
+            const isPrem = data.is_premium || false;
+
+            // User Info
+            document.getElementById('workerName').textContent = user.full_name || 'Worker';
+            document.getElementById('workerTrade').textContent = `${data.trade || 'Trade'} | 📍 ${user.suburb || 'Suburb'}`;
+
+            // Premium Badge
+            const badge = document.getElementById('premiumBadge');
+            if (isPrem) {
+                badge.textContent = '⭐ Premium';
+                badge.className = 'premium-badge';
+            } else {
+                badge.textContent = 'Free';
+                badge.className = 'premium-badge free';
+            }
+
+            // Stats (placeholder - will be updated with real data later)
+            document.getElementById('statJobs').textContent = '0';
+            document.getElementById('statRating').textContent = '0.0';
+            document.getElementById('statResponse').textContent = '0%';
+            document.getElementById('statPremium').textContent = isPrem ? 'Premium' : 'Free';
+
+            // Upgrade Prompt
+            const upgradePrompt = document.getElementById('upgradePrompt');
+            if (isPrem) {
+                upgradePrompt.style.display = 'none';
+            } else {
+                upgradePrompt.style.display = 'block';
+            }
+
+            // Profile Form
+            document.getElementById('editFullName').value = user.full_name || '';
+            document.getElementById('editTrade').value = data.trade || '';
+            document.getElementById('editExperience').value = data.years_experience || 0;
+            document.getElementById('editSuburb').value = user.suburb || '';
+            document.getElementById('editRate').value = data.hourly_rate || '';
+            document.getElementById('editBio').value = data.bio || '';
+
+            // Portfolio
+            renderPortfolio(isPrem);
+
+            // Photo Upload Section
+            const uploadSection = document.getElementById('photoUploadSection');
+            if (isPrem) {
+                uploadSection.style.display = 'block';
+                document.getElementById('photoLimitNote').textContent = `Maximum 10 photos (${portfolioPhotos.length}/10 used)`;
+            } else {
+                uploadSection.style.display = 'block';
+                document.getElementById('photoUploadArea').className = 'photo-upload-area premium-lock';
+                document.getElementById('photoLimitNote').textContent = '⭐ Upgrade to Premium to upload portfolio photos.';
+            }
+
+            // Subscription
+            document.getElementById('subscriptionPlan').textContent = isPrem ? 'Premium' : 'Free';
+            document.getElementById('subscriptionDetails').textContent = isPrem 
+                ? `Since ${new Date(data.premium_since).toLocaleDateString()} | ${data.premium_plan || 'Monthly'} plan`
+                : 'No active subscription';
+
+            const upgradeBtn = document.getElementById('upgradeSubscriptionBtn');
+            const cancelBtn = document.getElementById('cancelSubscriptionBtn');
+            if (isPrem) {
+                upgradeBtn.style.display = 'none';
+                cancelBtn.style.display = 'inline-block';
+            } else {
+                upgradeBtn.style.display = 'inline-block';
+                cancelBtn.style.display = 'none';
+            }
+        }
+
+        // ========================================
+        // 3. RENDER PORTFOLIO
+        // ========================================
+        function renderPortfolio(isPrem) {
+            const container = document.getElementById('portfolioContainer');
+            
+            if (!portfolioPhotos || portfolioPhotos.length === 0) {
+                container.innerHTML = `
+                    <div style="background:#f8f9fa; padding:20px; border-radius:12px; text-align:center; color:#6c757d;">
+                        <p style="margin:0;">${isPrem ? 'No portfolio photos yet. Upload your work!' : 'Upgrade to Premium to add portfolio photos.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="photo-grid">';
+            portfolioPhotos.forEach((photo, index) => {
+                html += `
+                    <div class="photo-item">
+                        <img src="${photo}" alt="Portfolio photo ${index + 1}" />
+                        ${isPrem ? `<button class="delete-btn" data-index="${index}">✕</button>` : ''}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+
+            // Add delete listeners
+            if (isPrem) {
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.dataset.index);
+                        deletePhoto(index);
+                    });
+                });
+            }
+        }
+
+        // ========================================
+        // 4. SHOW DASHBOARD
+        // ========================================
+        function showDashboard() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+        }
+
+        // ========================================
+        // 5. UPDATE PROFILE
+        // ========================================
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('editFullName').value.trim();
+            const trade = document.getElementById('editTrade').value;
+            const experience = parseInt(document.getElementById('editExperience').value);
+            const suburb = document.getElementById('editSuburb').value.trim();
+            const rate = parseFloat(document.getElementById('editRate').value) || null;
+            const bio = document.getElementById('editBio').value.trim();
+
+            if (!fullName) { alert('❌ Please enter your full name.'); return; }
+            if (!trade) { alert('❌ Please select your trade.'); return; }
+            if (!experience || experience < 0) { alert('❌ Please enter valid years of experience.'); return; }
+            if (!suburb) { alert('❌ Please enter your suburb.'); return; }
+
+            try {
+                // Update users table
+                const { error: userError } = await supabase
+                    .from('users')
+                    .update({
+                        full_name: fullName,
+                        suburb: suburb
+                    })
+                    .eq('id', workerUserId);
+
+                if (userError) throw userError;
+
+                // Update worker_profiles table
+                const { error: profileError } = await supabase
+                    .from('worker_profiles')
+                    .update({
+                        trade: trade,
+                        years_experience: experience,
+                        hourly_rate: rate,
+                        bio: bio
+                    })
+                    .eq('id', workerId);
+
+                if (profileError) throw profileError;
+
+                alert('✅ Profile updated successfully!');
+                loadWorkerData();
+
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('❌ Error updating profile: ' + error.message);
+            }
+        });
+
+        // ========================================
+        // 6. PHOTO UPLOAD (Premium Only)
+        // ========================================
+        document.getElementById('photoUploadArea').addEventListener('click', function() {
+            if (!isPremium) {
+                alert('⭐ Upgrade to Premium to upload portfolio photos!');
+                return;
+            }
+            if (portfolioPhotos.length >= 10) {
+                alert('⚠️ Maximum 10 photos allowed.');
+                return;
+            }
+            document.getElementById('photoInput').click();
+        });
+
+        document.getElementById('photoInput').addEventListener('change', async function(e) {
+            const files = e.target.files;
+            if (!files || files.length === 0) return;
+
+            if (!isPremium) {
+                alert('⭐ Upgrade to Premium to upload portfolio photos!');
+                return;
+            }
+
+            if (portfolioPhotos.length + files.length > 10) {
+                alert('⚠️ Maximum 10 photos allowed. You have ' + portfolioPhotos.length + ' photos.');
+                return;
+            }
+
+            // Convert to base64
+            const newPhotos = [];
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > 2 * 1024 * 1024) {
+                    alert('⚠️ File too large. Max 2MB per photo.');
+                    continue;
+                }
+                const reader = new FileReader();
+                const result = await new Promise((resolve) => {
+                    reader.onload = function(e) { resolve(e.target.result); };
+                    reader.readAsDataURL(files[i]);
+                });
+                newPhotos.push(result);
+            }
+
+            if (newPhotos.length === 0) return;
+
+            const updatedPhotos = [...portfolioPhotos, ...newPhotos];
+
+            try {
+                const { error } = await supabase
+                    .from('worker_profiles')
+                    .update({ portfolio_photos: updatedPhotos })
+                    .eq('id', workerId);
+
+                if (error) throw error;
+
+                portfolioPhotos = updatedPhotos;
+                renderPortfolio(isPremium);
+                document.getElementById('photoLimitNote').textContent = `Maximum 10 photos (${portfolioPhotos.length}/10 used)`;
+                alert('✅ Photos uploaded successfully!');
+
+            } catch (error) {
+                console.error('Error uploading photos:', error);
+                alert('❌ Error uploading photos: ' + error.message);
+            }
+
+            this.value = '';
+        });
+
+        // ========================================
+        // 7. DELETE PHOTO
+        // ========================================
+        async function deletePhoto(index) {
+            if (!isPremium) return;
+            if (!confirm('Delete this photo?')) return;
+
+            const updatedPhotos = portfolioPhotos.filter((_, i) => i !== index);
+
+            try {
+                const { error } = await supabase
+                    .from('worker_profiles')
+                    .update({ portfolio_photos: updatedPhotos })
+                    .eq('id', workerId);
+
+                if (error) throw error;
+
+                portfolioPhotos = updatedPhotos;
+                renderPortfolio(isPremium);
+                document.getElementById('photoLimitNote').textContent = `Maximum 10 photos (${portfolioPhotos.length}/10 used)`;
+                alert('✅ Photo deleted.');
+
+            } catch (error) {
+                console.error('Error deleting photo:', error);
+                alert('❌ Error deleting photo: ' + error.message);
+            }
+        }
+
+        // ========================================
+        // 8. CANCEL SUBSCRIPTION
+        // ========================================
+        document.getElementById('cancelSubscriptionBtn').addEventListener('click', async function() {
+            if (!confirm('Are you sure you want to cancel your Premium subscription? You will lose premium features.')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('worker_profiles')
+                    .update({
+                        is_premium: false,
+                        premium_since: null,
+                        premium_plan: null
+                    })
+                    .eq('id', workerId);
+
+                if (error) throw error;
+
+                isPremium = false;
+                sessionStorage.setItem('isPremium', 'false');
+                alert('✅ Subscription cancelled. You are now on the Free plan.');
+                loadWorkerData();
+
+            } catch (error) {
+                console.error('Error cancelling subscription:', error);
+                alert('❌ Error cancelling subscription: ' + error.message);
+            }
+        });
+
+        // ========================================
+        // 9. SIGN OUT
+        // ========================================
+        function handleSignOut(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to sign out?')) {
+                sessionStorage.clear();
+                alert('Signed out successfully.');
+                window.location.href = 'index.html';
+            }
+        }
+
+        document.getElementById('signOutBtn').addEventListener('click', handleSignOut);
+        document.getElementById('signOutBtnBottom').addEventListener('click', handleSignOut);
+
+        // ========================================
+        // 10. INIT
+        // ========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadWorkerData();
+        });
+    </script>
+</body>
+              </html>

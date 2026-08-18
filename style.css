@@ -59,6 +59,7 @@ nav a:hover {
     color: #007bff;
 }
 
+/* --- BUTTONS --- */
 .btn-outline {
     padding: 8px 20px;
     border: 2px solid #1a1a2e;
@@ -95,6 +96,7 @@ nav a:hover {
 .btn-primary:hover {
     background-color: #0056b3;
     transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,123,255,0.3);
 }
 
 .btn-secondary {
@@ -114,6 +116,32 @@ nav a:hover {
 .btn-secondary:hover {
     background-color: #1e7e34;
     transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40,167,69,0.3);
+}
+
+/* --- WORKER BUTTON --- */
+.btn-worker {
+    padding: 12px 28px;
+    background-color: #28a745;
+    color: #ffffff !important;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.btn-worker:hover {
+    background-color: #1e7e34;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40,167,69,0.3);
+}
+
+.btn-worker:active {
+    transform: translateY(0);
 }
 
 /* --- HERO SECTION --- */
@@ -475,6 +503,55 @@ nav a:hover {
     font-size: 14px;
 }
 
+/* --- WORKER LIST (Workers Page) --- */
+#workerList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.worker-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border-top: 4px solid #007bff;
+    transition: transform 0.3s;
+}
+
+.worker-card:hover {
+    transform: translateY(-5px);
+}
+
+.worker-card.premium {
+    border-top-color: #f0c040;
+}
+
+.worker-card .avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #6c757d;
+    flex-shrink: 0;
+}
+
+.worker-card .premium-badge {
+    display: inline-block;
+    background: #f0c040;
+    color: #1a1a2e;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
 /* --- FOOTER --- */
 footer {
     background-color: #1a1a2e;
@@ -529,17 +606,45 @@ footer {
     font-size: 14px;
 }
 
-/* --- RESPONSIVE --- */
+/* --- MOBILE MENU --- */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #1a1a2e;
+}
+
+/* --- RESPONSIVE (Mobile First) --- */
 @media (max-width: 768px) {
     header {
-        flex-direction: column;
-        gap: 15px;
+        flex-direction: row;
+        flex-wrap: wrap;
         padding: 15px 20px;
     }
 
+    .mobile-menu-btn {
+        display: block;
+    }
+
     nav {
-        flex-wrap: wrap;
-        justify-content: center;
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 15px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    nav.open {
+        display: flex;
+    }
+
+    nav a {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
     }
 
     .hero h1 {
@@ -553,6 +658,11 @@ footer {
     .hero-buttons {
         flex-direction: column;
         gap: 12px;
+    }
+
+    .hero-buttons a {
+        width: 100%;
+        text-align: center;
     }
 
     .section {
@@ -589,6 +699,10 @@ footer {
         align-items: center;
     }
 
+    .upload-methods button {
+        width: 100%;
+    }
+
     .generate-card {
         padding: 20px;
     }
@@ -600,5 +714,57 @@ footer {
     #cameraOverlay button {
         font-size: 16px !important;
         padding: 14px 24px !important;
+    }
+
+    #workerList {
+        grid-template-columns: 1fr;
+    }
+
+    /* Dual Offer Section */
+    .section > div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* --- EXTRA SMALL SCREENS --- */
+@media (max-width: 480px) {
+    .logo h1 {
+        font-size: 22px;
+    }
+
+    .logo .tagline {
+        font-size: 11px;
+    }
+
+    .hero {
+        padding: 40px 20px;
+    }
+
+    .price-big {
+        font-size: 32px;
+    }
+
+    .btn-primary, .btn-secondary, .btn-worker {
+        font-size: 13px;
+        padding: 10px 18px;
+    }
+
+    .pricing-card .price {
+        font-size: 26px;
+    }
+}
+
+/* --- TABLET --- */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .platform-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    #workerList {
+        grid-template-columns: repeat(2, 1fr);
     }
     }

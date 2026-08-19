@@ -768,3 +768,27 @@ footer {
         grid-template-columns: repeat(2, 1fr);
     }
     }
+/* --- FOOTER BRANDING --- */
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #343a40;
+    margin-top: 30px;
+    color: #adb5bd;
+    font-size: 14px;
+}
+
+.footer-bottom p {
+    margin: 4px 0;
+}
+
+.footer-logo p {
+    color: #adb5bd;
+    font-size: 13px;
+}
+
+footer .tagline {
+    color: #6c757d;
+    font-size: 12px;
+    letter-spacing: 1px;
+}

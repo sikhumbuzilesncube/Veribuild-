@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>VeriBuild - Contact Us</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .contact-container h1 {
+            font-size: 28px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .contact-container .subtitle {
+            color: #6c757d;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+        .contact-container h2 {
+            font-size: 20px;
+            color: #1a1a2e;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .contact-container p {
+            font-size: 15px;
+            color: #495057;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .contact-container .contact-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .contact-container .contact-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .contact-container .contact-item .icon {
+            font-size: 28px;
+        }
+        .contact-container .contact-item .label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .contact-container .contact-item .value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        .contact-container .form-group {
+            margin-bottom: 18px;
+        }
+        .contact-container label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .contact-container label .required {
+            color: #dc3545;
+        }
+        .contact-container input,
+        .contact-container select,
+        .contact-container textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #ffffff;
+        }
+        .contact-container input:focus,
+        .contact-container select:focus,
+        .contact-container textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .contact-container textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .contact-container .btn-submit {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .contact-container .highlight-box {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+            margin: 15px 0;
+        }
+        .contact-container .brand-tag {
+            text-align: center;
+            color: #6c757d;
+            font-size: 13px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+        .contact-container .brand-tag strong {
+            color: #007bff;
+        }
+        .contact-container .heart {
+            color: #dc3545;
+        }
+        .contact-container .support-hours {
+            background: #e9f7fe;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .support-hours p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+        @media (max-width: 600px) {
+            .contact-container { padding: 20px; }
+            .contact-container .contact-details { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================ -->
+    <!-- HEADER -->
+    <!-- ================================ -->
+    <header>
+        <div class="logo">
+            <h1>VeriBuild</h1>
+            <span class="tagline">A Product of Gatekeeper AI</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="refund.html">Refund</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <!-- ================================ -->
+    <!-- CONTACT CONTENT -->
+    <!-- ================================ -->
+    <section class="section" style="background:#f8f9fa;">
+        <div class="contact-container">
+            <h1>📬 Contact Us</h1>
+            <p class="subtitle">We'd love to hear from you. Get in touch with us anytime.</p>
+
+            <!-- Contact Details -->
+            <div class="contact-details">
+                <div class="contact-item">
+                    <div class="icon">📞</div>
+                    <div class="label">Phone</div>
+                    <div class="value">+263 77 780 3517</div>
+                </div>
+                <div class="contact-item">
+                    <div class="icon">✉️</div>
+                    <div class="label">Email</div>
+                    <div class="value">admin@gatekeeperai.co.zw</div>
+                </div>
+                <div class="contact-item">
+                    <div class="icon">💬</div>
+                    <div class="label">WhatsApp</div>
+                    <div class="value">+263 77 780 3517</div>
+                </div>
+                <div class="contact-item">
+                    <div class="icon">🌐</div>
+                    <div class="label">Website</div>
+                    <div class="value">www.veribuild.co.zw</div>
+                </div>
+            </div>
+
+            <!-- Support Hours -->
+            <div class="support-hours">
+                <h3 style="margin:0 0 5px 0; font-size:16px;">🕐 Support Hours</h3>
+                <p><strong>Monday - Friday:</strong> 8:00 AM - 5:00 PM (CAT)</p>
+                <p><strong>Saturday:</strong> 9:00 AM - 1:00 PM (CAT)</p>
+                <p><strong>Sunday:</strong> Closed</p>
+            </div>
+
+            <!-- Get Help -->
+            <h2>How Can We Help?</h2>
+            <ul style="padding-left:20px; margin-bottom:20px;">
+                <li><strong>FAQ:</strong> Visit our FAQ section on the homepage.</li>
+                <li><strong>Support:</strong> Email us for technical issues or account help.</li>
+                <li><strong>Sales:</strong> For partnerships or bulk inquiries.</li>
+            </ul>
+
+            <!-- Contact Form -->
+            <h2>Send Us a Message</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label>Your Name <span class="required">*</span></label>
+                    <input type="text" id="contactName" placeholder="e.g., John Ncube" required />
+                </div>
+                <div class="form-group">
+                    <label>Your Phone <span class="required">*</span></label>
+                    <input type="tel" id="contactPhone" placeholder="0772 123 456" required />
+                </div>
+                <div class="form-group">
+                    <label>Your Email</label>
+                    <input type="email" id="contactEmail" placeholder="you@example.com" />
+                </div>
+                <div class="form-group">
+                    <label>Subject <span class="required">*</span></label>
+                    <select id="contactSubject" required>
+                        <option value="">Select a subject...</option>
+                        <option value="general">General Inquiry</option>
+                        <option value="support">Technical Support</option>
+                        <option value="partnership">Partnership</option>
+                        <option value="complaint">Complaint</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Message <span class="required">*</span></label>
+                    <textarea id="contactMessage" placeholder="How can we help you?" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary btn-submit">📤 Send Message</button>
+            </form>
+
+            <!-- Success Message (Hidden) -->
+            <div id="contactSuccess" style="display:none; background:#d4edda; padding:20px; border-radius:12px; margin-top:20px; text-align:center;">
+                <div style="font-size:48px;">✅</div>
+                <h3 style="color:#155724; margin:10px 0 0 0;">Message Sent!</h3>
+                <p style="color:#155724;">We'll get back to you within 24 hours.</p>
+            </div>
+
+            <!-- Brand Tag -->
+            <div class="brand-tag">
+                Built with <span class="heart">❤️</span> from Zimbabwe for the African market.<br />
+                <strong>VeriBuild</strong> — A Product of <strong>Gatekeeper AI</strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- FOOTER -->
+    <!-- ================================ -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>VeriBuild</h2>
+                <p>A Product of Gatekeeper AI</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="terms.html">Terms</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="refund.html">Refund</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-contact">
+                <p>📞 +263 77 780 3517</p>
+                <p>✉️ admin@gatekeeperai.co.zw</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Built with ❤️ from Zimbabwe for the African market.</p>
+            <p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // CONTACT FORM HANDLER
+        // ========================================
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('contactName').value.trim();
+            const phone = document.getElementById('contactPhone').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value.trim();
+
+            // Validate
+            if (!name) { alert('❌ Please enter your name.'); return; }
+            if (!phone || phone.length < 10) { alert('❌ Please enter a valid phone number.'); return; }
+            if (!subject) { alert('❌ Please select a subject.'); return; }
+            if (!message) { alert('❌ Please enter your message.'); return; }
+
+            // For now, show success (we'll add real email sending later)
+            document.getElementById('contactForm').style.display = 'none';
+            document.getElementById('contactSuccess').style.display = 'block';
+
+            // Log to console
+            console.log('📬 Contact Form Submission:');
+            console.log('Name:', name);
+            console.log('Phone:', phone);
+            console.log('Email:', email);
+            console.log('Subject:', subject);
+            console.log('Message:', message);
+        });
+    </script>
+
+</body>
+              </html>

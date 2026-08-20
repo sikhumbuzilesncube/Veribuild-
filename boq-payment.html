@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>VeriBuild - BOQ Payment</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="paynow-config.js"></script>
+    <style>
+        .payment-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .payment-container h1 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .payment-container .subtitle {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .payment-container .amount {
+            font-size: 42px;
+            font-weight: 800;
+            color: #007bff;
+            margin: 10px 0;
+        }
+        .payment-container .amount-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .payment-container .payment-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .payment-container .payment-details p {
+            margin: 6px 0;
+            font-size: 14px;
+            color: #495057;
+        }
+        .payment-container .payment-details strong {
+            color: #1a1a2e;
+        }
+        .payment-container .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .payment-container label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .payment-container label .required {
+            color: #dc3545;
+        }
+        .payment-container input,
+        .payment-container select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #ffffff;
+        }
+        .payment-container input:focus,
+        .payment-container select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .payment-container .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .payment-container .payment-method {
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .payment-container .payment-method:hover {
+            border-color: #007bff;
+        }
+        .payment-container .payment-method.selected {
+            border-color: #007bff;
+            background: #e9f7fe;
+        }
+        .payment-container .payment-method .icon {
+            font-size: 28px;
+        }
+        .payment-container .payment-method .name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .payment-container .btn-pay {
+            width: 100%;
+            padding: 16px;
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .payment-container .back-link {
+            display: inline-block;
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 15px;
+            text-decoration: none;
+        }
+        .payment-container .back-link:hover {
+            color: #007bff;
+        }
+        .payment-container .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .payment-container .loading-overlay .spinner {
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 90%;
+        }
+        .payment-container .loading-overlay .spinner .spinner-icon {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .payment-container .disclaimer {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 15px;
+        }
+        @media (max-width: 600px) {
+            .payment-container { padding: 20px; }
+            .payment-container .payment-methods { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================ -->
+    <!-- HEADER -->
+    <!-- ================================ -->
+    <header>
+        <div class="logo">
+            <h1>VeriBuild</h1>
+            <span class="tagline">A Product of Gatekeeper AI</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="refund.html">Refund</a>
+        </nav>
+    </header>
+
+    <!-- ================================ -->
+    <!-- PAYMENT PAGE -->
+    <!-- ================================ -->
+    <section class="section" style="background:#f8f9fa;">
+        <div class="payment-container">
+            <h1>💳 Complete Your Payment</h1>
+            <p class="subtitle">Pay for your BOQ and get instant access to your estimate.</p>
+
+            <div class="amount" id="amountDisplay">$10.00</div>
+            <div class="amount-label">BOQ Generation Fee</div>
+
+            <!-- Payment Details -->
+            <div class="payment-details">
+                <p><strong>Plan:</strong> Residential BOQ</p>
+                <p><strong>Reference:</strong> <span id="referenceDisplay">Loading...</span></p>
+                <p><strong>Currency:</strong> USD</p>
+            </div>
+
+            <!-- Payment Form -->
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label>Your Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="payerPhone" placeholder="0772 123 456" required />
+                </div>
+                <div class="form-group">
+                    <label>Your Email (for receipt) <span style="font-weight:400; color:#6c757d;">(optional)</span></label>
+                    <input type="email" id="payerEmail" placeholder="you@example.com" />
+                </div>
+                <div class="form-group">
+                    <label>Your Name <span class="required">*</span></label>
+                    <input type="text" id="payerName" placeholder="e.g., John Ncube" required />
+                </div>
+
+                <!-- Payment Methods -->
+                <div style="text-align:left; margin:10px 0 5px 0; font-weight:600; font-size:14px;">Select Payment Method</div>
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="ecocash">
+                        <div class="icon">📱</div>
+                        <div class="name">EcoCash</div>
+                    </div>
+                    <div class="payment-method" data-method="onemoney">
+                        <div class="icon">💰</div>
+                        <div class="name">OneMoney</div>
+                    </div>
+                </div>
+                <input type="hidden" id="paymentMethod" value="ecocash" />
+
+                <button type="submit" class="btn-primary btn-pay">⬆️ Pay $10 via EcoCash</button>
+            </form>
+
+            <a href="index.html" class="back-link">← Cancel and return to home</a>
+
+            <div class="disclaimer">
+                You will receive a payment request on your phone via EcoCash/OneMoney.
+                Processing fees may apply.
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner">
+                <div class="spinner-icon">⏳</div>
+                <h3>Processing Payment...</h3>
+                <p style="color:#6c757d;">Please wait, do not close this window.</p>
+                <p style="color:#6c757d; font-size:12px;">You will receive a payment request on your phone.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- FOOTER -->
+    <!-- ================================ -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>VeriBuild</h2>
+                <p>A Product of Gatekeeper AI</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="terms.html">Terms</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="refund.html">Refund</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-contact">
+                <p>📞 +263 77 780 3517</p>
+                <p>✉️ admin@gatekeeperai.co.zw</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Built with ❤️ from Zimbabwe for the African market.</p>
+            <p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // PAYMENT LOGIC
+        // ========================================
+
+        // --- Generate Reference ---
+        function generateReference() {
+            const prefix = 'VERI';
+            const timestamp = Date.now().toString().slice(-8);
+            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            return `${prefix}${timestamp}${random}`;
+        }
+
+        const reference = generateReference();
+        document.getElementById('referenceDisplay').textContent = reference;
+
+        // --- Payment Method Selection ---
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('paymentMethod').value = this.dataset.method;
+                
+                const methodName = this.dataset.method === 'ecocash' ? 'EcoCash' : 'OneMoney';
+                document.querySelector('.btn-pay').textContent = `⬆️ Pay $10 via ${methodName}`;
+            });
+        });
+
+        // --- Form Submission ---
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Get form values
+            const phone = document.getElementById('payerPhone').value.trim();
+            const email = document.getElementById('payerEmail').value.trim();
+            const name = document.getElementById('payerName').value.trim();
+            const method = document.getElementById('paymentMethod').value;
+
+            // Validate
+            if (!phone || phone.length < 10) {
+                alert('❌ Please enter a valid phone number.');
+                return;
+            }
+            if (!name) {
+                alert('❌ Please enter your name.');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            // Format phone number (remove spaces, ensure +263)
+            let cleanPhone = phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('0')) {
+                cleanPhone = `263${cleanPhone.slice(1)}`;
+            }
+            if (!cleanPhone.startsWith('263')) {
+                cleanPhone = `263${cleanPhone}`;
+            }
+            const internationalPhone = `+${cleanPhone}`;
+
+            try {
+                // Create Paynow payment
+                const result = await createPaynowPayment({
+                    amount: 10.00,
+                    currency: 'USD',
+                    phone: internationalPhone,
+                    email: email,
+                    description: `VeriBuild BOQ - ${reference}`,
+                    reference: reference
+                });
+
+                if (result.success) {
+                    // Store reference in session for success page
+                    sessionStorage.setItem('paymentReference', reference);
+                    sessionStorage.setItem('paymentAmount', '10.00');
+                    sessionStorage.setItem('paymentType', 'boq');
+                    
+                    // Redirect to Paynow
+                    window.location.href = result.redirectUrl;
+                } else {
+                    alert('❌ Payment initiation failed: ' + result.error);
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('❌ Payment processing error. Please try again.');
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+  </html>

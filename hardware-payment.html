@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>VeriBuild - Hardware Subscription</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="paynow-config.js"></script>
+    <style>
+        .payment-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .payment-container h1 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .payment-container .subtitle {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .pricing-option {
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #ffffff;
+            text-align: center;
+        }
+        .pricing-option:hover {
+            border-color: #007bff;
+            transform: translateY(-3px);
+        }
+        .pricing-option.selected {
+            border-color: #007bff;
+            background: #f8f9fa;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .pricing-option .plan-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .pricing-option .plan-price {
+            font-size: 24px;
+            font-weight: 800;
+            color: #007bff;
+            margin: 8px 0;
+        }
+        .pricing-option .plan-price span {
+            font-size: 14px;
+            font-weight: 400;
+            color: #6c757d;
+        }
+        .pricing-option .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 0;
+            text-align: left;
+            font-size: 13px;
+        }
+        .pricing-option .plan-features li {
+            padding: 4px 0;
+            color: #495057;
+        }
+        .pricing-option .plan-features li::before {
+            content: '✅ ';
+            color: #28a745;
+        }
+        .pricing-option .plan-features li.muted {
+            opacity: 0.4;
+        }
+        .pricing-option .plan-features li.muted::before {
+            content: '❌ ';
+            color: #dc3545;
+        }
+        .payment-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .payment-details p {
+            margin: 6px 0;
+            font-size: 14px;
+            color: #495057;
+        }
+        .payment-details strong {
+            color: #1a1a2e;
+        }
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .form-group label .required {
+            color: #dc3545;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #ffffff;
+        }
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .btn-pay {
+            width: 100%;
+            padding: 16px;
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading-overlay .spinner {
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 90%;
+        }
+        .loading-overlay .spinner .spinner-icon {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .back-link {
+            display: inline-block;
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 15px;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: #007bff;
+        }
+        @media (max-width: 600px) {
+            .payment-container { padding: 20px; }
+            .pricing-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================ -->
+    <!-- HEADER -->
+    <!-- ================================ -->
+    <header>
+        <div class="logo">
+            <h1>VeriBuild</h1>
+            <span class="tagline">A Product of Gatekeeper AI</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="refund.html">Refund</a>
+        </nav>
+    </header>
+
+    <!-- ================================ -->
+    <!-- PAYMENT PAGE -->
+    <!-- ================================ -->
+    <section class="section" style="background:#f8f9fa;">
+        <div class="payment-container">
+            <h1>🏪 Hardware Shop Subscription</h1>
+            <p class="subtitle">Choose a plan and list your products on VeriBuild.</p>
+
+            <!-- Pricing Options -->
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-option" data-plan="free" data-price="0">
+                    <div class="plan-name">Free</div>
+                    <div class="plan-price">$0 <span>/ forever</span></div>
+                    <ul class="plan-features">
+                        <li>List up to 5 products</li>
+                        <li class="muted">No price updates</li>
+                        <li class="muted">No priority listing</li>
+                    </ul>
+                </div>
+
+                <!-- Tier 1 -->
+                <div class="pricing-option selected" data-plan="tier1" data-price="10">
+                    <div class="plan-name">Tier 1</div>
+                    <div class="plan-price">$10 <span>/ month</span></div>
+                    <ul class="plan-features">
+                        <li>List up to 20 products</li>
+                        <li>Update prices anytime</li>
+                        <li class="muted">No priority listing</li>
+                    </ul>
+                </div>
+
+                <!-- Tier 2 -->
+                <div class="pricing-option" data-plan="tier2" data-price="18">
+                    <div class="plan-name">Tier 2</div>
+                    <div class="plan-price">$18 <span>/ month</span></div>
+                    <ul class="plan-features">
+                        <li>Unlimited products</li>
+                        <li>Update prices anytime</li>
+                        <li>Priority listing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Payment Details -->
+            <div class="payment-details">
+                <p><strong>Selected Plan:</strong> <span id="selectedPlanName">Tier 1</span></p>
+                <p><strong>Price:</strong> <span id="selectedPlanPrice">$10.00</span> / month</p>
+                <p><strong>Reference:</strong> <span id="referenceDisplay">Loading...</span></p>
+            </div>
+
+            <!-- Payment Form -->
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label>Business Name <span class="required">*</span></label>
+                    <input type="text" id="businessName" placeholder="e.g., Ncube Hardware" required />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="payerPhone" placeholder="0772 123 456" required />
+                </div>
+                <div class="form-group">
+                    <label>Email (for receipt) <span style="font-weight:400; color:#6c757d;">(optional)</span></label>
+                    <input type="email" id="payerEmail" placeholder="you@example.com" />
+                </div>
+
+                <button type="submit" class="btn-primary btn-pay">⬆️ Pay $10 via EcoCash</button>
+            </form>
+
+            <a href="index.html" class="back-link">← Cancel and return to home</a>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner">
+                <div class="spinner-icon">⏳</div>
+                <h3>Processing Payment...</h3>
+                <p style="color:#6c757d;">Please wait, do not close this window.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- FOOTER -->
+    <!-- ================================ -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>VeriBuild</h2>
+                <p>A Product of Gatekeeper AI</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="terms.html">Terms</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="refund.html">Refund</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-contact">
+                <p>📞 +263 77 780 3517</p>
+                <p>✉️ admin@gatekeeperai.co.zw</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Built with ❤️ from Zimbabwe for the African market.</p>
+            <p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // HARDWARE PAYMENT LOGIC
+        // ========================================
+
+        // --- Generate Reference ---
+        function generateReference() {
+            const prefix = 'HARD';
+            const timestamp = Date.now().toString().slice(-8);
+            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            return `${prefix}${timestamp}${random}`;
+        }
+
+        const reference = generateReference();
+        document.getElementById('referenceDisplay').textContent = reference;
+
+        // --- Plan Selection ---
+        let selectedPlan = 'tier1';
+        let selectedPrice = 10;
+        let selectedName = 'Tier 1';
+
+        document.querySelectorAll('.pricing-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.pricing-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                selectedPlan = this.dataset.plan;
+                selectedPrice = parseFloat(this.dataset.price);
+                selectedName = this.querySelector('.plan-name').textContent;
+                
+                document.getElementById('selectedPlanName').textContent = selectedName;
+                document.getElementById('selectedPlanPrice').textContent = `$${selectedPrice.toFixed(2)}`;
+                document.querySelector('.btn-pay').textContent = `⬆️ Pay $${selectedPrice} via EcoCash`;
+            });
+        });
+
+        // --- Form Submission ---
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const businessName = document.getElementById('businessName').value.trim();
+            const phone = document.getElementById('payerPhone').value.trim();
+            const email = document.getElementById('payerEmail').value.trim();
+
+            if (!businessName) { alert('❌ Please enter your business name.'); return; }
+            if (!phone || phone.length < 10) { alert('❌ Please enter a valid phone number.'); return; }
+
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            let cleanPhone = phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('0')) {
+                cleanPhone = `263${cleanPhone.slice(1)}`;
+            }
+            if (!cleanPhone.startsWith('263')) {
+                cleanPhone = `263${cleanPhone}`;
+            }
+            const internationalPhone = `+${cleanPhone}`;
+
+            try {
+                const result = await createPaynowPayment({
+                    amount: selectedPrice,
+                    currency: 'USD',
+                    phone: internationalPhone,
+                    email: email,
+                    description: `Hardware Subscription - ${selectedName} - ${reference}`,
+                    reference: reference
+                });
+
+                if (result.success) {
+                    sessionStorage.setItem('paymentReference', reference);
+                    sessionStorage.setItem('paymentAmount', selectedPrice.toFixed(2));
+                    sessionStorage.setItem('paymentType', 'hardware');
+                    sessionStorage.setItem('hardwarePlan', selectedPlan);
+                    sessionStorage.setItem('businessName', businessName);
+                    
+                    window.location.href = result.redirectUrl;
+                } else {
+                    alert('❌ Payment initiation failed: ' + result.error);
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }
+            } catch (error) {
+                alert('❌ Payment processing error. Please try again.');
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+  </html>

@@ -13,7 +13,7 @@ const PAYNOW_CONFIG = {
     returnUrl: 'https://veribuild.vercel.app/payment-success.html',
     
     // Result URL - where Paynow sends confirmation (Edge Function)
-    resultUrl: 'https://gfggbagrkdacuepqnkdg.supabase.co/functions/v1/paynow-webhook',
+    resultUrl: 'https://gfggbagrkdacuepqnkdg.supabase.co/functions/v1/database-access',
     
     // ==== PAYMENT ENDPOINTS ====
     // Paynow API endpoint

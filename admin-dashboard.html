@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>VeriBuild - Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .admin-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .admin-header h1 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin: 0;
+        }
+        .admin-header .badge {
+            background: #28a745;
+            color: #ffffff;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #007bff;
+        }
+        .stat-card .label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .stat-card .number.green { color: #28a745; }
+        .stat-card .number.orange { color: #f0c040; }
+        .stat-card .number.red { color: #dc3545; }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table th {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+            color: #495057;
+        }
+        table tr:hover {
+            background: #f8f9fa;
+        }
+        .status-badge {
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-badge.success { background: #d4edda; color: #155724; }
+        .status-badge.warning { background: #fff3cd; color: #856404; }
+        .status-badge.danger { background: #f8d7da; color: #721c24; }
+        .status-badge.info { background: #d1ecf1; color: #0c5460; }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-sm.primary { background: #007bff; color: #ffffff; }
+        .btn-sm.success { background: #28a745; color: #ffffff; }
+        .btn-sm.danger { background: #dc3545; color: #ffffff; }
+        .tab-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .tab-bar button {
+            padding: 8px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 30px;
+            background: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-bar button.active {
+            border-color: #007bff;
+            background: #007bff;
+            color: #ffffff;
+        }
+        .tab-bar button:hover {
+            border-color: #007bff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 600px) {
+            .admin-container { padding: 20px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================ -->
+    <!-- HEADER -->
+    <!-- ================================ -->
+    <header>
+        <div class="logo">
+            <h1>VeriBuild</h1>
+            <span class="tagline">A Product of Gatekeeper AI</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="admin-dashboard.html" class="btn-outline" style="border-color:#007bff; color:#007bff;">Admin</a>
+            <a href="#" class="btn-outline" id="signOutBtn">Sign Out</a>
+        </nav>
+    </header>
+
+    <!-- ================================ -->
+    <!-- ADMIN DASHBOARD -->
+    <!-- ================================ -->
+    <section class="section" style="background:#f8f9fa;">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>🛡️ Admin Dashboard</h1>
+                <span class="badge">Gatekeeper AI</span>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" style="text-align:center; padding:40px;">
+                <div style="font-size:48px; animation: spin 1s linear infinite;">⏳</div>
+                <p style="color:#6c757d; margin-top:10px;">Loading dashboard...</p>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboardContent" style="display:none;">
+
+                <!-- Stats -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="number" id="statUsers">0</div>
+                        <div class="label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statBOQs">0</div>
+                        <div class="label">BOQs Generated</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number green" id="statRevenue">$0</div>
+                        <div class="label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number orange" id="statPending">0</div>
+                        <div class="label">Pending Payments</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tab-bar">
+                    <button class="active" data-tab="payments">💳 Payments</button>
+                    <button data-tab="users">👤 Users</button>
+                    <button data-tab="workers">🔧 Workers</button>
+                    <button data-tab="hardware">🏪 Hardware</button>
+                    <button data-tab="referrals">📣 Referrals</button>
+                </div>
+
+                <!-- Tab: Payments -->
+                <div class="tab-content active" id="tab-payments">
+                    <h3 class="section-title">Recent Payments</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Reference</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                    <th>Payer</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTable">
+                                <tr>
+                                    <td colspan="7" style="text-align:center; color:#6c757d; padding:30px;">No payments yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Users -->
+                <div class="tab-content" id="tab-users">
+                    <h3 class="section-title">All Users</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th>Suburb</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <tr>
+                                    <td colspan="5" style="text-align:center; color:#6c757d; padding:30px;">No users yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Workers -->
+                <div class="tab-content" id="tab-workers">
+                    <h3 class="section-title">Skilled Workers</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Trade</th>
+                                    <th>Experience</th>
+                                    <th>Suburb</th>
+                                    <th>Premium</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workersTable">
+                                <tr>
+                                    <td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No workers yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Hardware -->
+                <div class="tab-content" id="tab-hardware">
+                    <h3 class="section-title">Hardware Shops</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Business Name</th>
+                                    <th>Phone</th>
+                                    <th>Suburb</th>
+                                    <th>Plan</th>
+                                    <th>Products</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hardwareTable">
+                                <tr>
+                                    <td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No hardware shops yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Referrals -->
+                <div class="tab-content" id="tab-referrals">
+                    <h3 class="section-title">Referral Partners</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Partner</th>
+                                    <th>Referral Code</th>
+                                    <th>Clicks</th>
+                                    <th>Conversions</th>
+                                    <th>Earnings</th>
+                                    <th>Withdrawn</th>
+                                </tr>
+                            </thead>
+                            <tbody id="referralsTable">
+                                <tr>
+                                    <td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No referrals yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================ -->
+    <!-- FOOTER -->
+    <!-- ================================ -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>VeriBuild</h2>
+                <p>A Product of Gatekeeper AI</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="terms.html">Terms</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="refund.html">Refund</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-contact">
+                <p>📞 +263 77 780 3517</p>
+                <p>✉️ admin@gatekeeperai.co.zw</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Built with ❤️ from Zimbabwe for the African market.</p>
+            <p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // SUPABASE CONFIGURATION
+        // ========================================
+        const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ========================================
+        // TAB SWITCHING
+        // ========================================
+        document.querySelectorAll('.tab-bar button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ========================================
+        // LOAD DASHBOARD DATA
+        // ========================================
+        async function loadAdminData() {
+            try {
+                // Fetch users
+                const { data: users, error: userError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (!userError && users) {
+                    document.getElementById('statUsers').textContent = users.length;
+                    renderUsers(users);
+                }
+
+                // Fetch payments
+                const { data: payments, error: paymentError } = await supabase
+                    .from('payments')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                if (!paymentError && payments) {
+                    const totalRevenue = payments.reduce((sum, p) => sum + (p.status === 'completed' ? p.amount : 0), 0);
+                    const pending = payments.filter(p => p.status === 'pending').length;
+                    
+                    document.getElementById('statRevenue').textContent = '$' + totalRevenue.toFixed(2);
+                    document.getElementById('statPending').textContent = pending;
+                    renderPayments(payments);
+                }
+
+                // Fetch workers
+                const { data: workers, error: workerError } = await supabase
+                    .from('worker_profiles')
+                    .select('*, users(phone, full_name, suburb)')
+                    .order('created_at', { ascending: false });
+
+                if (!workerError && workers) {
+                    renderWorkers(workers);
+                }
+
+                // Fetch hardware shops
+                const { data: hardware, error: hardwareError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('role', 'hardware')
+                    .order('created_at', { ascending: false });
+
+                if (!hardwareError && hardware) {
+                    renderHardware(hardware);
+                }
+
+                // Show dashboard
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+                document.getElementById('loadingState').innerHTML = `
+                    <div style="font-size:48px;">❌</div>
+                    <p style="color:#6c757d;">Error loading dashboard. Please refresh.</p>
+                `;
+            }
+        }
+
+        // ========================================
+        // RENDER FUNCTIONS
+        // ========================================
+        function renderPayments(payments) {
+            const tbody = document.getElementById('paymentsTable');
+            if (!payments || payments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#6c757d; padding:30px;">No payments yet</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = payments.map(p => {
+                const statusClass = p.status === 'completed' ? 'success' : (p.status === 'pending' ? 'warning' : 'danger');
+                return `<tr>
+                    <td><strong>${p.reference}</strong></td>
+                    <td>$${p.amount.toFixed(2)}</td>
+                    <td>${p.type.replace('_', ' ').toUpperCase()}</td>
+                    <td>${p.payer_name || 'N/A'}</td>
+                    <td><span class="status-badge ${statusClass}">${p.status}</span></td>
+                    <td>${new Date(p.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn-sm primary">View</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderUsers(users) {
+            const tbody = document.getElementById('usersTable');
+            if (!users || users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#6c757d; padding:30px;">No users yet</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = users.slice(0, 20).map(u => `<tr>
+                <td><strong>${u.full_name || 'N/A'}</strong></td>
+                <td>${u.phone}</td>
+                <td><span class="status-badge info">${u.role}</span></td>
+                <td>${u.suburb || 'N/A'}</td>
+                <td>${new Date(u.created_at).toLocaleDateString()}</td>
+            </tr>`).join('');
+        }
+
+        function renderWorkers(workers) {
+            const tbody = document.getElementById('workersTable');
+            if (!workers || workers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No workers yet</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = workers.slice(0, 20).map(w => {
+                const user = w.users || {};
+                return `<tr>
+                    <td><strong>${user.full_name || 'N/A'}</strong></td>
+                    <td>${w.trade}</td>
+                    <td>${w.years_experience || 0} yrs</td>
+                    <td>${user.suburb || 'N/A'}</td>
+                    <td>${w.is_premium ? '✅ Premium' : 'Free'}</td>
+                    <td><span class="status-badge ${w.is_active ? 'success' : 'danger'}">${w.is_active ? 'Active' : 'Inactive'}</span></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderHardware(hardware) {
+            const tbody = document.getElementById('hardwareTable');
+            if (!hardware || hardware.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No hardware shops yet</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = hardware.slice(0, 20).map(h => `<tr>
+                <td><strong>${h.full_name || 'N/A'}</strong></td>
+                <td>${h.phone}</td>
+                <td>${h.suburb || 'N/A'}</td>
+                <td><span class="status-badge info">Free</span></td>
+                <td>0</td>
+                <td><span class="status-badge ${h.is_verified ? 'success' : 'warning'}">${h.is_verified ? 'Verified' : 'Pending'}</span></td>
+            </tr>`).join('');
+        }
+
+        // ========================================
+        // SIGN OUT
+        // ========================================
+        document.getElementById('signOutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Sign out?')) {
+                sessionStorage.clear();
+                window.location.href = 'index.html';
+            }
+        });
+
+        // ========================================
+        // INIT
+        // ========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminData();
+        });
+    </script>
+</body>
+  </html>

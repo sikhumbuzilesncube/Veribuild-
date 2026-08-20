@@ -37,6 +37,21 @@
             font-size: 12px;
             font-weight: 600;
         }
+        .admin-header .logout-btn {
+            background: none;
+            border: 2px solid #dc3545;
+            color: #dc3545;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+        .admin-header .logout-btn:hover {
+            background: #dc3545;
+            color: #ffffff;
+        }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -84,6 +99,7 @@
             text-align: left;
             font-weight: 600;
             color: #1a1a2e;
+            border-bottom: 2px solid #dee2e6;
         }
         table td {
             padding: 10px 12px;
@@ -98,11 +114,13 @@
             border-radius: 30px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-block;
         }
         .status-badge.success { background: #d4edda; color: #155724; }
         .status-badge.warning { background: #fff3cd; color: #856404; }
         .status-badge.danger { background: #f8d7da; color: #721c24; }
         .status-badge.info { background: #d1ecf1; color: #0c5460; }
+        .status-badge.premium { background: #f0c040; color: #1a1a2e; }
         .btn-sm {
             padding: 4px 12px;
             font-size: 12px;
@@ -129,6 +147,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 14px;
         }
         .tab-bar button.active {
             border-color: #007bff;
@@ -153,13 +172,107 @@
             font-size: 48px;
             margin-bottom: 10px;
         }
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+        }
+        .loading-state .spinner {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .password-box {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .password-box .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .password-box h2 {
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .password-box p {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .password-box input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .password-box input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .password-box .btn-unlock {
+            width: 100%;
+            padding: 14px;
+            background: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .password-box .btn-unlock:hover {
+            background: #0056b3;
+        }
+        .password-box .error {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
         @media (max-width: 600px) {
             .admin-container { padding: 20px; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
+            .tab-bar button { font-size: 12px; padding: 6px 14px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- ================================ -->
+    <!-- PASSWORD OVERLAY -->
+    <!-- ================================ -->
+    <div class="password-overlay" id="passwordOverlay">
+        <div class="password-box">
+            <div class="icon">🛡️</div>
+            <h2>Admin Access</h2>
+            <p>Enter your password to access the dashboard.</p>
+            <input type="password" id="adminPasswordInput" placeholder="Enter password..." />
+            <button class="btn-unlock" id="unlockBtn">🔓 Unlock Dashboard</button>
+            <div class="error" id="passwordError">❌ Incorrect password. Please try again.</div>
+        </div>
+    </div>
 
     <!-- ================================ -->
     <!-- HEADER -->
@@ -171,24 +284,26 @@
         </div>
         <nav>
             <a href="index.html">Home</a>
-            <a href="admin-dashboard.html" class="btn-outline" style="border-color:#007bff; color:#007bff;">Admin</a>
-            <a href="#" class="btn-outline" id="signOutBtn">Sign Out</a>
+            <a href="#" class="btn-outline" style="border-color:#007bff; color:#007bff;">🛡️ Admin</a>
         </nav>
     </header>
 
     <!-- ================================ -->
     <!-- ADMIN DASHBOARD -->
     <!-- ================================ -->
-    <section class="section" style="background:#f8f9fa;">
-        <div class="admin-container">
+    <section class="section" style="background:#f8f9fa; min-height:80vh;">
+        <div class="admin-container" id="dashboardContainer" style="display:none;">
             <div class="admin-header">
                 <h1>🛡️ Admin Dashboard</h1>
-                <span class="badge">Gatekeeper AI</span>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <span class="badge">Gatekeeper AI</span>
+                    <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+                </div>
             </div>
 
             <!-- Loading State -->
-            <div id="loadingState" style="text-align:center; padding:40px;">
-                <div style="font-size:48px; animation: spin 1s linear infinite;">⏳</div>
+            <div class="loading-state" id="loadingState">
+                <div class="spinner">⏳</div>
                 <p style="color:#6c757d; margin-top:10px;">Loading dashboard...</p>
             </div>
 
@@ -237,12 +352,14 @@
                                     <th>Payer</th>
                                     <th>Status</th>
                                     <th>Date</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="paymentsTable">
                                 <tr>
-                                    <td colspan="7" style="text-align:center; color:#6c757d; padding:30px;">No payments yet</td>
+                                    <td colspan="6" class="empty-state">
+                                        <div class="icon">💳</div>
+                                        No payments yet
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -261,11 +378,15 @@
                                     <th>Role</th>
                                     <th>Suburb</th>
                                     <th>Joined</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody id="usersTable">
                                 <tr>
-                                    <td colspan="5" style="text-align:center; color:#6c757d; padding:30px;">No users yet</td>
+                                    <td colspan="6" class="empty-state">
+                                        <div class="icon">👤</div>
+                                        No users yet
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -289,7 +410,10 @@
                             </thead>
                             <tbody id="workersTable">
                                 <tr>
-                                    <td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No workers yet</td>
+                                    <td colspan="6" class="empty-state">
+                                        <div class="icon">🔧</div>
+                                        No workers yet
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -313,7 +437,10 @@
                             </thead>
                             <tbody id="hardwareTable">
                                 <tr>
-                                    <td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No hardware shops yet</td>
+                                    <td colspan="6" class="empty-state">
+                                        <div class="icon">🏪</div>
+                                        No hardware shops yet
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -337,7 +464,10 @@
                             </thead>
                             <tbody id="referralsTable">
                                 <tr>
-                                    <td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No referrals yet</td>
+                                    <td colspan="6" class="empty-state">
+                                        <div class="icon">📣</div>
+                                        No referrals yet
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -378,11 +508,70 @@
 
     <script>
         // ========================================
+        // ADMIN PASSWORD PROTECTION
+        // ========================================
+        const ADMIN_PASSWORD = 'VeriBuild2026!'; // ⚠️ CHANGE THIS TO SOMETHING STRONG!
+
+        // ========================================
         // SUPABASE CONFIGURATION
         // ========================================
         const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ========================================
+        // PASSWORD AUTHENTICATION
+        // ========================================
+        let isAuthenticated = false;
+
+        function checkAuth() {
+            const sessionKey = sessionStorage.getItem('adminSession');
+            if (sessionKey === 'authenticated') {
+                isAuthenticated = true;
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.getElementById('dashboardContainer').style.display = 'block';
+                loadAdminData();
+                return true;
+            }
+            return false;
+        }
+
+        document.getElementById('unlockBtn').addEventListener('click', function() {
+            const password = document.getElementById('adminPasswordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminSession', 'authenticated');
+                isAuthenticated = true;
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.getElementById('passwordError').style.display = 'none';
+                document.getElementById('dashboardContainer').style.display = 'block';
+                loadAdminData();
+            } else {
+                document.getElementById('passwordError').style.display = 'block';
+                document.getElementById('adminPasswordInput').value = '';
+                document.getElementById('adminPasswordInput').focus();
+            }
+        });
+
+        // Allow Enter key on password input
+        document.getElementById('adminPasswordInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('unlockBtn').click();
+            }
+        });
+
+        // ========================================
+        // LOGOUT
+        // ========================================
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.removeItem('adminSession');
+                isAuthenticated = false;
+                document.getElementById('dashboardContainer').style.display = 'none';
+                document.getElementById('passwordOverlay').style.display = 'flex';
+                document.getElementById('adminPasswordInput').value = '';
+                document.getElementById('passwordError').style.display = 'none';
+            }
+        });
 
         // ========================================
         // TAB SWITCHING
@@ -393,14 +582,21 @@
                 this.classList.add('active');
 
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+                const targetTab = document.getElementById('tab-' + this.dataset.tab);
+                if (targetTab) targetTab.classList.add('active');
             });
         });
 
         // ========================================
-        // LOAD DASHBOARD DATA
+        // LOAD ADMIN DATA
         // ========================================
         async function loadAdminData() {
+            const loadingState = document.getElementById('loadingState');
+            const dashboardContent = document.getElementById('dashboardContent');
+
+            loadingState.style.display = 'block';
+            dashboardContent.style.display = 'none';
+
             try {
                 // Fetch users
                 const { data: users, error: userError } = await supabase
@@ -418,7 +614,7 @@
                     .from('payments')
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(20);
+                    .limit(50);
 
                 if (!paymentError && payments) {
                     const totalRevenue = payments.reduce((sum, p) => sum + (p.status === 'completed' ? p.amount : 0), 0);
@@ -429,10 +625,20 @@
                     renderPayments(payments);
                 }
 
+                // Fetch BOQs
+                const { data: boqs, error: boqError } = await supabase
+                    .from('boq_history')
+                    .select('*')
+                    .eq('status', 'paid');
+
+                if (!boqError && boqs) {
+                    document.getElementById('statBOQs').textContent = boqs.length;
+                }
+
                 // Fetch workers
                 const { data: workers, error: workerError } = await supabase
                     .from('worker_profiles')
-                    .select('*, users(phone, full_name, suburb)')
+                    .select('*, users:worker_id(phone, full_name, suburb)')
                     .order('created_at', { ascending: false });
 
                 if (!workerError && workers) {
@@ -451,14 +657,14 @@
                 }
 
                 // Show dashboard
-                document.getElementById('loadingState').style.display = 'none';
-                document.getElementById('dashboardContent').style.display = 'block';
+                loadingState.style.display = 'none';
+                dashboardContent.style.display = 'block';
 
             } catch (error) {
                 console.error('Error loading admin data:', error);
-                document.getElementById('loadingState').innerHTML = `
+                loadingState.innerHTML = `
                     <div style="font-size:48px;">❌</div>
-                    <p style="color:#6c757d;">Error loading dashboard. Please refresh.</p>
+                    <p style="color:#6c757d; margin-top:10px;">Error loading dashboard. Please refresh.</p>
                 `;
             }
         }
@@ -469,21 +675,25 @@
         function renderPayments(payments) {
             const tbody = document.getElementById('paymentsTable');
             if (!payments || payments.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#6c757d; padding:30px;">No payments yet</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <div class="icon">💳</div>
+                            No payments yet
+                        </td>
+                    </tr>
+                `;
                 return;
             }
             tbody.innerHTML = payments.map(p => {
                 const statusClass = p.status === 'completed' ? 'success' : (p.status === 'pending' ? 'warning' : 'danger');
                 return `<tr>
-                    <td><strong>${p.reference}</strong></td>
-                    <td>$${p.amount.toFixed(2)}</td>
-                    <td>${p.type.replace('_', ' ').toUpperCase()}</td>
+                    <td><strong>${p.reference || 'N/A'}</strong></td>
+                    <td>$${p.amount ? p.amount.toFixed(2) : '0.00'}</td>
+                    <td>${p.type ? p.type.replace('_', ' ').toUpperCase() : 'N/A'}</td>
                     <td>${p.payer_name || 'N/A'}</td>
-                    <td><span class="status-badge ${statusClass}">${p.status}</span></td>
-                    <td>${new Date(p.created_at).toLocaleDateString()}</td>
-                    <td>
-                        <button class="btn-sm primary">View</button>
-                    </td>
+                    <td><span class="status-badge ${statusClass}">${p.status || 'N/A'}</span></td>
+                    <td>${p.created_at ? new Date(p.created_at).toLocaleDateString() : 'N/A'}</td>
                 </tr>`;
             }).join('');
         }
@@ -491,32 +701,49 @@
         function renderUsers(users) {
             const tbody = document.getElementById('usersTable');
             if (!users || users.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#6c757d; padding:30px;">No users yet</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <div class="icon">👤</div>
+                            No users yet
+                        </td>
+                    </tr>
+                `;
                 return;
             }
-            tbody.innerHTML = users.slice(0, 20).map(u => `<tr>
-                <td><strong>${u.full_name || 'N/A'}</strong></td>
-                <td>${u.phone}</td>
-                <td><span class="status-badge info">${u.role}</span></td>
-                <td>${u.suburb || 'N/A'}</td>
-                <td>${new Date(u.created_at).toLocaleDateString()}</td>
-            </tr>`).join('');
+            tbody.innerHTML = users.slice(0, 50).map(u => `
+                <tr>
+                    <td><strong>${u.full_name || 'N/A'}</strong></td>
+                    <td>${u.phone || 'N/A'}</td>
+                    <td><span class="status-badge info">${u.role || 'N/A'}</span></td>
+                    <td>${u.suburb || 'N/A'}</td>
+                    <td>${u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}</td>
+                    <td><span class="status-badge ${u.is_verified ? 'success' : 'warning'}">${u.is_verified ? 'Verified' : 'Pending'}</span></td>
+                </tr>
+            `).join('');
         }
 
         function renderWorkers(workers) {
             const tbody = document.getElementById('workersTable');
             if (!workers || workers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No workers yet</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <div class="icon">🔧</div>
+                            No workers yet
+                        </td>
+                    </tr>
+                `;
                 return;
             }
-            tbody.innerHTML = workers.slice(0, 20).map(w => {
+            tbody.innerHTML = workers.slice(0, 50).map(w => {
                 const user = w.users || {};
                 return `<tr>
                     <td><strong>${user.full_name || 'N/A'}</strong></td>
-                    <td>${w.trade}</td>
+                    <td>${w.trade || 'N/A'}</td>
                     <td>${w.years_experience || 0} yrs</td>
                     <td>${user.suburb || 'N/A'}</td>
-                    <td>${w.is_premium ? '✅ Premium' : 'Free'}</td>
+                    <td><span class="status-badge ${w.is_premium ? 'premium' : 'info'}">${w.is_premium ? '⭐ Premium' : 'Free'}</span></td>
                     <td><span class="status-badge ${w.is_active ? 'success' : 'danger'}">${w.is_active ? 'Active' : 'Inactive'}</span></td>
                 </tr>`;
             }).join('');
@@ -525,36 +752,39 @@
         function renderHardware(hardware) {
             const tbody = document.getElementById('hardwareTable');
             if (!hardware || hardware.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#6c757d; padding:30px;">No hardware shops yet</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <div class="icon">🏪</div>
+                            No hardware shops yet
+                        </td>
+                    </tr>
+                `;
                 return;
             }
-            tbody.innerHTML = hardware.slice(0, 20).map(h => `<tr>
-                <td><strong>${h.full_name || 'N/A'}</strong></td>
-                <td>${h.phone}</td>
-                <td>${h.suburb || 'N/A'}</td>
-                <td><span class="status-badge info">Free</span></td>
-                <td>0</td>
-                <td><span class="status-badge ${h.is_verified ? 'success' : 'warning'}">${h.is_verified ? 'Verified' : 'Pending'}</span></td>
-            </tr>`).join('');
+            tbody.innerHTML = hardware.slice(0, 50).map(h => `
+                <tr>
+                    <td><strong>${h.full_name || 'N/A'}</strong></td>
+                    <td>${h.phone || 'N/A'}</td>
+                    <td>${h.suburb || 'N/A'}</td>
+                    <td><span class="status-badge info">Free</span></td>
+                    <td>0</td>
+                    <td><span class="status-badge ${h.is_verified ? 'success' : 'warning'}">${h.is_verified ? 'Verified' : 'Pending'}</span></td>
+                </tr>
+            `).join('');
         }
-
-        // ========================================
-        // SIGN OUT
-        // ========================================
-        document.getElementById('signOutBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Sign out?')) {
-                sessionStorage.clear();
-                window.location.href = 'index.html';
-            }
-        });
 
         // ========================================
         // INIT
         // ========================================
         document.addEventListener('DOMContentLoaded', function() {
-            loadAdminData();
+            // Check if already authenticated
+            if (!checkAuth()) {
+                // Show password overlay
+                document.getElementById('passwordOverlay').style.display = 'flex';
+                document.getElementById('adminPasswordInput').focus();
+            }
         });
     </script>
 </body>
-  </html>
+</html>

@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         .admin-container {
             max-width: 1100px;
             margin: 0 auto;
@@ -204,6 +207,7 @@
             max-width: 400px;
             width: 90%;
             text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         .password-box .icon {
             font-size: 48px;
@@ -251,10 +255,21 @@
             margin-top: 10px;
             display: none;
         }
+        .password-box .brand {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .password-box .brand strong {
+            color: #007bff;
+        }
         @media (max-width: 600px) {
             .admin-container { padding: 20px; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
             .tab-bar button { font-size: 12px; padding: 6px 14px; }
+            .password-box { padding: 25px; }
         }
     </style>
 </head>
@@ -271,6 +286,9 @@
             <input type="password" id="adminPasswordInput" placeholder="Enter password..." />
             <button class="btn-unlock" id="unlockBtn">🔓 Unlock Dashboard</button>
             <div class="error" id="passwordError">❌ Incorrect password. Please try again.</div>
+            <div class="brand">
+                <strong>VeriBuild</strong> — A Product of <strong>Gatekeeper AI</strong>
+            </div>
         </div>
     </div>
 
@@ -510,7 +528,8 @@
         // ========================================
         // ADMIN PASSWORD PROTECTION
         // ========================================
-        const ADMIN_PASSWORD = 'Sabbaths@@@-1982!'; // ⚠️ CHANGE THIS TO SOMETHING STRONG!
+        // ⚠️ CHANGE THIS PASSWORD TO SOMETHING STRONG!
+        const ADMIN_PASSWORD = 'VeriBuild2026!';
 
         // ========================================
         // SUPABASE CONFIGURATION
@@ -520,58 +539,68 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ========================================
-        // PASSWORD AUTHENTICATION
+        // DOM ELEMENTS
         // ========================================
-        let isAuthenticated = false;
+        const passwordOverlay = document.getElementById('passwordOverlay');
+        const unlockBtn = document.getElementById('unlockBtn');
+        const adminPasswordInput = document.getElementById('adminPasswordInput');
+        const passwordError = document.getElementById('passwordError');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const logoutBtn = document.getElementById('logoutBtn');
 
+        // ========================================
+        // AUTHENTICATION FUNCTIONS
+        // ========================================
         function checkAuth() {
             const sessionKey = sessionStorage.getItem('adminSession');
             if (sessionKey === 'authenticated') {
-                isAuthenticated = true;
-                document.getElementById('passwordOverlay').style.display = 'none';
-                document.getElementById('dashboardContainer').style.display = 'block';
+                passwordOverlay.style.display = 'none';
+                dashboardContainer.style.display = 'block';
                 loadAdminData();
                 return true;
             }
             return false;
         }
 
-        document.getElementById('unlockBtn').addEventListener('click', function() {
-            const password = document.getElementById('adminPasswordInput').value;
+        function unlockDashboard() {
+            const password = adminPasswordInput.value;
             if (password === ADMIN_PASSWORD) {
                 sessionStorage.setItem('adminSession', 'authenticated');
-                isAuthenticated = true;
-                document.getElementById('passwordOverlay').style.display = 'none';
-                document.getElementById('passwordError').style.display = 'none';
-                document.getElementById('dashboardContainer').style.display = 'block';
+                passwordOverlay.style.display = 'none';
+                passwordError.style.display = 'none';
+                dashboardContainer.style.display = 'block';
+                adminPasswordInput.value = '';
                 loadAdminData();
             } else {
-                document.getElementById('passwordError').style.display = 'block';
-                document.getElementById('adminPasswordInput').value = '';
-                document.getElementById('adminPasswordInput').focus();
+                passwordError.style.display = 'block';
+                adminPasswordInput.value = '';
+                adminPasswordInput.focus();
             }
-        });
+        }
 
-        // Allow Enter key on password input
-        document.getElementById('adminPasswordInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('unlockBtn').click();
-            }
-        });
-
-        // ========================================
-        // LOGOUT
-        // ========================================
-        document.getElementById('logoutBtn').addEventListener('click', function() {
+        function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 sessionStorage.removeItem('adminSession');
-                isAuthenticated = false;
-                document.getElementById('dashboardContainer').style.display = 'none';
-                document.getElementById('passwordOverlay').style.display = 'flex';
-                document.getElementById('adminPasswordInput').value = '';
-                document.getElementById('passwordError').style.display = 'none';
+                dashboardContainer.style.display = 'none';
+                passwordOverlay.style.display = 'flex';
+                adminPasswordInput.value = '';
+                passwordError.style.display = 'none';
+                adminPasswordInput.focus();
+            }
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        unlockBtn.addEventListener('click', unlockDashboard);
+
+        adminPasswordInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                unlockDashboard();
             }
         });
+
+        logoutBtn.addEventListener('click', logout);
 
         // ========================================
         // TAB SWITCHING
@@ -779,12 +808,13 @@
         // ========================================
         document.addEventListener('DOMContentLoaded', function() {
             // Check if already authenticated
-            if (!checkAuth()) {
+            const isAuth = checkAuth();
+            if (!isAuth) {
                 // Show password overlay
-                document.getElementById('passwordOverlay').style.display = 'flex';
-                document.getElementById('adminPasswordInput').focus();
+                passwordOverlay.style.display = 'flex';
+                adminPasswordInput.focus();
             }
         });
     </script>
 </body>
-</html>
+    </html>

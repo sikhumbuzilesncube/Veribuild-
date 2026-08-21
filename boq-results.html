@@ -3,14 +3,266 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>VeriBuild - Your BOQ Results</title>
+    <title>VeriBuild - BOQ Results</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- QR Code Library -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <!-- jsPDF for PDF generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .boq-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .boq-container h2 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+        .boq-container .subtitle {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .boq-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
+        }
+        .boq-card h3 {
+            font-size: 18px;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .summary-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .summary-item .label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .summary-item .value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table th {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #1a1a2e;
+            border-bottom: 2px solid #dee2e6;
+        }
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+            color: #495057;
+        }
+        table tr:last-child td {
+            border-bottom: none;
+        }
+        table tfoot td {
+            font-weight: 700;
+            border-top: 2px solid #dee2e6;
+            padding-top: 12px;
+        }
+        .total-row td {
+            font-size: 16px;
+            color: #007bff;
+        }
+        .engineer-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-left: 4px solid #007bff;
+            transition: all 0.3s;
+        }
+        .engineer-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .engineer-card .engineer-info {
+            flex: 1;
+        }
+        .engineer-card .engineer-info h4 {
+            margin: 0;
+            font-size: 16px;
+            color: #1a1a2e;
+        }
+        .engineer-card .engineer-info p {
+            margin: 4px 0 0 0;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .engineer-card .engineer-info .rating {
+            color: #f0c040;
+            font-size: 14px;
+        }
+        .engineer-card .engineer-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .engineer-card .engineer-actions .badge-premium {
+            background: #f0c040;
+            color: #1a1a2e;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .btn-request {
+            padding: 8px 20px;
+            background: #28a745;
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .btn-request:hover {
+            background: #1e7e34;
+            transform: translateY(-2px);
+        }
+        .btn-request:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-request.requested {
+            background: #6c757d;
+        }
+        .engineer-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .engineer-warning .icon {
+            font-size: 28px;
+        }
+        .engineer-warning p {
+            margin: 0;
+            font-size: 14px;
+            color: #856404;
+        }
+        .no-engineers {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+        .no-engineers .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .btn-group .btn {
+            padding: 10px 24px;
+            font-size: 14px;
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-group .btn-primary {
+            background: #007bff;
+            color: #ffffff;
+        }
+        .btn-group .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        .btn-group .btn-secondary {
+            background: #28a745;
+            color: #ffffff;
+        }
+        .btn-group .btn-secondary:hover {
+            background: #1e7e34;
+            transform: translateY(-2px);
+        }
+        .btn-group .btn-outline {
+            background: transparent;
+            color: #1a1a2e;
+            border: 2px solid #dee2e6;
+        }
+        .btn-group .btn-outline:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        .loading-spinner .spinner {
+            font-size: 32px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #qrCodeContainer {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+        @media (max-width: 600px) {
+            .boq-container { padding: 20px; }
+            .engineer-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .summary-grid { grid-template-columns: 1fr 1fr; }
+            .btn-group { flex-direction: column; }
+            .btn-group .btn { width: 100%; text-align: center; }
+        }
+    </style>
 </head>
 <body>
 
@@ -20,146 +272,166 @@
     <header>
         <div class="logo">
             <h1>VeriBuild</h1>
-            <span class="tagline">Verified Building Solutions</span>
+            <span class="tagline">A Product of Gatekeeper AI</span>
         </div>
         <nav>
             <a href="index.html">Home</a>
-            <a href="#" id="logoutBtn" class="btn-outline">Logout</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="refund.html">Refund</a>
         </nav>
     </header>
 
     <!-- ================================ -->
     <!-- BOQ RESULTS -->
     <!-- ================================ -->
-    <section class="section">
-        <h2>📊 Your Bill of Quantities</h2>
-        <p>Here is your detailed material list and cost estimate.</p>
-
+    <section class="section" style="background:#f8f9fa;">
         <div class="boq-container">
+            <h2>📊 Your Bill of Quantities</h2>
+            <p class="subtitle">Here is your detailed material list and cost estimate.</p>
 
-            <!-- ==================== -->
-            <!-- PROJECT SUMMARY -->
-            <!-- ==================== -->
-            <div class="boq-card">
-                <h3>📋 Project Summary</h3>
-                <div class="summary-grid">
-                    <div class="summary-item">
-                        <span class="label">Plan Type</span>
-                        <span class="value" id="planType">Residential</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="label">Floor Area</span>
-                        <span class="value" id="floorArea">120 m²</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="label">Rooms</span>
-                        <span class="value" id="numRooms">4</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="label">Brick Type</span>
-                        <span class="value" id="brickType">Stock Brick</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="label">Wall Thickness</span>
-                        <span class="value" id="wallThickness">230mm</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="label">Roof Type</span>
-                        <span class="value" id="roofType">Zinc</span>
-                    </div>
-                </div>
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-spinner">
+                <div class="spinner">⏳</div>
+                <p>Loading your BOQ results...</p>
             </div>
 
-            <!-- ==================== -->
-            <!-- MATERIAL QUANTITIES -->
-            <!-- ==================== -->
-            <div class="boq-card">
-                <h3>🧱 Material Quantities</h3>
-                <div class="table-responsive">
-                    <table class="boq-table">
-                        <thead>
-                            <tr>
-                                <th>Material</th>
-                                <th>Quantity</th>
-                                <th>Unit</th>
-                            </tr>
-                        </thead>
-                        <tbody id="materialQuantities">
-                            <!-- Populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- Results Content -->
+            <div id="resultsContent" style="display:none;">
 
-            <!-- ==================== -->
-            <!-- COST BREAKDOWN -->
-            <!-- ==================== -->
-            <div class="boq-card">
-                <h3>💰 Cost Breakdown</h3>
-                <div class="table-responsive">
-                    <table class="boq-table">
-                        <thead>
-                            <tr>
-                                <th>Material</th>
-                                <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
-                                <th>Supplier</th>
-                            </tr>
-                        </thead>
-                        <tbody id="costBreakdown">
-                            <!-- Populated by JavaScript -->
-                        </tbody>
-                        <tfoot>
-                            <tr class="total-row">
-                                <td colspan="3"><strong>Total Material Cost</strong></td>
-                                <td><strong id="totalCost">$0.00</strong></td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ==================== -->
-            <!-- HARDWARE SOURCING -->
-            <!-- ==================== -->
-            <div class="boq-card">
-                <h3>🛒 Hardware Sourcing (Cheapest Prices)</h3>
-                <p>Buy from these local shops to get the best prices.</p>
-                <div id="hardwareList">
-                    <!-- Populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- ==================== -->
-            <!-- WORKER RECOMMENDATIONS -->
-            <!-- ==================== -->
-            <div class="boq-card">
-                <h3>👷 Recommended Skilled Workers</h3>
-                <p>These workers are available in your area.</p>
-                <div id="workerList">
-                    <!-- Populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- ==================== -->
-            <!-- QR CODE & ACTIONS -->
-            <!-- ==================== -->
-            <div class="boq-card">
-                <h3>📱 Share or Download</h3>
-                <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center;">
-                    <div id="qrCodeContainer" style="background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                        <!-- QR Code generated here -->
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <button id="downloadPdfBtn" class="btn-primary">📄 Download BOQ PDF</button>
-                        <button id="shareBtn" class="btn-secondary">📤 Share via WhatsApp</button>
-                        <button id="newBoqBtn" class="btn-outline">🔄 New BOQ</button>
+                <!-- ================================ -->
+                <!-- PROJECT SUMMARY -->
+                <!-- ================================ -->
+                <div class="boq-card">
+                    <h3>📋 Project Summary</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="label">Plan Type</div>
+                            <div class="value" id="planType">Residential</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">Floor Area</div>
+                            <div class="value" id="floorArea">120 m²</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">Rooms</div>
+                            <div class="value" id="numRooms">4</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">Brick Type</div>
+                            <div class="value" id="brickType">Stock Brick</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">Wall Thickness</div>
+                            <div class="value" id="wallThickness">230mm</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">Roof Type</div>
+                            <div class="value" id="roofType">Zinc</div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+                <!-- ================================ -->
+                <!-- MATERIAL QUANTITIES -->
+                <!-- ================================ -->
+                <div class="boq-card">
+                    <h3>🧱 Material Quantities</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="materialQuantities">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ================================ -->
+                <!-- COST BREAKDOWN -->
+                <!-- ================================ -->
+                <div class="boq-card">
+                    <h3>💰 Cost Breakdown</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                    <th>Supplier</th>
+                                </tr>
+                            </thead>
+                            <tbody id="costBreakdown">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="3"><strong>Total Material Cost</strong></td>
+                                    <td><strong id="totalCost">$0.00</strong></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ================================ -->
+                <!-- HARDWARE SOURCING -->
+                <!-- ================================ -->
+                <div class="boq-card">
+                    <h3>🛒 Hardware Sourcing (Cheapest Prices)</h3>
+                    <p style="font-size:14px; color:#6c757d; margin-bottom:15px;">Buy from these local shops to get the best prices.</p>
+                    <div id="hardwareList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- ================================ -->
+                <!-- STRUCTURAL ENGINEER (Conditional) -->
+                <!-- ================================ -->
+                <div class="boq-card" id="engineerSection" style="display:none;">
+                    <h3>📐 Structural Engineer Required</h3>
+                    
+                    <div class="engineer-warning">
+                        <div class="icon">⚠️</div>
+                        <p>
+                            <strong>This project contains structural steel elements.</strong><br />
+                            By law, a registered structural engineer must design and certify these elements before council approval.
+                            Request a quote from a verified engineer below.
+                        </p>
+                    </div>
+
+                    <div id="engineerList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- ================================ -->
+                <!-- QR CODE & ACTIONS -->
+                <!-- ================================ -->
+                <div class="boq-card">
+                    <h3>📱 Share or Download</h3>
+                    <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;">
+                        <div id="qrCodeContainer">
+                            <!-- QR Code generated here -->
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <button id="downloadPdfBtn" class="btn-primary" style="padding:12px 28px; border-radius:30px; border:none; font-weight:600; cursor:pointer;">📄 Download BOQ PDF</button>
+                            <button id="shareBtn" class="btn-secondary" style="padding:12px 28px; border-radius:30px; border:none; font-weight:600; cursor:pointer;">📤 Share via WhatsApp</button>
+                            <a href="index.html" class="btn-outline" style="padding:12px 28px; border-radius:30px; text-decoration:none; text-align:center; font-weight:600;">🔄 New BOQ</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </section>
 
@@ -170,24 +442,578 @@
         <div class="footer-content">
             <div class="footer-logo">
                 <h2>VeriBuild</h2>
-                <p>Verified Building Solutions</p>
+                <p>A Product of Gatekeeper AI</p>
             </div>
             <div class="footer-links">
                 <a href="index.html">Home</a>
-                <a href="#">About</a>
-                <a href="#">Contact</a>
+                <a href="terms.html">Terms</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="refund.html">Refund</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
             </div>
             <div class="footer-contact">
-                <p>📍 Bulawayo, Zimbabwe</p>
                 <p>📞 +263 77 780 3517</p>
                 <p>✉️ admin@gatekeeperai.co.zw</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 VeriBuild. All rights reserved.</p>
+            <p>Built with ❤️ from Zimbabwe for the African market.</p>
+            <p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI. All rights reserved.</p>
         </div>
     </footer>
 
-    <script src="boq-results.js"></script>
+    <script>
+        // ========================================
+        // SUPABASE CONFIGURATION
+        // ========================================
+        const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ========================================
+        // SAMPLE BOQ DATA (Replace with real data)
+        // ========================================
+        const boqData = {
+            planType: 'Residential',
+            floorArea: 120,
+            numRooms: 4,
+            brickType: 'Stock Brick',
+            wallThickness: '230mm',
+            roofType: 'Zinc',
+            hasStructuralSteel: true, // ← This triggers the engineer section
+            quantities: {
+                bricks: { qty: 7800, unit: 'units' },
+                cementMortar: { qty: 70, unit: 'bags' },
+                pitSand: { qty: 12, unit: 'tonnes' },
+                riverSand: { qty: 6, unit: 'tonnes' },
+                plasterCement: { qty: 36, unit: 'bags' },
+                roofSheets: { qty: 36, unit: 'sheets' },
+                screedCement: { qty: 18, unit: 'bags' },
+                screedSand: { qty: 2.4, unit: 'tonnes' },
+                internalPaint: { qty: 48, unit: 'liters' },
+                externalPaint: { qty: 36, unit: 'liters' },
+                rebar: { qty: 144, unit: 'kg' },
+                lintels: { qty: 18, unit: 'meters' }
+            },
+            hardwarePrices: {
+                bricks: { price: 0.08, supplier: 'City Hardware', phone: '0772 123 456' },
+                cementMortar: { price: 9.50, supplier: 'Ncube Hardware', phone: '0773 789 012' },
+                pitSand: { price: 75, supplier: 'Build-it', phone: '0712 345 678' },
+                riverSand: { price: 70, supplier: 'Build-it', phone: '0712 345 678' },
+                plasterCement: { price: 9.50, supplier: 'Ncube Hardware', phone: '0773 789 012' },
+                roofSheets: { price: 15, supplier: 'Delta Supplies', phone: '0789 012 345' },
+                screedCement: { price: 9.50, supplier: 'Ncube Hardware', phone: '0773 789 012' },
+                screedSand: { price: 70, supplier: 'Build-it', phone: '0712 345 678' },
+                internalPaint: { price: 8, supplier: 'Paints & More', phone: '0774 567 890' },
+                externalPaint: { price: 8, supplier: 'Paints & More', phone: '0774 567 890' },
+                rebar: { price: 1.10, supplier: 'City Hardware', phone: '0772 123 456' },
+                lintels: { price: 25, supplier: 'Ncube Hardware', phone: '0773 789 012' }
+            },
+            totalCost: 0
+        };
+
+        // ========================================
+        // ENGINEER DATA (Fetched from Supabase)
+        // ========================================
+        let engineers = [];
+        let leadRequests = {};
+
+        // ========================================
+        // 1. POPULATE MATERIAL QUANTITIES
+        // ========================================
+        function populateQuantities() {
+            const tbody = document.getElementById('materialQuantities');
+            const q = boqData.quantities;
+            
+            const materials = [
+                { name: 'Bricks (Stock)', qty: q.bricks.qty, unit: q.bricks.unit },
+                { name: 'Cement (Mortar)', qty: q.cementMortar.qty, unit: q.cementMortar.unit },
+                { name: 'Pit Sand', qty: q.pitSand.qty, unit: q.pitSand.unit },
+                { name: 'River Sand (Plaster)', qty: q.riverSand.qty, unit: q.riverSand.unit },
+                { name: 'Cement (Plaster)', qty: q.plasterCement.qty, unit: q.plasterCement.unit },
+                { name: 'Zinc Sheets', qty: q.roofSheets.qty, unit: q.roofSheets.unit },
+                { name: 'Cement (Screed)', qty: q.screedCement.qty, unit: q.screedCement.unit },
+                { name: 'Sand (Screed)', qty: q.screedSand.qty, unit: q.screedSand.unit },
+                { name: 'Paint (Internal)', qty: q.internalPaint.qty, unit: q.internalPaint.unit },
+                { name: 'Paint (External)', qty: q.externalPaint.qty, unit: q.externalPaint.unit },
+                { name: 'Rebar (10mm)', qty: q.rebar.qty, unit: q.rebar.unit },
+                { name: 'Steel Lintels', qty: q.lintels.qty, unit: q.lintels.unit }
+            ];
+            
+            materials.forEach(m => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${m.name}</strong></td>
+                    <td>${m.qty.toLocaleString()}</td>
+                    <td>${m.unit}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ========================================
+        // 2. POPULATE COST BREAKDOWN
+        // ========================================
+        function populateCostBreakdown() {
+            const tbody = document.getElementById('costBreakdown');
+            const q = boqData.quantities;
+            const p = boqData.hardwarePrices;
+            let total = 0;
+            
+            const items = [
+                { name: 'Bricks (Stock)', qty: q.bricks.qty, unit: q.bricks.unit, price: p.bricks.price, supplier: p.bricks.supplier },
+                { name: 'Cement (Mortar)', qty: q.cementMortar.qty, unit: q.cementMortar.unit, price: p.cementMortar.price, supplier: p.cementMortar.supplier },
+                { name: 'Pit Sand', qty: q.pitSand.qty, unit: q.pitSand.unit, price: p.pitSand.price, supplier: p.pitSand.supplier },
+                { name: 'River Sand', qty: q.riverSand.qty, unit: q.riverSand.unit, price: p.riverSand.price, supplier: p.riverSand.supplier },
+                { name: 'Cement (Plaster)', qty: q.plasterCement.qty, unit: q.plasterCement.unit, price: p.plasterCement.price, supplier: p.plasterCement.supplier },
+                { name: 'Zinc Sheets', qty: q.roofSheets.qty, unit: q.roofSheets.unit, price: p.roofSheets.price, supplier: p.roofSheets.supplier },
+                { name: 'Cement (Screed)', qty: q.screedCement.qty, unit: q.screedCement.unit, price: p.screedCement.price, supplier: p.screedCement.supplier },
+                { name: 'Sand (Screed)', qty: q.screedSand.qty, unit: q.screedSand.unit, price: p.screedSand.price, supplier: p.screedSand.supplier },
+                { name: 'Paint (Internal)', qty: q.internalPaint.qty, unit: q.internalPaint.unit, price: p.internalPaint.price, supplier: p.internalPaint.supplier },
+                { name: 'Paint (External)', qty: q.externalPaint.qty, unit: q.externalPaint.unit, price: p.externalPaint.price, supplier: p.externalPaint.supplier },
+                { name: 'Rebar (10mm)', qty: q.rebar.qty, unit: q.rebar.unit, price: p.rebar.price, supplier: p.rebar.supplier },
+                { name: 'Steel Lintels', qty: q.lintels.qty, unit: q.lintels.unit, price: p.lintels.price, supplier: p.lintels.supplier }
+            ];
+            
+            items.forEach(item => {
+                const lineTotal = item.qty * item.price;
+                total += lineTotal;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.qty.toLocaleString()} ${item.unit}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td><strong>$${lineTotal.toFixed(2)}</strong></td>
+                    <td>${item.supplier}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            boqData.totalCost = total;
+            document.getElementById('totalCost').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // ========================================
+        // 3. POPULATE HARDWARE LIST
+        // ========================================
+        function populateHardwareList() {
+            const container = document.getElementById('hardwareList');
+            const p = boqData.hardwarePrices;
+            
+            const suppliers = {};
+            Object.values(p).forEach(item => {
+                if (!suppliers[item.supplier]) {
+                    suppliers[item.supplier] = {
+                        name: item.supplier,
+                        phone: item.phone,
+                        products: []
+                    };
+                }
+            });
+            
+            let html = '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:10px;">';
+            Object.keys(suppliers).forEach(name => {
+                html += `
+                    <div style="background:#f8f9fa; padding:15px; border-radius:8px; text-align:center;">
+                        <strong>${name}</strong>
+                        <p style="font-size:14px; color:#6c757d;">📞 ${suppliers[name].phone}</p>
+                        <a href="tel:${suppliers[name].phone}" class="btn-outline" style="font-size:12px; padding:4px 12px; text-decoration:none;">Call Shop</a>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // ========================================
+        // 4. FETCH ENGINEERS FROM SUPABASE
+        // ========================================
+        async function fetchEngineers() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select(`
+                        id,
+                        full_name,
+                        phone,
+                        suburb,
+                        engineer_profiles (
+                            id,
+                            company_name,
+                            registration_number,
+                            years_experience,
+                            is_premium,
+                            average_rating
+                        )
+                    `)
+                    .eq('role', 'engineer')
+                    .eq('is_verified', true);
+
+                if (error) throw error;
+
+                // Filter only engineers with profiles
+                const validEngineers = data.filter(u => u.engineer_profiles && u.engineer_profiles.length > 0);
+                
+                engineers = validEngineers.map(u => ({
+                    id: u.id,
+                    name: u.full_name || 'Engineer',
+                    phone: u.phone || 'N/A',
+                    suburb: u.suburb || 'N/A',
+                    company: u.engineer_profiles[0]?.company_name || 'Engineering Firm',
+                    experience: u.engineer_profiles[0]?.years_experience || 0,
+                    is_premium: u.engineer_profiles[0]?.is_premium || false,
+                    rating: u.engineer_profiles[0]?.average_rating || 0
+                }));
+
+                return engineers;
+
+            } catch (error) {
+                console.error('Error fetching engineers:', error);
+                return [];
+            }
+        }
+
+        // ========================================
+        // 5. RENDER ENGINEERS
+        // ========================================
+        function renderEngineers(engineersList) {
+            const container = document.getElementById('engineerList');
+
+            if (!engineersList || engineersList.length === 0) {
+                container.innerHTML = `
+                    <div class="no-engineers">
+                        <div class="icon">📐</div>
+                        <h4>No Engineers Available</h4>
+                        <p>No registered engineers are available in your area. Please check back later.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Show only premium engineers (or all if no premium)
+            const premiumEngineers = engineersList.filter(e => e.is_premium);
+            const displayEngineers = premiumEngineers.length > 0 ? premiumEngineers : engineersList;
+
+            let html = '';
+            displayEngineers.forEach(eng => {
+                const stars = '⭐'.repeat(Math.min(5, Math.round(eng.rating || 0))) + '☆'.repeat(Math.max(0, 5 - Math.round(eng.rating || 0)));
+                const isRequested = leadRequests[eng.id] || false;
+
+                html += `
+                    <div class="engineer-card" id="engineer-${eng.id}">
+                        <div class="engineer-info">
+                            <h4>${eng.name} ${eng.is_premium ? '<span class="badge-premium">⭐ Premium</span>' : ''}</h4>
+                            <p>${eng.company} · ${eng.experience} years experience</p>
+                            <p>📍 ${eng.suburb} · 📞 ${eng.phone}</p>
+                            <div class="rating">${stars} (${eng.rating.toFixed(1) || 'New'})</div>
+                        </div>
+                        <div class="engineer-actions">
+                            <button class="btn-request ${isRequested ? 'requested' : ''}" 
+                                    data-engineer-id="${eng.id}"
+                                    ${isRequested ? 'disabled' : ''}>
+                                ${isRequested ? '✅ Requested' : '📞 Request a Quote'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            // Add event listeners to "Request a Quote" buttons
+            document.querySelectorAll('.btn-request').forEach(btn => {
+                if (!btn.disabled) {
+                    btn.addEventListener('click', function() {
+                        const engineerId = this.dataset.engineerId;
+                        requestQuote(engineerId);
+                    });
+                }
+            });
+        }
+
+        // ========================================
+        // 6. REQUEST A QUOTE
+        // ========================================
+        async function requestQuote(engineerId) {
+            const engineer = engineers.find(e => e.id === engineerId);
+            if (!engineer) {
+                alert('❌ Engineer not found.');
+                return;
+            }
+
+            // Check if client is logged in (for MVP, use a placeholder)
+            const clientPhone = sessionStorage.getItem('clientPhone') || '+263771234567';
+            const clientName = sessionStorage.getItem('clientName') || 'Client';
+
+            if (!confirm(`Request a quote from ${engineer.name}? They will contact you with their structural design quote.`)) {
+                return;
+            }
+
+            const button = document.querySelector(`.btn-request[data-engineer-id="${engineerId}"]`);
+            button.textContent = '⏳ Sending...';
+            button.disabled = true;
+
+            try {
+                // Create lead in Supabase
+                const leadData = {
+                    client_id: null, // Replace with actual user ID when auth is ready
+                    engineer_id: engineerId,
+                    boq_id: null, // Replace with actual BOQ ID
+                    status: 'pending',
+                    client_message: `Client requesting structural quote for BOQ project.`,
+                    lead_fee_charged: 5.00,
+                    payment_status: 'pending',
+                    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+                };
+
+                const { data, error } = await supabase
+                    .from('engineer_leads')
+                    .insert([leadData])
+                    .select();
+
+                if (error) throw error;
+
+                // Store the lead
+                leadRequests[engineerId] = true;
+
+                // Update button
+                button.textContent = '✅ Requested';
+                button.className = 'btn-request requested';
+                button.disabled = true;
+
+                // Show success message
+                alert(`✅ Quote request sent to ${engineer.name}! They will contact you within 24 hours.`);
+
+                // TODO: Send notification to engineer (email/SMS via Edge Function)
+
+            } catch (error) {
+                console.error('Error requesting quote:', error);
+                alert('❌ Failed to send request. Please try again.');
+                button.textContent = '📞 Request a Quote';
+                button.disabled = false;
+            }
+        }
+
+        // ========================================
+        // 7. GENERATE QR CODE
+        // ========================================
+        function generateQRCode() {
+            const container = document.getElementById('qrCodeContainer');
+            const url = window.location.href;
+            
+            container.innerHTML = '';
+            
+            const qr = new QRCode(container, {
+                text: url,
+                width: 128,
+                height: 128,
+                colorDark: '#1a1a2e',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            const label = document.createElement('p');
+            label.textContent = 'Scan to view this BOQ online';
+            label.style.fontSize = '12px';
+            label.style.color = '#6c757d';
+            label.style.marginTop = '8px';
+            container.appendChild(label);
+        }
+
+        // ========================================
+        // 8. GENERATE PDF
+        // ========================================
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const q = boqData.quantities;
+            const p = boqData.hardwarePrices;
+            let y = 20;
+
+            // --- Cover Page ---
+            doc.setFontSize(24);
+            doc.setTextColor('#1a1a2e');
+            doc.text('VeriBuild', 105, y, { align: 'center' });
+            y += 10;
+
+            doc.setFontSize(14);
+            doc.setTextColor('#6c757d');
+            doc.text('Verified Building Solutions', 105, y, { align: 'center' });
+            y += 20;
+
+            doc.setFontSize(18);
+            doc.setTextColor('#007bff');
+            doc.text('BILL OF QUANTITIES', 105, y, { align: 'center' });
+            y += 15;
+
+            doc.setFontSize(12);
+            doc.setTextColor('#333');
+            doc.text(`Prepared for: Client`, 20, y);
+            y += 8;
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, y);
+            y += 8;
+            doc.text(`Plan Type: ${boqData.planType}`, 20, y);
+            y += 8;
+            doc.text(`Floor Area: ${boqData.floorArea} m²`, 20, y);
+            y += 8;
+            doc.text(`Rooms: ${boqData.numRooms}`, 20, y);
+            y += 20;
+
+            // --- Material Quantities ---
+            doc.setFontSize(16);
+            doc.setTextColor('#1a1a2e');
+            doc.text('1. MATERIAL QUANTITIES', 20, y);
+            y += 10;
+
+            doc.setFontSize(10);
+            doc.text('Material', 20, y);
+            doc.text('Qty', 140, y);
+            doc.text('Unit', 180, y);
+            y += 6;
+            doc.line(20, y, 190, y);
+            y += 4;
+
+            const materials = [
+                ['Bricks (Stock)', q.bricks.qty, q.bricks.unit],
+                ['Cement (Mortar)', q.cementMortar.qty, q.cementMortar.unit],
+                ['Pit Sand', q.pitSand.qty, q.pitSand.unit],
+                ['River Sand (Plaster)', q.riverSand.qty, q.riverSand.unit],
+                ['Cement (Plaster)', q.plasterCement.qty, q.plasterCement.unit],
+                ['Zinc Sheets', q.roofSheets.qty, q.roofSheets.unit],
+                ['Cement (Screed)', q.screedCement.qty, q.screedCement.unit],
+                ['Sand (Screed)', q.screedSand.qty, q.screedSand.unit],
+                ['Paint (Internal)', q.internalPaint.qty, q.internalPaint.unit],
+                ['Paint (External)', q.externalPaint.qty, q.externalPaint.unit],
+                ['Rebar (10mm)', q.rebar.qty, q.rebar.unit],
+                ['Steel Lintels', q.lintels.qty, q.lintels.unit]
+            ];
+
+            materials.forEach(m => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                doc.text(m[0], 20, y);
+                doc.text(String(m[1]), 140, y);
+                doc.text(m[2], 180, y);
+                y += 6;
+            });
+
+            y += 10;
+
+            // --- Cost Breakdown ---
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.setFontSize(16);
+            doc.setTextColor('#1a1a2e');
+            doc.text('2. COST BREAKDOWN', 20, y);
+            y += 10;
+
+            doc.setFontSize(10);
+            doc.text('Material', 20, y);
+            doc.text('Qty', 80, y);
+            doc.text('Unit Price', 120, y);
+            doc.text('Total', 160, y);
+            y += 6;
+            doc.line(20, y, 190, y);
+            y += 4;
+
+            let total = 0;
+            const costItems = [
+                ['Bricks', q.bricks.qty, p.bricks.price],
+                ['Cement (Mortar)', q.cementMortar.qty, p.cementMortar.price],
+                ['Pit Sand', q.pitSand.qty, p.pitSand.price],
+                ['River Sand', q.riverSand.qty, p.riverSand.price],
+                ['Cement (Plaster)', q.plasterCement.qty, p.plasterCement.price],
+                ['Zinc Sheets', q.roofSheets.qty, p.roofSheets.price],
+                ['Cement (Screed)', q.screedCement.qty, p.screedCement.price],
+                ['Sand (Screed)', q.screedSand.qty, p.screedSand.price],
+                ['Paint (Internal)', q.internalPaint.qty, p.internalPaint.price],
+                ['Paint (External)', q.externalPaint.qty, p.externalPaint.price],
+                ['Rebar', q.rebar.qty, p.rebar.price],
+                ['Lintels', q.lintels.qty, p.lintels.price]
+            ];
+
+            costItems.forEach(item => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                const lineTotal = item[1] * item[2];
+                total += lineTotal;
+                doc.text(item[0], 20, y);
+                doc.text(String(item[1]), 80, y);
+                doc.text(`$${item[2].toFixed(2)}`, 120, y);
+                doc.text(`$${lineTotal.toFixed(2)}`, 160, y);
+                y += 6;
+            });
+
+            y += 6;
+            doc.line(20, y, 190, y);
+            y += 4;
+            doc.setFontSize(12);
+            doc.setTextColor('#007bff');
+            doc.text(`TOTAL MATERIAL COST: $${total.toFixed(2)}`, 20, y);
+            y += 15;
+
+            // --- Footer ---
+            doc.setFontSize(10);
+            doc.setTextColor('#6c757d');
+            doc.text('Generated by VeriBuild - Verified Building Solutions', 105, 285, { align: 'center' });
+            doc.text('Bulawayo, Zimbabwe | www.veribuild.co.zw', 105, 290, { align: 'center' });
+
+            // --- Save PDF ---
+            doc.save('veribuild-boq.pdf');
+        }
+
+        // ========================================
+        // 9. SHARE VIA WHATSAPP
+        // ========================================
+        function shareViaWhatsApp() {
+            const url = window.location.href;
+            const message = `📊 My VeriBuild BOQ\n\nTotal Material Cost: $${boqData.totalCost.toFixed(2)}\nFloor Area: ${boqData.floorArea} m²\nRooms: ${boqData.numRooms}\n\nView my full BOQ here: ${url}`;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // ========================================
+        // 10. INIT
+        // ========================================
+        async function init() {
+            // Show loading
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('resultsContent').style.display = 'none';
+
+            // Populate project summary
+            document.getElementById('planType').textContent = boqData.planType;
+            document.getElementById('floorArea').textContent = `${boqData.floorArea} m²`;
+            document.getElementById('numRooms').textContent = boqData.numRooms;
+            document.getElementById('brickType').textContent = boqData.brickType;
+            document.getElementById('wallThickness').textContent = boqData.wallThickness;
+            document.getElementById('roofType').textContent = boqData.roofType;
+
+            populateQuantities();
+            populateCostBreakdown();
+            populateHardwareList();
+
+            // Show/hide engineer section based on structural steel detection
+            if (boqData.hasStructuralSteel) {
+                document.getElementById('engineerSection').style.display = 'block';
+                
+                // Fetch and render engineers
+                const engineersList = await fetchEngineers();
+                renderEngineers(engineersList);
+            }
+
+            generateQRCode();
+
+            // Event listeners
+            document.getElementById('downloadPdfBtn').addEventListener('click', generatePDF);
+            document.getElementById('shareBtn').addEventListener('click', shareViaWhatsApp);
+
+            // Hide loading, show results
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('resultsContent').style.display = 'block';
+
+            console.log('✅ BOQ Results page loaded successfully!');
+        }
+
+        // Run when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
             </html>

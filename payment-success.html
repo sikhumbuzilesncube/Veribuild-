@@ -172,6 +172,16 @@
                 actionButton.textContent = '🏪 Go to Dashboard';
                 actionButton.href = 'hardware-dashboard.html';
             }
+        } else if (type === 'engineer_subscription') {
+            const engineerPlan = sessionStorage.getItem('engineerPlan') || 'monthly';
+            const engineerCurrency = sessionStorage.getItem('engineerCurrency') || 'usd';
+            const planText = engineerPlan === 'monthly' ? 'Monthly' : 'Yearly';
+            const currencySymbol = engineerCurrency === 'usd' ? '$' : 'ZWG ';
+            subtitleElement.textContent = `Your ${planText} Engineer subscription is now active! You can now receive client structural leads.`;
+            if (actionButton) {
+                actionButton.textContent = '📐 Go to Dashboard';
+                actionButton.href = 'engineer-dashboard.html';
+            }
         } else if (type === 'boq') {
             subtitleElement.textContent = 'Your BOQ is being generated and will be ready in a few moments.';
             if (actionButton) {
@@ -189,6 +199,7 @@
         // Clear session storage after displaying (to prevent reuse)
         // sessionStorage.clear(); // Uncomment if you want to clear after use
     });
-    </script>
+                              </script>
+    
 </body>
               </html>

@@ -18,19 +18,26 @@
         }
         .upload-container h1 { font-size: 24px; color: #1a1a2e; margin-bottom: 5px; }
         .upload-container .subtitle { color: #6c757d; font-size: 14px; margin-bottom: 25px; }
-        .drop-zone {
+        .file-input-wrapper {
+            background: #f8f9fa;
             border: 2px dashed #dee2e6;
             border-radius: 12px;
-            padding: 40px 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: #f8f9fa;
+            padding: 30px 20px;
             margin-bottom: 20px;
         }
-        .drop-zone:hover { border-color: #007bff; background: #e9f7fe; }
-        .drop-zone .icon { font-size: 48px; display: block; margin-bottom: 10px; }
-        .drop-zone p { margin: 0; color: #6c757d; }
-        .drop-zone .sub-text { font-size: 12px; color: #adb5bd; }
+        .file-input-wrapper input[type="file"] {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 14px;
+            max-width: 100%;
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .file-input-wrapper .icon { font-size: 48px; display: block; margin-bottom: 10px; }
+        .file-input-wrapper p { color: #6c757d; margin-bottom: 10px; }
         .file-info {
             background: #e9f7fe;
             padding: 12px 16px;
@@ -51,6 +58,7 @@
         }
         .form-group input:focus, .form-group select:focus { border-color: #007bff; outline: none; }
         .btn-generate { width: 100%; padding: 14px; font-size: 18px; font-weight: 700; margin-top: 10px; }
+        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
         .result-box {
             background: #f8f9fa;
             border-radius: 12px;
@@ -74,6 +82,17 @@
             font-size: 13px;
             color: #856404;
         }
+        .btn-primary {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 28px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover { background: #0056b3; transform: translateY(-2px); }
         @media (max-width: 600px) { .upload-container { padding: 20px; } }
     </style>
 </head>
@@ -97,13 +116,12 @@
                 <strong>🧪 Test Mode:</strong> Using test user <strong>+263771234567</strong> (Client)
             </div>
 
-            <!-- Drop Zone -->
-            <div class="drop-zone" id="dropZone">
+            <!-- File Input -->
+            <div class="file-input-wrapper">
                 <span class="icon">📄</span>
-                <p>Tap to upload a PDF file</p>
-                <span class="sub-text">PDF files only (max 10MB)</span>
+                <p>Select a PDF file to upload</p>
+                <input type="file" id="fileInput" accept=".pdf" />
             </div>
-            <input type="file" id="fileInput" accept=".pdf" style="display:none;" />
 
             <div class="file-info" id="fileInfo">
                 <p>📎 Selected: <span id="fileName">No file selected</span></p>
@@ -185,7 +203,6 @@
         // ========================================
         // DOM ELEMENTS
         // ========================================
-        const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
         const fileName = document.getElementById('fileName');
@@ -195,21 +212,20 @@
         const resultContent = document.getElementById('resultContent');
 
         // ========================================
-        // FILE UPLOAD HANDLERS
+        // FILE INPUT HANDLER
         // ========================================
-        dropZone.addEventListener('click', () => fileInput.click());
-
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 selectedFile = file;
                 fileName.textContent = file.name;
                 fileInfo.style.display = 'block';
+                console.log('✅ File selected:', file.name);
             }
         });
 
         // ========================================
-        // GENERATE BOQ (SKIPS SIGN-UP)
+        // GENERATE BOQ
         // ========================================
         generateBtn.addEventListener('click', async function() {
             // Validate file
@@ -227,9 +243,12 @@
             loading.style.display = 'block';
             resultBox.style.display = 'none';
             this.disabled = true;
+            this.textContent = '⏳ Uploading...';
 
             try {
-                // 1. Get test user (hardcoded phone)
+                console.log('📤 Starting upload...');
+
+                // 1. Get test user
                 const { data: userData, error: userError } = await supabase
                     .from('users')
                     .select('id')
@@ -238,16 +257,25 @@
 
                 if (userError) throw userError;
                 if (!userData) {
-                    throw new Error('Test user not found. Please run the SQL to add the test user.');
+                    throw new Error('Test user not found. Phone: +263771234567');
                 }
 
+                console.log('✅ User found:', userData.id);
+
                 // 2. Upload PDF to Supabase Storage
-                const filePath = `boq-plans/${Date.now()}_${selectedFile.name}`;
+                const filePath = `${Date.now()}_${selectedFile.name}`;
+                console.log('📤 Uploading to:', filePath);
+
                 const { data: uploadData, error: uploadError } = await supabase.storage
                     .from('boq-plans')
                     .upload(filePath, selectedFile);
 
-                if (uploadError) throw uploadError;
+                if (uploadError) {
+                    console.error('Upload error:', uploadError);
+                    throw new Error(`Storage upload failed: ${uploadError.message}`);
+                }
+
+                console.log('✅ Upload successful:', uploadData);
 
                 // 3. Get public URL
                 const { data: urlData } = supabase.storage
@@ -255,6 +283,7 @@
                     .getPublicUrl(filePath);
 
                 const pdfUrl = urlData.publicUrl;
+                console.log('✅ PDF URL:', pdfUrl);
 
                 // 4. Get preferences
                 const preferences = {
@@ -280,6 +309,8 @@
 
                 if (boqError) throw boqError;
 
+                console.log('✅ BOQ created:', boqData);
+
                 // 6. Show success
                 resultBox.style.display = 'block';
                 resultContent.innerHTML = `
@@ -295,10 +326,8 @@
                     </div>
                 `;
 
-                console.log('✅ BOQ created:', boqData);
-
             } catch (error) {
-                console.error('Error:', error);
+                console.error('❌ Error:', error);
                 resultBox.style.display = 'block';
                 resultContent.innerHTML = `
                     <div class="error">
@@ -306,8 +335,11 @@
                         <br /><br />
                         <strong>Please make sure:</strong><br />
                         • Test user exists (phone: +263771234567)<br />
-                        • Storage bucket 'boq-plans' exists<br />
-                        • You have internet connection
+                        • Storage bucket 'boq-plans' exists and is public<br />
+                        • Storage policies are set up<br />
+                        • You have internet connection<br />
+                        <br />
+                        <strong>Check the console for details</strong>
                     </div>
                 `;
             }
@@ -315,7 +347,8 @@
             // Hide loading
             loading.style.display = 'none';
             this.disabled = false;
+            this.textContent = '📊 Generate BOQ';
         });
     </script>
 </body>
-  </html>
+    </html>

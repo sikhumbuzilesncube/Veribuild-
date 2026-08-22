@@ -15,171 +15,39 @@
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
-        .auth-container .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .auth-container .logo h1 {
-            font-size: 28px;
-            color: #1a1a2e;
-        }
-        .auth-container .logo h1 span {
-            color: #007bff;
-        }
-        .auth-container .logo p {
-            color: #6c757d;
-            font-size: 14px;
-            margin-top: -5px;
-        }
-        .auth-container h2 {
-            text-align: center;
-            font-size: 22px;
-            color: #1a1a2e;
-            margin-bottom: 5px;
-        }
-        .auth-container .subtitle {
-            text-align: center;
-            color: #6c757d;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            color: #1a1a2e;
-            margin-bottom: 5px;
-        }
-        .form-group label .optional {
-            font-weight: 400;
-            color: #6c757d;
-            font-size: 12px;
-        }
-        .form-group label .required {
-            color: #dc3545;
-        }
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #dee2e6;
-            border-radius: 10px;
-            font-size: 16px;
-            background: #ffffff;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-        .form-group .hint {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 4px;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            font-size: 18px;
-            font-weight: 700;
-            margin-top: 10px;
-            border: none;
-            border-radius: 30px;
-            background: #007bff;
-            color: #ffffff;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-submit:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-        }
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .auth-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #6c757d;
-        }
-        .auth-footer a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .auth-footer a:hover {
-            text-decoration: underline;
-        }
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none;
-            font-size: 14px;
-        }
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none;
-            font-size: 14px;
-        }
-        .password-strength {
-            height: 4px;
-            border-radius: 4px;
-            margin-top: 6px;
-            background: #e9ecef;
-            overflow: hidden;
-        }
-        .password-strength .bar {
-            height: 100%;
-            width: 0%;
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
+        .auth-container .logo { text-align: center; margin-bottom: 20px; }
+        .auth-container .logo h1 { font-size: 28px; color: #1a1a2e; }
+        .auth-container .logo h1 span { color: #007bff; }
+        .auth-container .logo p { color: #6c757d; font-size: 14px; margin-top: -5px; }
+        .auth-container h2 { text-align: center; font-size: 22px; color: #1a1a2e; margin-bottom: 5px; }
+        .auth-container .subtitle { text-align: center; color: #6c757d; font-size: 14px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; font-size: 14px; color: #1a1a2e; margin-bottom: 5px; }
+        .form-group label .optional { font-weight: 400; color: #6c757d; font-size: 12px; }
+        .form-group label .required { color: #dc3545; }
+        .form-group input { width: 100%; padding: 12px 16px; border: 2px solid #dee2e6; border-radius: 10px; font-size: 16px; background: #ffffff; transition: border-color 0.3s; }
+        .form-group input:focus { border-color: #007bff; outline: none; }
+        .form-group .hint { font-size: 12px; color: #6c757d; margin-top: 4px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-submit { width: 100%; padding: 14px; font-size: 18px; font-weight: 700; margin-top: 10px; border: none; border-radius: 30px; background: #007bff; color: #ffffff; cursor: pointer; transition: all 0.3s; }
+        .btn-submit:hover { background: #0056b3; transform: translateY(-2px); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #6c757d; }
+        .auth-footer a { color: #007bff; text-decoration: none; font-weight: 600; }
+        .error-message { background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; display: none; font-size: 14px; }
+        .success-message { background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; display: none; font-size: 14px; }
+        .password-strength { height: 4px; border-radius: 4px; margin-top: 6px; background: #e9ecef; overflow: hidden; }
+        .password-strength .bar { height: 100%; width: 0%; border-radius: 4px; transition: width 0.3s; }
         .password-strength .bar.weak { background: #dc3545; width: 33%; }
         .password-strength .bar.medium { background: #f0c040; width: 66%; }
         .password-strength .bar.strong { background: #28a745; width: 100%; }
-        .password-hint {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 4px;
-        }
-        .password-hint .weak { color: #dc3545; }
-        .password-hint .medium { color: #f0c040; }
-        .password-hint .strong { color: #28a745; }
-        @media (max-width: 600px) {
-            .auth-container { padding: 20px; }
-            .form-row { grid-template-columns: 1fr; }
-        }
+        .password-hint { font-size: 12px; color: #6c757d; margin-top: 4px; }
+        @media (max-width: 600px) { .auth-container { padding: 20px; } .form-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-
-    <!-- ================================ -->
-    <!-- HEADER -->
-    <!-- ================================ -->
     <header>
-        <div class="logo">
-            <h1>VeriBuild</h1>
-            <span class="tagline">A Product of Gatekeeper AI</span>
-        </div>
+        <div class="logo"><h1>Veri<span>Build</span></h1><p>A Product of Gatekeeper AI</p></div>
         <nav>
             <a href="index.html">Home</a>
             <a href="login.html">Login</a>
@@ -187,24 +55,18 @@
         </nav>
     </header>
 
-    <!-- ================================ -->
-    <!-- SIGN UP FORM -->
-    <!-- ================================ -->
     <section class="section" style="background:#f8f9fa; min-height:80vh; display:flex; align-items:center;">
         <div class="auth-container">
             <div class="logo">
                 <h1>Veri<span>Build</span></h1>
                 <p>Verified Building Solutions</p>
             </div>
-
             <h2>Create Account</h2>
             <p class="subtitle">Sign up to generate your BOQ and find skilled workers.</p>
 
-            <!-- Error / Success Messages -->
             <div class="error-message" id="errorMessage"></div>
             <div class="success-message" id="successMessage"></div>
 
-            <!-- Sign Up Form -->
             <form id="signupForm">
                 <div class="form-row">
                     <div class="form-group">
@@ -216,94 +78,57 @@
                         <input type="text" id="surname" placeholder="e.g., Ncube" required />
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Organisation <span class="optional">(optional)</span></label>
                     <input type="text" id="organisation" placeholder="e.g., Ncube Construction" />
                 </div>
-
                 <div class="form-group">
                     <label>Email Address <span class="required">*</span></label>
                     <input type="email" id="email" placeholder="you@example.com" required />
                     <div class="hint">We'll send your BOQ and receipts here.</div>
                 </div>
-
                 <div class="form-group">
                     <label>Phone Number <span class="required">*</span></label>
                     <input type="tel" id="phone" placeholder="0772 123 456" required />
                     <div class="hint">We'll use this for login and notifications.</div>
                 </div>
-
                 <div class="form-group">
                     <label>Password <span class="required">*</span></label>
                     <input type="password" id="password" placeholder="Minimum 6 characters" required minlength="6" />
-                    <div class="password-strength">
-                        <div class="bar" id="passwordBar"></div>
-                    </div>
+                    <div class="password-strength"><div class="bar" id="passwordBar"></div></div>
                     <div class="password-hint" id="passwordHint">Use at least 6 characters</div>
                 </div>
-
                 <div class="form-group">
                     <label>Confirm Password <span class="required">*</span></label>
                     <input type="password" id="confirmPassword" placeholder="Re-enter your password" required />
                 </div>
-
                 <button type="submit" class="btn-submit" id="submitBtn">🚀 Create Account</button>
             </form>
 
-            <div class="auth-footer">
-                Already have an account? <a href="login.html">Login</a>
-            </div>
-
+            <div class="auth-footer">Already have an account? <a href="login.html">Login</a></div>
             <div class="auth-footer" style="margin-top:10px; font-size:12px; color:#adb5bd;">
                 By signing up, you agree to our <a href="terms.html" style="color:#adb5bd; text-decoration:underline;">Terms & Conditions</a>
             </div>
         </div>
     </section>
 
-    <!-- ================================ -->
-    <!-- FOOTER -->
-    <!-- ================================ -->
     <footer>
         <div class="footer-content">
-            <div class="footer-logo">
-                <h2>VeriBuild</h2>
-                <p>A Product of Gatekeeper AI</p>
-            </div>
-            <div class="footer-links">
-                <a href="index.html">Home</a>
-                <a href="terms.html">Terms</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="refund.html">Refund</a>
-                <a href="about.html">About</a>
-                <a href="contact.html">Contact</a>
-            </div>
-            <div class="footer-contact">
-                <p>📞 +263 77 780 3517</p>
-                <p>✉️ admin@gatekeeperai.co.zw</p>
-            </div>
+            <div class="footer-logo"><h2>VeriBuild</h2><p>A Product of Gatekeeper AI</p></div>
+            <div class="footer-links"><a href="index.html">Home</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
+            <div class="footer-contact"><p>📞 +263 77 780 3517</p><p>✉️ admin@gatekeeperai.co.zw</p></div>
         </div>
-        <div class="footer-bottom">
-            <p>Built with ❤️ from Zimbabwe for the African market.</p>
-            <p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI. All rights reserved.</p>
-        </div>
+        <div class="footer-bottom"><p>Built with ❤️ from Zimbabwe for the African market.</p><p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI.</p></div>
     </footer>
 
     <script>
-        // ========================================
-        // SUPABASE CONFIGURATION
-        // ========================================
         const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ========================================
-        // DOM ELEMENTS
-        // ========================================
         const form = document.getElementById('signupForm');
         const firstName = document.getElementById('firstName');
         const surname = document.getElementById('surname');
-        const organisation = document.getElementById('organisation');
         const email = document.getElementById('email');
         const phone = document.getElementById('phone');
         const password = document.getElementById('password');
@@ -314,86 +139,41 @@
         const passwordBar = document.getElementById('passwordBar');
         const passwordHint = document.getElementById('passwordHint');
 
-        // ========================================
-        // PASSWORD STRENGTH
-        // ========================================
         password.addEventListener('input', function() {
             const val = this.value;
             const length = val.length;
-            let strength = 'weak';
-            let hint = '';
-
-            if (length === 0) {
-                passwordBar.className = 'bar';
-                passwordHint.textContent = 'Use at least 6 characters';
-                return;
-            }
-
+            if (length === 0) { passwordBar.className = 'bar'; passwordHint.textContent = 'Use at least 6 characters'; return; }
             if (length >= 8 && /[A-Z]/.test(val) && /[a-z]/.test(val) && /[0-9]/.test(val)) {
-                strength = 'strong';
-                hint = '✅ Strong password';
+                passwordBar.className = 'bar strong'; passwordHint.textContent = '✅ Strong password';
             } else if (length >= 6 && (/[A-Z]/.test(val) || /[a-z]/.test(val)) && /[0-9]/.test(val)) {
-                strength = 'medium';
-                hint = '⚠️ Medium password - add uppercase and lowercase letters';
+                passwordBar.className = 'bar medium'; passwordHint.textContent = '⚠️ Medium password';
             } else {
-                strength = 'weak';
-                hint = '❌ Weak password - use at least 6 characters with letters and numbers';
+                passwordBar.className = 'bar weak'; passwordHint.textContent = '❌ Weak password';
             }
-
-            passwordBar.className = 'bar ' + strength;
-            passwordHint.textContent = hint;
         });
 
-        // ========================================
-        // SHOW ERROR / SUCCESS
-        // ========================================
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            successMessage.style.display = 'none';
-        }
+        function showError(msg) { errorMessage.textContent = msg; errorMessage.style.display = 'block'; successMessage.style.display = 'none'; }
+        function showSuccess(msg) { successMessage.textContent = msg; successMessage.style.display = 'block'; errorMessage.style.display = 'none'; }
+        function hideMessages() { errorMessage.style.display = 'none'; successMessage.style.display = 'none'; }
 
-        function showSuccess(message) {
-            successMessage.textContent = message;
-            successMessage.style.display = 'block';
-            errorMessage.style.display = 'none';
-        }
-
-        function hideMessages() {
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-        }
-
-        // ========================================
-        // FORMAT PHONE NUMBER
-        // ========================================
-        function formatPhoneNumber(phone) {
+        function formatPhone(phone) {
             let cleaned = phone.replace(/\D/g, '');
-            if (cleaned.startsWith('0')) {
-                cleaned = '263' + cleaned.slice(1);
-            }
-            if (!cleaned.startsWith('263')) {
-                cleaned = '263' + cleaned;
-            }
+            if (cleaned.startsWith('0')) cleaned = '263' + cleaned.slice(1);
+            if (!cleaned.startsWith('263')) cleaned = '263' + cleaned;
             return '+' + cleaned;
         }
 
-        // ========================================
-        // FORM SUBMISSION (FIXED)
-        // ========================================
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             hideMessages();
 
             const firstNameVal = firstName.value.trim();
             const surnameVal = surname.value.trim();
-            const organisationVal = organisation.value.trim();
             const emailVal = email.value.trim();
             const phoneVal = phone.value.trim();
             const passwordVal = password.value;
             const confirmPasswordVal = confirmPassword.value;
 
-            // Validation
             if (!firstNameVal) { showError('Please enter your first name.'); return; }
             if (!surnameVal) { showError('Please enter your surname.'); return; }
             if (!emailVal) { showError('Please enter your email address.'); return; }
@@ -402,13 +182,13 @@
             if (!passwordVal || passwordVal.length < 6) { showError('Password must be at least 6 characters.'); return; }
             if (passwordVal !== confirmPasswordVal) { showError('Passwords do not match.'); return; }
 
-            const formattedPhone = formatPhoneNumber(phoneVal);
+            const formattedPhone = formatPhone(phoneVal);
 
             submitBtn.disabled = true;
             submitBtn.textContent = '⏳ Creating account...';
 
             try {
-                // Check if user already exists
+                // Check if user exists
                 const { data: existingUser } = await supabase
                     .from('users')
                     .select('phone')
@@ -430,7 +210,6 @@
                         data: {
                             full_name: firstNameVal + ' ' + surnameVal,
                             email: emailVal,
-                            organisation: organisationVal || null,
                             suburb: 'Not set',
                             role: 'client',
                             is_verified: true
@@ -438,49 +217,4 @@
                     }
                 });
 
-                if (authError) {
-                    console.error('Auth error:', authError);
-                    showError('Sign up failed: ' + authError.message);
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '🚀 Create Account';
-                    return;
-                }
-
-                // Insert into users table
-                const { error: insertError } = await supabase
-                    .from('users')
-                    .insert([{
-                        id: authData.user.id,
-                        phone: formattedPhone,
-                        full_name: firstNameVal + ' ' + surnameVal,
-                        email: emailVal,
-                        organisation: organisationVal || null,
-                        suburb: 'Not set',
-                        role: 'client',
-                        is_verified: true
-                    }]);
-
-                if (insertError) {
-                    console.error('Insert error:', insertError);
-                    showSuccess('✅ Account created! You can now login.');
-                    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
-                    return;
-                }
-
-                showSuccess('✅ Account created successfully! Redirecting to login...');
-                submitBtn.textContent = '✅ Done!';
-
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
-
-            } catch (error) {
-                console.error('Sign up error:', error);
-                showError('An unexpected error occurred. Please try again.');
-                submitBtn.disabled = false;
-                submitBtn.textContent = '🚀 Create Account';
-            }
-        });
-    </script>
-</body>
-    </html>
+                if (

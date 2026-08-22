@@ -217,4 +217,48 @@
                     }
                 });
 
-                if (
+                if (authError) {
+                    console.error('Auth error:', authError);
+                    showError('Sign up failed: ' + authError.message);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '🚀 Create Account';
+                    return;
+                }
+
+                // Insert into users table
+                const { error: insertError } = await supabase
+                    .from('users')
+                    .insert([{
+                        id: authData.user.id,
+                        phone: formattedPhone,
+                        full_name: firstNameVal + ' ' + surnameVal,
+                        email: emailVal,
+                        suburb: 'Not set',
+                        role: 'client',
+                        is_verified: true
+                    }]);
+
+                if (insertError) {
+                    console.error('Insert error:', insertError);
+                    showSuccess('✅ Account created! You can now login.');
+                    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                    return;
+                }
+
+                showSuccess('✅ Account created successfully! Redirecting to login...');
+                submitBtn.textContent = '✅ Done!';
+
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Sign up error:', error);
+                showError('An unexpected error occurred. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 Create Account';
+            }
+        });
+    </script>
+</body>
+                        </html>

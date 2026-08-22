@@ -5,8 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>VeriBuild - Verified Building Solutions</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Additional inline styles for navigation */
+        nav .btn-primary {
+            background: #007bff;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        nav .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        nav .btn-outline {
+            background: transparent;
+            color: #1a1a2e;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border: 2px solid #1a1a2e;
+            transition: all 0.3s;
+        }
+        nav .btn-outline:hover {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        nav .btn-success {
+            background: #28a745;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        nav .btn-success:hover {
+            background: #1e7e34;
+            transform: translateY(-2px);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            nav { display: none; flex-direction: column; width: 100%; padding-top: 15px; border-top: 1px solid #e9ecef; }
+            nav.open { display: flex; }
+            nav a { width: 100%; text-align: center; padding: 10px 0; }
+        }
+    </style>
 </head>
 <body>
 
@@ -18,15 +81,14 @@
             <h1>VeriBuild</h1>
             <span class="tagline">Verified Building Solutions</span>
         </div>
-        <nav>
+        <nav id="mainNav">
             <a href="#how-it-works">How It Works</a>
             <a href="#platform">Platform</a>
             <a href="#pricing">Pricing</a>
-            <a href="login.html" class="btn-outline" style="font-size:13px; padding:6px 18px;">Login</a>
-            <a href="signup.html" class="btn-primary" style="font-size:13px; padding:6px 18px;">Sign Up</a>
-            <a href="#generate" class="btn-primary">Get Started</a>
+            <a href="login.html" class="btn-outline">Login</a>
+            <a href="signup.html" class="btn-primary">Sign Up</a>
+            <a href="#generate" class="btn-success">Get Started</a>
         </nav>
-        <!-- Mobile Menu Toggle -->
         <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     </header>
 
@@ -103,7 +165,6 @@
         <h2>Your Complete Building Platform</h2>
         <p>One platform connecting clients, hardware shops, workers, and engineers.</p>
         <div class="platform-grid">
-            <!-- For Clients -->
             <div class="platform-card">
                 <div class="platform-icon">🏠</div>
                 <h3>For Clients</h3>
@@ -121,7 +182,6 @@
                 </div>
             </div>
 
-            <!-- For Hardware Shops -->
             <div class="platform-card">
                 <div class="platform-icon">🛒</div>
                 <h3>For Hardware Shops</h3>
@@ -135,7 +195,6 @@
                 <a href="#" class="btn-outline" style="font-size:12px; padding:6px 16px;">Register Hardware</a>
             </div>
 
-            <!-- For Skilled Workers -->
             <div class="platform-card">
                 <div class="platform-icon">👷</div>
                 <h3>For Skilled Workers</h3>
@@ -153,7 +212,6 @@
                 </div>
             </div>
 
-            <!-- For Engineers -->
             <div class="platform-card">
                 <div class="platform-icon">📐</div>
                 <h3>For Engineers</h3>
@@ -189,58 +247,33 @@
     </section>
 
     <!-- ================================ -->
-    <!-- GENERATE BOQ (WITH FULL-SCREEN CAMERA) -->
+    <!-- GENERATE BOQ -->
     <!-- ================================ -->
     <section id="generate" class="section alt-bg">
         <h2>Generate Your BOQ</h2>
         <p>Upload your building plan or take a photo with your phone.</p>
 
         <div class="generate-card">
-            <!-- Upload Methods -->
             <div class="upload-methods">
                 <button id="uploadPdfBtn" class="btn-outline">📄 Upload PDF</button>
                 <button id="takePhotoBtn" class="btn-primary">📸 Take Photo</button>
             </div>
 
-            <!-- Hidden PDF Input -->
             <input type="file" id="pdfFileInput" accept=".pdf" style="display:none;" />
 
-            <!-- FULL-SCREEN CAMERA OVERLAY -->
-            <div id="cameraOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#000; z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
-                <video id="video" autoplay playsinline style="width:100%; height:100%; object-fit:cover; background:#000;"></video>
-                
-                <!-- Camera Controls -->
-                <div style="position:absolute; bottom:40px; left:0; right:0; display:flex; justify-content:center; gap:20px; padding:0 20px; z-index:10;">
-                    <button id="capturePhotoBtn" class="btn-secondary" style="font-size:20px; padding:16px 40px; border-radius:50px; background:#28a745; color:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.5);">
-                        📸 Take Photo
-                    </button>
-                    <button id="cancelCameraBtn" class="btn-outline" style="font-size:16px; padding:16px 30px; border-radius:50px; background:rgba(255,255,255,0.2); color:#fff; border:2px solid #fff;">
-                        ❌ Cancel
-                    </button>
+            <div id="cameraContainer" style="display:none; margin-top:20px;">
+                <video id="video" autoplay playsinline style="width:100%; max-width:400px; border-radius:12px; background:#000;"></video>
+                <div style="margin-top:10px;">
+                    <button id="capturePhotoBtn" class="btn-secondary">📸 Take Photo</button>
+                    <button id="cancelCameraBtn" class="btn-outline">❌ Cancel</button>
                 </div>
-                
-                <!-- Photo Counter -->
-                <div style="position:absolute; top:40px; right:20px; background:rgba(0,0,0,0.7); color:#fff; padding:8px 16px; border-radius:30px; font-size:16px; z-index:10;">
-                    📸 <span id="photoCountOverlay">0</span>
-                </div>
-                
-                <div style="position:absolute; top:40px; left:20px; background:rgba(0,0,0,0.5); color:#fff; padding:6px 12px; border-radius:8px; font-size:12px; z-index:10;">
-                    Tap Cancel to exit
-                </div>
-            </div>
-
-            <!-- Photo Preview -->
-            <div id="photoPreview" style="display:none; margin-top:20px; padding:20px; background:#ffffff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
-                <p><strong>📸 Photos Taken:</strong> <span id="photoCount">0</span></p>
-                <div id="photoThumbnails" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
-                <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+                <div id="photoPreview" style="display:none; margin-top:20px;">
+                    <p><strong>Photos Taken:</strong> <span id="photoCount">0</span></p>
                     <button id="generateFromPhotosBtn" class="btn-primary">📄 Generate BOQ from Photos</button>
                     <button id="clearPhotosBtn" class="btn-outline">🗑️ Clear Photos</button>
-                    <button id="addMorePhotosBtn" class="btn-outline">📸 Add More Photos</button>
                 </div>
             </div>
 
-            <!-- PDF File Display -->
             <div id="fileDisplay" style="display:none; margin-top:15px; padding:15px; background:#e9f7fe; border-radius:8px;">
                 <p>📄 Selected: <span id="fileName"></span></p>
                 <button id="generateFromPdfBtn" class="btn-primary">📄 Generate BOQ from PDF</button>
@@ -271,9 +304,9 @@
             </div>
             <div class="pricing-card">
                 <h3>Hardware Shops</h3>
-                <p class="price">$12 <span>/ month</span></p>
+                <p class="price">$10 <span>/ month</span></p>
                 <ul>
-                    <li>✅ List up to 50 products</li>
+                    <li>✅ List up to 20 products</li>
                     <li>✅ Update prices anytime</li>
                     <li>✅ Appear in BOQ sourcing list</li>
                 </ul>
@@ -311,7 +344,7 @@
             </div>
             <div class="faq-item">
                 <h3>Do I need to sign up to generate a BOQ?</h3>
-                <p>You can upload your plan without signing up, but you'll need to sign up (free) before we generate your BOQ.</p>
+                <p>Yes, you need to sign up (free) to generate a BOQ. Sign up takes less than 1 minute.</p>
             </div>
             <div class="faq-item">
                 <h3>Can I take photos instead of scanning?</h3>
@@ -327,46 +360,10 @@
             </div>
             <div class="faq-item">
                 <h3>Do you offer commercial BOQs?</h3>
-                <p>Not yet. Commercial BOQs (offices, shops, schools) are coming soon. Register your email to be notified.</p>
+                <p>Not yet. Commercial BOQs (offices, shops, schools) are coming soon.</p>
             </div>
         </div>
     </section>
-
-    <!-- ================================ -->
-    <!-- SIGN-UP POPUP -->
-    <!-- ================================ -->
-    <div id="signupPopup" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center;">
-        <div style="background:#ffffff; max-width:400px; width:90%; padding:30px; border-radius:16px; box-shadow:0 8px 30px rgba(0,0,0,0.3);">
-            <h2 style="margin-bottom:10px;">🔐 Sign Up for VeriBuild</h2>
-            <p style="color:#6c757d; margin-bottom:20px;">Free in 30 seconds. No credit card required.</p>
-            
-            <!-- Phone Input -->
-            <label style="display:block; font-weight:600; margin-bottom:5px;">Phone Number</label>
-            <input type="tel" id="signupPhone" placeholder="0772 123 456" 
-                   style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; margin-bottom:15px;">
-            
-            <!-- Send OTP Button -->
-            <button id="sendOtpBtn" class="btn-primary" style="width:100%; margin-bottom:15px;">
-                📲 Send Verification Code via WhatsApp
-            </button>
-            
-            <!-- OTP Input -->
-            <div id="otpSection" style="display:none;">
-                <label style="display:block; font-weight:600; margin-bottom:5px;">Verification Code</label>
-                <input type="text" id="otpInput" placeholder="Enter 6-digit code" maxlength="6"
-                       style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; margin-bottom:10px;">
-                <p id="otpStatus" style="font-size:14px; color:#6c757d; margin-bottom:10px;">⏳ Code expires in 5 minutes</p>
-                <button id="verifyOtpBtn" class="btn-secondary" style="width:100%;">
-                    ✅ Verify Code
-                </button>
-            </div>
-            
-            <!-- Close Button -->
-            <button id="closeSignupBtn" style="margin-top:15px; background:none; border:none; color:#6c757d; cursor:pointer; font-size:14px; width:100%;">
-                Cancel
-            </button>
-        </div>
-    </div>
 
     <!-- ================================ -->
     <!-- FOOTER -->
@@ -375,29 +372,61 @@
         <div class="footer-content">
             <div class="footer-logo">
                 <h2>VeriBuild</h2>
-                <p>Verified Building Solutions</p>
+                <p>A Product of Gatekeeper AI</p>
             </div>
             <div class="footer-links">
-    <a href="about.html">About Us</a>
-    <a href="contact.html">Contact Us</a>
-    <a href="terms.html">Terms & Conditions</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="refund.html">Refund Policy</a>
-    <a href="workers.html">Find a Worker</a>
-    <a href="client-dashboard.html">Client Dashboard</a>
-    <a href="worker-dashboard.html">Worker Dashboard</a>
-</div>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="terms.html">Terms & Conditions</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="refund.html">Refund Policy</a>
+                <a href="workers.html">Find a Worker</a>
+                <a href="client-dashboard.html">Client Dashboard</a>
+                <a href="worker-dashboard.html">Worker Dashboard</a>
+            </div>
             <div class="footer-contact">
-                <p>📍 Bulawayo, Zimbabwe</p>
                 <p>📞 +263 77 780 3517</p>
                 <p>✉️ admin@gatekeeperai.co.zw</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 VeriBuild. All rights reserved.</p>
+            <p>Built with ❤️ from Zimbabwe for the African market.</p>
+            <p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI. All rights reserved.</p>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        // ========================================
+        // MOBILE MENU
+        // ========================================
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('mainNav').classList.toggle('open');
+        });
+
+        // ========================================
+        // BOQ UPLOAD HANDLERS
+        // ========================================
+        const uploadPdfBtn = document.getElementById('uploadPdfBtn');
+        const pdfFileInput = document.getElementById('pdfFileInput');
+        const fileDisplay = document.getElementById('fileDisplay');
+        const fileName = document.getElementById('fileName');
+
+        if (uploadPdfBtn) {
+            uploadPdfBtn.addEventListener('click', function() {
+                pdfFileInput.click();
+            });
+        }
+
+        if (pdfFileInput) {
+            pdfFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    fileName.textContent = file.name;
+                    fileDisplay.style.display = 'block';
+                    alert('✅ PDF uploaded: ' + file.name + '\nClick "Generate BOQ from PDF" to proceed.');
+                }
+            });
+        }
+    </script>
 </body>
     </html>

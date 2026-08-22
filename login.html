@@ -53,9 +53,6 @@
             color: #1a1a2e;
             margin-bottom: 5px;
         }
-        .form-group label .required {
-            color: #dc3545;
-        }
         .form-group input {
             width: 100%;
             padding: 12px 16px;
@@ -80,12 +77,19 @@
             align-items: center;
             margin-bottom: 20px;
             font-size: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .form-options label {
             display: flex;
             align-items: center;
             gap: 6px;
             color: #495057;
+            cursor: pointer;
+        }
+        .form-options label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
             cursor: pointer;
         }
         .form-options a {
@@ -149,20 +153,9 @@
             display: none;
             font-size: 14px;
         }
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-        .remember-me input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
         @media (max-width: 600px) {
             .auth-container { padding: 20px; }
-            .form-options { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .form-options { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
@@ -214,7 +207,7 @@
                 </div>
 
                 <div class="form-options">
-                    <label class="remember-me">
+                    <label>
                         <input type="checkbox" id="rememberMe" />
                         Remember Me
                     </label>
@@ -272,7 +265,6 @@
         const form = document.getElementById('loginForm');
         const phone = document.getElementById('phone');
         const password = document.getElementById('password');
-        const rememberMe = document.getElementById('rememberMe');
         const loginBtn = document.getElementById('loginBtn');
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
@@ -312,18 +304,7 @@
         }
 
         // ========================================
-        // CHECK IF USER IS ALREADY LOGGED IN
-        // ========================================
-        async function checkSession() {
-            const { data } = await supabase.auth.getSession();
-            if (data.session) {
-                // User is already logged in, redirect to dashboard
-                window.location.href = 'client-dashboard.html';
-            }
-        }
-
-        // ========================================
-        // FORM SUBMISSION
+        // FORM SUBMISSION (FIXED)
         // ========================================
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -344,7 +325,7 @@
             const formattedPhone = formatPhoneNumber(phoneVal);
 
             loginBtn.disabled = true;
-            loginBtn.innerHTML = '⏳ Logging in...';
+            loginBtn.textContent = '⏳ Logging in...';
 
             try {
                 const { data, error } = await supabase.auth.signInWithPassword({
@@ -356,26 +337,17 @@
                     console.error('Login error:', error);
                     if (error.message.includes('Invalid login credentials')) {
                         showError('Invalid phone number or password. Please try again.');
-                    } else if (error.message.includes('Email not confirmed')) {
-                        showError('Please verify your phone number first. Check your WhatsApp for a verification code.');
                     } else {
                         showError('Login failed: ' + error.message);
                     }
                     loginBtn.disabled = false;
-                    loginBtn.innerHTML = '🔐 Login';
+                    loginBtn.textContent = '🔐 Login';
                     return;
                 }
 
-                // Success
                 showSuccess('✅ Login successful! Redirecting...');
-                loginBtn.innerHTML = '✅ Welcome!';
+                loginBtn.textContent = '✅ Welcome!';
 
-                // Store session
-                if (rememberMe.checked) {
-                    // Session will be persisted by Supabase
-                }
-
-                // Redirect to dashboard
                 setTimeout(() => {
                     window.location.href = 'client-dashboard.html';
                 }, 1500);
@@ -384,28 +356,9 @@
                 console.error('Login error:', error);
                 showError('An unexpected error occurred. Please try again.');
                 loginBtn.disabled = false;
-                loginBtn.innerHTML = '🔐 Login';
+                loginBtn.textContent = '🔐 Login';
             }
-        });
-
-        // ========================================
-        // ENTER KEY SUPPORT
-        // ========================================
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const active = document.activeElement;
-                if (active && active.tagName === 'INPUT') {
-                    form.dispatchEvent(new Event('submit'));
-                }
-            }
-        });
-
-        // ========================================
-        // INIT
-        // ========================================
-        document.addEventListener('DOMContentLoaded', function() {
-            checkSession();
         });
     </script>
 </body>
-      </html>
+    </html>

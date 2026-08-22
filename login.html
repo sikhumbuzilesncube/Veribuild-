@@ -15,160 +15,34 @@
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
-        .auth-container .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .auth-container .logo h1 {
-            font-size: 28px;
-            color: #1a1a2e;
-        }
-        .auth-container .logo h1 span {
-            color: #007bff;
-        }
-        .auth-container .logo p {
-            color: #6c757d;
-            font-size: 14px;
-            margin-top: -5px;
-        }
-        .auth-container h2 {
-            text-align: center;
-            font-size: 22px;
-            color: #1a1a2e;
-            margin-bottom: 5px;
-        }
-        .auth-container .subtitle {
-            text-align: center;
-            color: #6c757d;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            color: #1a1a2e;
-            margin-bottom: 5px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #dee2e6;
-            border-radius: 10px;
-            font-size: 16px;
-            background: #ffffff;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-        .form-group .hint {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 4px;
-        }
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 14px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .form-options label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #495057;
-            cursor: pointer;
-        }
-        .form-options label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        .form-options a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .form-options a:hover {
-            text-decoration: underline;
-        }
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            font-size: 18px;
-            font-weight: 700;
-            margin-top: 5px;
-            border: none;
-            border-radius: 30px;
-            background: #007bff;
-            color: #ffffff;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-submit:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-        }
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .auth-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #6c757d;
-        }
-        .auth-footer a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .auth-footer a:hover {
-            text-decoration: underline;
-        }
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none;
-            font-size: 14px;
-        }
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none;
-            font-size: 14px;
-        }
-        @media (max-width: 600px) {
-            .auth-container { padding: 20px; }
-            .form-options { flex-direction: column; align-items: flex-start; }
-        }
+        .auth-container .logo { text-align: center; margin-bottom: 20px; }
+        .auth-container .logo h1 { font-size: 28px; color: #1a1a2e; }
+        .auth-container .logo h1 span { color: #007bff; }
+        .auth-container .logo p { color: #6c757d; font-size: 14px; margin-top: -5px; }
+        .auth-container h2 { text-align: center; font-size: 22px; color: #1a1a2e; margin-bottom: 5px; }
+        .auth-container .subtitle { text-align: center; color: #6c757d; font-size: 14px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; font-size: 14px; color: #1a1a2e; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 12px 16px; border: 2px solid #dee2e6; border-radius: 10px; font-size: 16px; background: #ffffff; transition: border-color 0.3s; }
+        .form-group input:focus { border-color: #007bff; outline: none; }
+        .form-group .hint { font-size: 12px; color: #6c757d; margin-top: 4px; }
+        .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 14px; flex-wrap: wrap; gap: 10px; }
+        .form-options label { display: flex; align-items: center; gap: 6px; color: #495057; cursor: pointer; }
+        .form-options label input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+        .form-options a { color: #007bff; text-decoration: none; }
+        .btn-submit { width: 100%; padding: 14px; font-size: 18px; font-weight: 700; margin-top: 5px; border: none; border-radius: 30px; background: #007bff; color: #ffffff; cursor: pointer; transition: all 0.3s; }
+        .btn-submit:hover { background: #0056b3; transform: translateY(-2px); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #6c757d; }
+        .auth-footer a { color: #007bff; text-decoration: none; font-weight: 600; }
+        .error-message { background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; display: none; font-size: 14px; }
+        .success-message { background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; display: none; font-size: 14px; }
+        @media (max-width: 600px) { .auth-container { padding: 20px; } .form-options { flex-direction: column; align-items: flex-start; } }
     </style>
 </head>
 <body>
-
-    <!-- ================================ -->
-    <!-- HEADER -->
-    <!-- ================================ -->
     <header>
-        <div class="logo">
-            <h1>VeriBuild</h1>
-            <span class="tagline">A Product of Gatekeeper AI</span>
-        </div>
+        <div class="logo"><h1>Veri<span>Build</span></h1><p>A Product of Gatekeeper AI</p></div>
         <nav>
             <a href="index.html">Home</a>
             <a href="login.html" class="btn-primary" style="padding:8px 20px; font-size:13px;">Login</a>
@@ -176,92 +50,53 @@
         </nav>
     </header>
 
-    <!-- ================================ -->
-    <!-- LOGIN FORM -->
-    <!-- ================================ -->
     <section class="section" style="background:#f8f9fa; min-height:80vh; display:flex; align-items:center;">
         <div class="auth-container">
             <div class="logo">
                 <h1>Veri<span>Build</span></h1>
                 <p>Verified Building Solutions</p>
             </div>
-
             <h2>Welcome Back</h2>
             <p class="subtitle">Login to access your BOQs and manage your projects.</p>
 
-            <!-- Error / Success Messages -->
             <div class="error-message" id="errorMessage"></div>
             <div class="success-message" id="successMessage"></div>
 
-            <!-- Login Form -->
             <form id="loginForm">
                 <div class="form-group">
                     <label>Phone Number <span class="required">*</span></label>
                     <input type="tel" id="phone" placeholder="0772 123 456" required />
                     <div class="hint">Enter the phone number you used to sign up.</div>
                 </div>
-
                 <div class="form-group">
                     <label>Password <span class="required">*</span></label>
                     <input type="password" id="password" placeholder="Enter your password" required />
                 </div>
-
                 <div class="form-options">
-                    <label>
-                        <input type="checkbox" id="rememberMe" />
-                        Remember Me
-                    </label>
+                    <label><input type="checkbox" id="rememberMe" /> Remember Me</label>
                     <a href="forgot-password.html">Forgot Password?</a>
                 </div>
-
                 <button type="submit" class="btn-submit" id="loginBtn">🔐 Login</button>
             </form>
 
-            <div class="auth-footer">
-                Don't have an account? <a href="signup.html">Sign Up</a>
-            </div>
+            <div class="auth-footer">Don't have an account? <a href="signup.html">Sign Up</a></div>
         </div>
     </section>
 
-    <!-- ================================ -->
-    <!-- FOOTER -->
-    <!-- ================================ -->
     <footer>
         <div class="footer-content">
-            <div class="footer-logo">
-                <h2>VeriBuild</h2>
-                <p>A Product of Gatekeeper AI</p>
-            </div>
-            <div class="footer-links">
-                <a href="index.html">Home</a>
-                <a href="terms.html">Terms</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="refund.html">Refund</a>
-                <a href="about.html">About</a>
-                <a href="contact.html">Contact</a>
-            </div>
-            <div class="footer-contact">
-                <p>📞 +263 77 780 3517</p>
-                <p>✉️ admin@gatekeeperai.co.zw</p>
-            </div>
+            <div class="footer-logo"><h2>VeriBuild</h2><p>A Product of Gatekeeper AI</p></div>
+            <div class="footer-links"><a href="index.html">Home</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
+            <div class="footer-contact"><p>📞 +263 77 780 3517</p><p>✉️ admin@gatekeeperai.co.zw</p></div>
         </div>
-        <div class="footer-bottom">
-            <p>Built with ❤️ from Zimbabwe for the African market.</p>
-            <p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI. All rights reserved.</p>
-        </div>
+        <div class="footer-bottom"><p>Built with ❤️ from Zimbabwe for the African market.</p><p>&copy; 2026 VeriBuild — A Product of Gatekeeper AI.</p></div>
     </footer>
 
     <script>
-        // ========================================
-        // SUPABASE CONFIGURATION
-        // ========================================
         const SUPABASE_URL = 'https://gfggbagrkdacuepqnkdg.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZ2diYWdya2RhY3VlcHFua2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODY3NTYsImV4cCI6MjEwMjQ2Mjc1Nn0.2OHTD7-vCE2sZ-NwQWqUSNWmHcPt_KRkYfG12Uz1rxE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ========================================
-        // DOM ELEMENTS
-        // ========================================
         const form = document.getElementById('loginForm');
         const phone = document.getElementById('phone');
         const password = document.getElementById('password');
@@ -269,43 +104,17 @@
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
 
-        // ========================================
-        // SHOW ERROR / SUCCESS
-        // ========================================
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            successMessage.style.display = 'none';
-        }
+        function showError(msg) { errorMessage.textContent = msg; errorMessage.style.display = 'block'; successMessage.style.display = 'none'; }
+        function showSuccess(msg) { successMessage.textContent = msg; successMessage.style.display = 'block'; errorMessage.style.display = 'none'; }
+        function hideMessages() { errorMessage.style.display = 'none'; successMessage.style.display = 'none'; }
 
-        function showSuccess(message) {
-            successMessage.textContent = message;
-            successMessage.style.display = 'block';
-            errorMessage.style.display = 'none';
-        }
-
-        function hideMessages() {
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-        }
-
-        // ========================================
-        // FORMAT PHONE NUMBER
-        // ========================================
-        function formatPhoneNumber(phone) {
+        function formatPhone(phone) {
             let cleaned = phone.replace(/\D/g, '');
-            if (cleaned.startsWith('0')) {
-                cleaned = '263' + cleaned.slice(1);
-            }
-            if (!cleaned.startsWith('263')) {
-                cleaned = '263' + cleaned;
-            }
+            if (cleaned.startsWith('0')) cleaned = '263' + cleaned.slice(1);
+            if (!cleaned.startsWith('263')) cleaned = '263' + cleaned;
             return '+' + cleaned;
         }
 
-        // ========================================
-        // FORM SUBMISSION (FIXED)
-        // ========================================
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             hideMessages();
@@ -313,16 +122,10 @@
             const phoneVal = phone.value.trim();
             const passwordVal = password.value;
 
-            if (!phoneVal || phoneVal.length < 10) {
-                showError('Please enter a valid phone number.');
-                return;
-            }
-            if (!passwordVal || passwordVal.length < 6) {
-                showError('Please enter your password.');
-                return;
-            }
+            if (!phoneVal || phoneVal.length < 10) { showError('Please enter a valid phone number.'); return; }
+            if (!passwordVal || passwordVal.length < 6) { showError('Please enter your password.'); return; }
 
-            const formattedPhone = formatPhoneNumber(phoneVal);
+            const formattedPhone = formatPhone(phoneVal);
 
             loginBtn.disabled = true;
             loginBtn.textContent = '⏳ Logging in...';
@@ -361,4 +164,4 @@
         });
     </script>
 </body>
-    </html>
+                        </html>

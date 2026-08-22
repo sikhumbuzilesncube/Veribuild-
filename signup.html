@@ -164,14 +164,6 @@
         .password-hint .weak { color: #dc3545; }
         .password-hint .medium { color: #f0c040; }
         .password-hint .strong { color: #28a745; }
-        .loading-spinner {
-            display: inline-block;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
         @media (max-width: 600px) {
             .auth-container { padding: 20px; }
             .form-row { grid-template-columns: 1fr; }
@@ -349,7 +341,7 @@
             }
 
             passwordBar.className = 'bar ' + strength;
-            passwordHint.innerHTML = hint;
+            passwordHint.textContent = hint;
         });
 
         // ========================================
@@ -376,30 +368,23 @@
         // FORMAT PHONE NUMBER
         // ========================================
         function formatPhoneNumber(phone) {
-            // Remove all non-numeric characters
             let cleaned = phone.replace(/\D/g, '');
-            
-            // If it starts with 0, replace with +263
             if (cleaned.startsWith('0')) {
                 cleaned = '263' + cleaned.slice(1);
             }
-            
-            // If it doesn't start with 263, add it
             if (!cleaned.startsWith('263')) {
                 cleaned = '263' + cleaned;
             }
-            
             return '+' + cleaned;
         }
 
         // ========================================
-        // FORM SUBMISSION
+        // FORM SUBMISSION (FIXED)
         // ========================================
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             hideMessages();
 
-            // Get values
             const firstNameVal = firstName.value.trim();
             const surnameVal = surname.value.trim();
             const organisationVal = organisation.value.trim();
@@ -408,7 +393,7 @@
             const passwordVal = password.value;
             const confirmPasswordVal = confirmPassword.value;
 
-            // Validate
+            // Validation
             if (!firstNameVal) { showError('Please enter your first name.'); return; }
             if (!surnameVal) { showError('Please enter your surname.'); return; }
             if (!emailVal) { showError('Please enter your email address.'); return; }
@@ -417,16 +402,14 @@
             if (!passwordVal || passwordVal.length < 6) { showError('Password must be at least 6 characters.'); return; }
             if (passwordVal !== confirmPasswordVal) { showError('Passwords do not match.'); return; }
 
-            // Format phone number
             const formattedPhone = formatPhoneNumber(phoneVal);
 
-            // Disable button
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '⏳ Creating account...';
+            submitBtn.textContent = '⏳ Creating account...';
 
             try {
-                // 1. Check if user already exists
-                const { data: existingUser, error: checkError } = await supabase
+                // Check if user already exists
+                const { data: existingUser } = await supabase
                     .from('users')
                     .select('phone')
                     .eq('phone', formattedPhone)
@@ -435,11 +418,11 @@
                 if (existingUser) {
                     showError('This phone number is already registered. Please login.');
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = '🚀 Create Account';
+                    submitBtn.textContent = '🚀 Create Account';
                     return;
                 }
 
-                // 2. Create user with Supabase Auth (no email confirmation)
+                // Create user with Supabase Auth
                 const { data: authData, error: authError } = await supabase.auth.signUp({
                     phone: formattedPhone,
                     password: passwordVal,
@@ -459,11 +442,11 @@
                     console.error('Auth error:', authError);
                     showError('Sign up failed: ' + authError.message);
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = '🚀 Create Account';
+                    submitBtn.textContent = '🚀 Create Account';
                     return;
                 }
 
-                // 3. Also insert into users table (for easy querying)
+                // Insert into users table
                 const { error: insertError } = await supabase
                     .from('users')
                     .insert([{
@@ -479,20 +462,14 @@
 
                 if (insertError) {
                     console.error('Insert error:', insertError);
-                    // User was created in auth but not in users table
-                    // Still show success but with a warning
-                    showSuccess('✅ Account created successfully! You can now login.');
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 2000);
+                    showSuccess('✅ Account created! You can now login.');
+                    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
                     return;
                 }
 
-                // Success!
-                showSuccess('✅ Account created successfully! You can now login.');
-                submitBtn.innerHTML = '✅ Done!';
+                showSuccess('✅ Account created successfully! Redirecting to login...');
+                submitBtn.textContent = '✅ Done!';
 
-                // Redirect to login after 2 seconds
                 setTimeout(() => {
                     window.location.href = 'login.html';
                 }, 2000);
@@ -501,21 +478,9 @@
                 console.error('Sign up error:', error);
                 showError('An unexpected error occurred. Please try again.');
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '🚀 Create Account';
-            }
-        });
-
-        // ========================================
-        // ENTER KEY SUPPORT
-        // ========================================
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const active = document.activeElement;
-                if (active && active.tagName === 'INPUT') {
-                    form.dispatchEvent(new Event('submit'));
-                }
+                submitBtn.textContent = '🚀 Create Account';
             }
         });
     </script>
 </body>
-  </html>
+    </html>
